@@ -1,5 +1,6 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -25,16 +26,12 @@ std::string readFile(const char *fileName) {
 unsigned int createTriangle() {
   // clang-format off
   float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-    -0.5f, 0.5f, 0.0f,
-    -0.1f, -0.5f, 0.0f,
-    0.1f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.5f, 0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+     0.0f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+     0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
   };
   unsigned int indices[] = {
     0, 1, 2,
-    3, 4, 5,
   };
   // clang-format on
 
@@ -53,9 +50,17 @@ unsigned int createTriangle() {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, /* normalized */ GL_FALSE,
-                        /* stride */ 3 * sizeof(float), (void *)0);
+  glVertexAttribPointer(/* layout position */ 0, /* size */ 3,
+                        /* type */ GL_FLOAT,
+                        /* normalized */ GL_FALSE,
+                        /* stride */ 6 * sizeof(float), /* offset */ (void *)0);
   glEnableVertexAttribArray(0);
+  glVertexAttribPointer(/* layout position */ 1, /* size */ 3,
+                        /* type */ GL_FLOAT,
+                        /* normalized */ GL_FALSE,
+                        /* stride */ 6 * sizeof(float),
+                        /* offset */ (void *)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
   return VAO;
 }
 
@@ -160,7 +165,12 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    float timeValue = glfwGetTime();
+    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+
     glUseProgram(shaderProgram);
+    glUniform4f(vertexColorLocation, 0, greenValue, 0, 1);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, /* offset */ 0);
     glBindVertexArray(0);
