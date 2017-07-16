@@ -10,6 +10,10 @@ cc_library(
 cc_binary(
     name = "learn_opengl",
     srcs = ["learn_opengl.cc"],
+    data = [
+        "fragment.glsl",
+        "vertex.glsl",
+    ],
     linkopts = [
         "-lGL",
         "-lGLU",

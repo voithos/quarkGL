@@ -1,6 +1,9 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
+#include <fstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
@@ -10,6 +13,13 @@ void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
+}
+
+std::string readFile(const char *fileName) {
+  std::ifstream file(fileName);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
 }
 
 unsigned int createTriangle() {
@@ -50,13 +60,8 @@ unsigned int createTriangle() {
 }
 
 unsigned int compileVertexShader() {
-  const char *vertexShaderSource =
-      "#version 330 core\n"
-      "layout (location = 0) in vec3 aPos;\n"
-      "\n"
-      "void main() {\n"
-      "  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-      "}\n";
+  std::string vertexSourceString = readFile("src/vertex.glsl");
+  const char *vertexShaderSource = vertexSourceString.c_str();
 
   unsigned int vertexShader;
   vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -77,13 +82,8 @@ unsigned int compileVertexShader() {
 }
 
 unsigned int compileFragmentShader() {
-  const char *fragmentShaderSource =
-      "#version 330 core\n"
-      "out vec4 FragColor;\n"
-      "\n"
-      "void main() {\n"
-      "  FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-      "}\n";
+  std::string fragmentSourceString = readFile("src/fragment.glsl");
+  const char *fragmentShaderSource = fragmentSourceString.c_str();
 
   unsigned int fragmentShader;
   fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
