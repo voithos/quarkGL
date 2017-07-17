@@ -7,6 +7,13 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "shader",
+    srcs = ["shader.cc"],
+    hdrs = ["shader.h"],
+    deps = [":glad"],
+)
+
 cc_binary(
     name = "learn_opengl",
     srcs = ["learn_opengl.cc"],
@@ -28,6 +35,7 @@ cc_binary(
     ],
     deps = [
         ":glad",
+        ":shader",
         "@glfw//:glfw",
     ],
 )
