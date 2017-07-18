@@ -1,8 +1,8 @@
-#include "glad.h"
 #include "shader.h"
 #include <GLFW/glfw3.h>
 #include <cmath>
 #include <fstream>
+#include <glad/glad.h>
 #include <iostream>
 #include <sstream>
 #include <string>
