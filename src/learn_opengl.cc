@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <sstream>
+#include <stb/stb_image.h>
 #include <string>
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
@@ -17,15 +18,18 @@ void processInput(GLFWwindow *window) {
   }
 }
 
-unsigned int createTriangle() {
+unsigned int createRectangle() {
   // clang-format off
   float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
   };
   unsigned int indices[] = {
     0, 1, 2,
+    0, 2, 3
   };
   // clang-format on
 
@@ -44,12 +48,55 @@ unsigned int createTriangle() {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_STATIC_DRAW);
 
+  int stride = 8;
   glVertexAttribPointer(/* layout position */ 0, /* size */ 3,
                         /* type */ GL_FLOAT,
                         /* normalized */ GL_FALSE,
-                        /* stride */ 3 * sizeof(float), /* offset */ (void *)0);
+                        /* stride */ stride * sizeof(float),
+                        /* offset */ (void *)0);
   glEnableVertexAttribArray(0);
+  glVertexAttribPointer(/* layout position */ 1, /* size */ 3,
+                        /* type */ GL_FLOAT,
+                        /* normalized */ GL_FALSE,
+                        /* stride */ stride * sizeof(float),
+                        /* offset */ (void *)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(/* layout position */ 2, /* size */ 2,
+                        /* type */ GL_FLOAT,
+                        /* normalized */ GL_FALSE,
+                        /* stride */ stride * sizeof(float),
+                        /* offset */ (void *)(6 * sizeof(float)));
+  glEnableVertexAttribArray(2);
   return VAO;
+}
+
+unsigned int createTexture(const char *filePath) {
+  unsigned int texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+
+  // Set texture-wrapping/filtering options.
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  int width, height, numChannels;
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char *data = stbi_load(filePath, &width, &height, &numChannels, 0);
+  std::cout << filePath << "RGB DATA num " << numChannels << std::endl;
+  if (data) {
+    glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0,
+                 /* texture format */ GL_RGB, width, height, 0,
+                 /* tex data format */ numChannels == 3 ? GL_RGB : GL_RGBA,
+                 GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+  } else {
+    std::cout << "ERROR::TEXTURE::LOAD_FAILED\n" << filePath << std::endl;
+  }
+  stbi_image_free(data);
+
+  return texture;
 }
 
 int main() {
@@ -76,7 +123,9 @@ int main() {
 
   Shader mainShader("src/vertex.glsl", "src/fragment.glsl");
 
-  unsigned int VAO = createTriangle();
+  unsigned int VAO = createRectangle();
+  unsigned int texture0 = createTexture("src/container.jpg");
+  unsigned int texture1 = createTexture("src/awesomeface.png");
 
   while (!glfwWindowShouldClose(window)) {
     processInput(window);
@@ -85,9 +134,16 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     mainShader.use();
+    mainShader.setInt("texture0", 0);
+    mainShader.setInt("texture1", 1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, /* offset */ 0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, /* offset */ 0);
     glBindVertexArray(0);
 
     glfwSwapBuffers(window);

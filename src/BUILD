@@ -9,6 +9,8 @@ cc_binary(
     name = "learn_opengl",
     srcs = ["learn_opengl.cc"],
     data = [
+        "awesomeface.png",
+        "container.jpg",
         "fragment.glsl",
         "vertex.glsl",
     ],
@@ -27,6 +29,7 @@ cc_binary(
     deps = [
         ":shader",
         "//third_party:glad",
+        "//third_party:stb_image",
         "@glfw//:glfw",
     ],
 )
