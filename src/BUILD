@@ -2,7 +2,7 @@ cc_library(
     name = "shader",
     srcs = ["shader.cc"],
     hdrs = ["shader.h"],
-    deps = ["//third_party:glad"],
+    deps = ["//third_party/glad"],
 )
 
 cc_binary(
@@ -28,9 +28,9 @@ cc_binary(
     ],
     deps = [
         ":shader",
-        "//third_party:glad",
-        "//third_party:stb_image",
+        "//third_party/glad",
         "//third_party/glm",
+        "//third_party/stb_image",
         "@glfw//:glfw",
     ],
 )
