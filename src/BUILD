@@ -30,6 +30,7 @@ cc_binary(
         ":shader",
         "//third_party:glad",
         "//third_party:stb_image",
+        "//third_party/glm",
         "@glfw//:glfw",
     ],
 )
