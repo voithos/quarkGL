@@ -84,7 +84,6 @@ unsigned int createTexture(const char *filePath) {
   int width, height, numChannels;
   stbi_set_flip_vertically_on_load(true);
   unsigned char *data = stbi_load(filePath, &width, &height, &numChannels, 0);
-  std::cout << filePath << "RGB DATA num " << numChannels << std::endl;
   if (data) {
     glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0,
                  /* texture format */ GL_RGB, width, height, 0,
