@@ -10,7 +10,7 @@ std::string readFile(const char *path) {
   return buffer.str();
 }
 
-Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath) {
+Shader::Shader(const char *vertexPath, const char *fragmentPath) {
   // Read file contents.
   std::string vertexSourceString;
   std::string fragmentSourceString;
@@ -25,7 +25,7 @@ Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath) {
   const char *vertexShaderSource = vertexSourceString.c_str();
   const char *fragmentShaderSource = fragmentSourceString.c_str();
 
-  GLuint vertexShader, fragmentShader;
+  unsigned int vertexShader, fragmentShader;
   int success;
   char infoLog[512];
 
@@ -73,7 +73,7 @@ Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath) {
   glDeleteShader(fragmentShader);
 }
 
-GLuint Shader::getProgramId() { return shaderProgram; }
+unsigned int Shader::getProgramId() { return shaderProgram; }
 
 void Shader::use() { glUseProgram(shaderProgram); }
 

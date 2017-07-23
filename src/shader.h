@@ -11,11 +11,11 @@
 
 class Shader {
 private:
-  GLuint shaderProgram;
+  unsigned int shaderProgram;
 
 public:
-  Shader(const GLchar *vertexPath, const GLchar *fragmentPath);
-  GLuint getProgramId();
+  Shader(const char *vertexPath, const char *fragmentPath);
+  unsigned int getProgramId();
   void use();
   void setBool(const std::string &name, bool value) const;
   void setInt(const std::string &name, int value) const;
