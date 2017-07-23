@@ -142,9 +142,7 @@ int main() {
     trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
     trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
 
-    unsigned int transformLoc =
-        glGetUniformLocation(mainShader.getProgramId(), "transform");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    mainShader.setMatrix4f("transform", trans);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture0);

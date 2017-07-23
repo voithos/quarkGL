@@ -2,7 +2,10 @@ cc_library(
     name = "shader",
     srcs = ["shader.cc"],
     hdrs = ["shader.h"],
-    deps = ["//third_party/glad"],
+    deps = [
+        "//third_party/glad",
+        "//third_party/glm",
+    ],
 )
 
 cc_binary(
