@@ -138,19 +138,26 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glm::mat4 trans;
-    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-    trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
-
-    mainShader.setMatrix4f("transform", trans);
-
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture0);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture1);
 
     glBindVertexArray(VAO);
+
+    glm::mat4 trans;
+    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+    trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
+    mainShader.setMatrix4f("transform", trans);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, /* offset */ 0);
+
+    glm::mat4 trans2;
+    trans2 = glm::translate(trans2, glm::vec3(-0.5f, 0.5f, 0.0f));
+    float scale = sin((float)glfwGetTime());
+    trans2 = glm::scale(trans2, glm::vec3(scale, scale, scale));
+    mainShader.setMatrix4f("transform", trans2);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, /* offset */ 0);
+
     glBindVertexArray(0);
 
     glfwSwapBuffers(window);
