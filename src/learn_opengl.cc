@@ -24,15 +24,62 @@ void processInput(GLFWwindow *window) {
 unsigned int createRectangle() {
   // clang-format off
   float vertices[] = {
-    // positions          // colors           // texture coords
-     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+    // positions          // texture coords
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
   };
   unsigned int indices[] = {
     0, 1, 2,
-    0, 2, 3
+    2, 3, 0,
+    1, 5, 6,
+    6, 2, 1,
+    7, 6, 5,
+    5, 4, 7,
+    4, 0, 3,
+    3, 7, 4,
+    4, 5, 1,
+    1, 0, 4,
+    3, 2, 6,
+    6, 7, 3,
   };
   // clang-format on
 
@@ -51,25 +98,19 @@ unsigned int createRectangle() {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_STATIC_DRAW);
 
-  int stride = 8;
+  int stride = 5;
   glVertexAttribPointer(/* layout position */ 0, /* size */ 3,
                         /* type */ GL_FLOAT,
                         /* normalized */ GL_FALSE,
                         /* stride */ stride * sizeof(float),
                         /* offset */ (void *)0);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(/* layout position */ 1, /* size */ 3,
+  glVertexAttribPointer(/* layout position */ 1, /* size */ 2,
                         /* type */ GL_FLOAT,
                         /* normalized */ GL_FALSE,
                         /* stride */ stride * sizeof(float),
                         /* offset */ (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(/* layout position */ 2, /* size */ 2,
-                        /* type */ GL_FLOAT,
-                        /* normalized */ GL_FALSE,
-                        /* stride */ stride * sizeof(float),
-                        /* offset */ (void *)(6 * sizeof(float)));
-  glEnableVertexAttribArray(2);
   return VAO;
 }
 
@@ -107,8 +148,10 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL",
-                                        /* monitor */ NULL, /* share */ NULL);
+  unsigned int screenWidth = 800, screenHeight = 600;
+  GLFWwindow *window =
+      glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL",
+                       /* monitor */ NULL, /* share */ NULL);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -123,6 +166,8 @@ int main() {
 
   glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
+  glEnable(GL_DEPTH_TEST);
+
   Shader mainShader("src/vertex.glsl", "src/fragment.glsl");
   mainShader.use();
   mainShader.setInt("texture0", 0);
@@ -136,7 +181,18 @@ int main() {
     processInput(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glm::mat4 model =
+        glm::rotate(glm::mat4(), (float)glfwGetTime() * glm::radians(50.0f),
+                    glm::vec3(0.5f, 1.0f, 0.0f));
+    glm::mat4 view = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4 projection = glm::perspective(
+        glm::radians(45.0f), (float)screenWidth / (float)screenHeight, 0.1f,
+        100.0f);
+    glm::mat4 modelViewProjection = projection * view * model;
+
+    mainShader.setMatrix4f("modelViewProjection", modelViewProjection);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture0);
@@ -144,20 +200,7 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, texture1);
 
     glBindVertexArray(VAO);
-
-    glm::mat4 trans;
-    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-    trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
-    mainShader.setMatrix4f("transform", trans);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, /* offset */ 0);
-
-    glm::mat4 trans2;
-    trans2 = glm::translate(trans2, glm::vec3(-0.5f, 0.5f, 0.0f));
-    float scale = sin((float)glfwGetTime());
-    trans2 = glm::scale(trans2, glm::vec3(scale, scale, scale));
-    mainShader.setMatrix4f("transform", trans2);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, /* offset */ 0);
-
+    glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 
     glfwSwapBuffers(window);
