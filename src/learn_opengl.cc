@@ -14,12 +14,61 @@
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+float lastX = 400;
+float lastY = 300;
+float pitch = 0.0f;
+float yaw = 0.0f;
+bool initialMouse = true;
+float fov = 45.0f;
+
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
+}
+
+void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
+  fov -= yoffset;
+  if (fov < 1.0f) {
+    fov = 1.0f;
+  }
+  if (fov > 45.0f) {
+    fov = 45.0f;
+  }
+}
+
+void mouseCallback(GLFWwindow *window, double xpos, double ypos) {
+  if (initialMouse) {
+    lastX = xpos;
+    lastY = ypos;
+    initialMouse = false;
+  }
+  float xoffset = xpos - lastX;
+  // Reversed since y-coordinates range from bottom to top.
+  float yoffset = lastY - ypos;
+  lastX = xpos;
+  lastY = ypos;
+
+  float sensitivity = 0.05f;
+  xoffset *= sensitivity;
+  yoffset *= sensitivity;
+
+  yaw += xoffset;
+  pitch += yoffset;
+  if (pitch > 89.0f) {
+    pitch = 89.0f;
+  }
+  if (pitch < -89.0f) {
+    pitch = -89.0f;
+  }
+
+  glm::vec3 front;
+  front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+  front.y = sin(glm::radians(pitch));
+  front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+  cameraFront = glm::normalize(front);
 }
 
 void processInput(GLFWwindow *window) {
@@ -186,6 +235,9 @@ int main() {
     return -1;
   }
 
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetScrollCallback(window, scrollCallback);
+  glfwSetCursorPosCallback(window, mouseCallback);
   glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
   glEnable(GL_DEPTH_TEST);
@@ -215,7 +267,7 @@ int main() {
     glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
     glm::mat4 projection = glm::perspective(
-        glm::radians(45.0f), (float)screenWidth / (float)screenHeight, 0.1f,
+        glm::radians(fov), (float)screenWidth / (float)screenHeight, 0.1f,
         100.0f);
     glm::mat4 modelViewProjection = projection * view * model;
 
