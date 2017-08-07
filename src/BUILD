@@ -1,4 +1,14 @@
 cc_library(
+    name = "camera",
+    srcs = ["camera.cc"],
+    hdrs = ["camera.h"],
+    deps = [
+        "//third_party/glad",
+        "//third_party/glm",
+    ],
+)
+
+cc_library(
     name = "shader",
     srcs = ["shader.cc"],
     hdrs = ["shader.h"],
@@ -30,6 +40,7 @@ cc_binary(
         "-ldl",
     ],
     deps = [
+        ":camera",
         ":shader",
         "//third_party/glad",
         "//third_party/glm",
