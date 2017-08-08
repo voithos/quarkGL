@@ -1,5 +1,7 @@
 #include "camera.h"
 
+namespace qrk {
+
 Camera::Camera(glm::vec3 position, glm::vec3 worldUp, float yaw, float pitch)
     : position_(position), worldUp_(worldUp), yaw_(yaw), pitch_(pitch),
       speed_(SPEED), sensitivity_(SENSITIVITY), fov_(FOV) {
@@ -55,4 +57,5 @@ void Camera::processMouseMove(float xoffset, float yoffset,
 
 void Camera::processMouseScroll(float yoffset) {
   fov_ = glm::clamp(fov_ - yoffset, MIN_FOV, MAX_FOV);
+}
 }

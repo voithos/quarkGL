@@ -1,5 +1,7 @@
 #include "shader.h"
 
+namespace qrk {
+
 std::string readFile(const char *path) {
   std::ifstream file;
   file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -92,4 +94,5 @@ void Shader::setFloat(const std::string &name, float value) const {
 void Shader::setMatrix4f(const std::string &name, glm::mat4 &matrix) const {
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1,
                      GL_FALSE, glm::value_ptr(matrix));
+}
 }

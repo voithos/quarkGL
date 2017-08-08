@@ -10,6 +10,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+namespace qrk {
+
 class Shader {
 private:
   unsigned int shaderProgram;
@@ -23,5 +25,6 @@ public:
   void setFloat(const std::string &name, float value) const;
   void setMatrix4f(const std::string &name, glm::mat4 &matrix) const;
 };
+}
 
 #endif

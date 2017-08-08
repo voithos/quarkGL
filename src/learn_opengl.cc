@@ -26,7 +26,7 @@ bool initialMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+qrk::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
@@ -57,16 +57,16 @@ void processInput(GLFWwindow *window) {
   }
 
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    camera.processKeyboard(CameraDirection::FORWARD, deltaTime);
+    camera.processKeyboard(qrk::CameraDirection::FORWARD, deltaTime);
   }
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    camera.processKeyboard(CameraDirection::LEFT, deltaTime);
+    camera.processKeyboard(qrk::CameraDirection::LEFT, deltaTime);
   }
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    camera.processKeyboard(CameraDirection::BACKWARD, deltaTime);
+    camera.processKeyboard(qrk::CameraDirection::BACKWARD, deltaTime);
   }
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    camera.processKeyboard(CameraDirection::RIGHT, deltaTime);
+    camera.processKeyboard(qrk::CameraDirection::RIGHT, deltaTime);
   }
 }
 
@@ -220,7 +220,7 @@ int main() {
 
   glEnable(GL_DEPTH_TEST);
 
-  Shader mainShader("src/vertex.glsl", "src/fragment.glsl");
+  qrk::Shader mainShader("src/vertex.glsl", "src/fragment.glsl");
   mainShader.use();
   mainShader.setInt("texture0", 0);
   mainShader.setInt("texture1", 1);

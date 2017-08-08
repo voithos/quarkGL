@@ -7,6 +7,8 @@
 
 #include <vector>
 
+namespace qrk {
+
 enum class CameraDirection {
   FORWARD,
   BACKWARD,
@@ -53,5 +55,6 @@ public:
                         bool constrainPitch = true);
   void processMouseScroll(float yoffset);
 };
+}
 
 #endif
