@@ -8,10 +8,10 @@
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include <stb/stb_image.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <stb/stb_image.h>
 
 #include <qrk/camera.h>
 #include <qrk/shader.h>
@@ -28,15 +28,15 @@ float lastFrame = 0.0f;
 
 qrk::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
   camera.processMouseScroll(yoffset);
 }
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+void mouseCallback(GLFWwindow *window, double xpos, double ypos) {
   if (initialMouse) {
     lastX = xpos;
     lastY = ypos;
@@ -51,7 +51,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
   camera.processMouseMove(xoffset, yoffset);
 }
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
@@ -152,18 +152,18 @@ unsigned int createRectangle() {
                         /* type */ GL_FLOAT,
                         /* normalized */ GL_FALSE,
                         /* stride */ stride * sizeof(float),
-                        /* offset */ (void*)0);
+                        /* offset */ (void *)0);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(/* layout position */ 1, /* size */ 2,
                         /* type */ GL_FLOAT,
                         /* normalized */ GL_FALSE,
                         /* stride */ stride * sizeof(float),
-                        /* offset */ (void*)(3 * sizeof(float)));
+                        /* offset */ (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
   return VAO;
 }
 
-unsigned int createTexture(const char* filePath) {
+unsigned int createTexture(const char *filePath) {
   unsigned int texture;
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
@@ -176,7 +176,7 @@ unsigned int createTexture(const char* filePath) {
 
   int width, height, numChannels;
   stbi_set_flip_vertically_on_load(true);
-  unsigned char* data = stbi_load(filePath, &width, &height, &numChannels, 0);
+  unsigned char *data = stbi_load(filePath, &width, &height, &numChannels, 0);
   if (data) {
     glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0,
                  /* texture format */ GL_RGB, width, height, 0,
@@ -197,7 +197,7 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  GLFWwindow* window =
+  GLFWwindow *window =
       glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL",
                        /* monitor */ NULL, /* share */ NULL);
   if (window == NULL) {
@@ -220,14 +220,14 @@ int main() {
 
   glEnable(GL_DEPTH_TEST);
 
-  qrk::Shader mainShader("src/vertex.glsl", "src/fragment.glsl");
+  qrk::Shader mainShader("examples/vertex.glsl", "examples/fragment.glsl");
   mainShader.use();
   mainShader.setInt("texture0", 0);
   mainShader.setInt("texture1", 1);
 
   unsigned int VAO = createRectangle();
-  unsigned int texture0 = createTexture("src/container.jpg");
-  unsigned int texture1 = createTexture("src/awesomeface.png");
+  unsigned int texture0 = createTexture("examples/container.jpg");
+  unsigned int texture1 = createTexture("examples/awesomeface.png");
 
   while (!glfwWindowShouldClose(window)) {
     float currentFrame = glfwGetTime();
