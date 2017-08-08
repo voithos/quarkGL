@@ -77,20 +77,20 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
 
 void Shader::use() { glUseProgram(shaderProgram_); }
 
-void Shader::setBool(const std::string &name, bool value) const {
-  glUniform1i(glGetUniformLocation(shaderProgram_, name.c_str()), (int)value);
+void Shader::setBool(const char *name, bool value) const {
+  glUniform1i(glGetUniformLocation(shaderProgram_, name), (int)value);
 }
 
-void Shader::setInt(const std::string &name, int value) const {
-  glUniform1i(glGetUniformLocation(shaderProgram_, name.c_str()), value);
+void Shader::setInt(const char *name, int value) const {
+  glUniform1i(glGetUniformLocation(shaderProgram_, name), value);
 }
 
-void Shader::setFloat(const std::string &name, float value) const {
-  glUniform1f(glGetUniformLocation(shaderProgram_, name.c_str()), value);
+void Shader::setFloat(const char *name, float value) const {
+  glUniform1f(glGetUniformLocation(shaderProgram_, name), value);
 }
 
-void Shader::setMatrix4f(const std::string &name, glm::mat4 &matrix) const {
-  glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name.c_str()), 1,
-                     GL_FALSE, glm::value_ptr(matrix));
+void Shader::setMatrix4f(const char *name, glm::mat4 &matrix) const {
+  glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name), 1, GL_FALSE,
+                     glm::value_ptr(matrix));
 }
 }
