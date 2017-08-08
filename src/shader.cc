@@ -2,7 +2,7 @@
 
 namespace qrk {
 
-std::string readFile(const char *path) {
+std::string readFile(const char* path) {
   std::ifstream file;
   file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -12,7 +12,7 @@ std::string readFile(const char *path) {
   return buffer.str();
 }
 
-Shader::Shader(const char *vertexPath, const char *fragmentPath) {
+Shader::Shader(const char* vertexPath, const char* fragmentPath) {
   // Read file contents.
   std::string vertexSourceString;
   std::string fragmentSourceString;
@@ -24,8 +24,8 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
     std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
   }
 
-  const char *vertexShaderSource = vertexSourceString.c_str();
-  const char *fragmentShaderSource = fragmentSourceString.c_str();
+  const char* vertexShaderSource = vertexSourceString.c_str();
+  const char* fragmentShaderSource = fragmentSourceString.c_str();
 
   unsigned int vertexShader, fragmentShader;
   int success;
@@ -77,19 +77,19 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
 
 void Shader::use() { glUseProgram(shaderProgram_); }
 
-void Shader::setBool(const char *name, bool value) const {
+void Shader::setBool(const char* name, bool value) const {
   glUniform1i(glGetUniformLocation(shaderProgram_, name), (int)value);
 }
 
-void Shader::setInt(const char *name, int value) const {
+void Shader::setInt(const char* name, int value) const {
   glUniform1i(glGetUniformLocation(shaderProgram_, name), value);
 }
 
-void Shader::setFloat(const char *name, float value) const {
+void Shader::setFloat(const char* name, float value) const {
   glUniform1f(glGetUniformLocation(shaderProgram_, name), value);
 }
 
-void Shader::setMatrix4f(const char *name, glm::mat4 &matrix) const {
+void Shader::setMatrix4f(const char* name, glm::mat4& matrix) const {
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name), 1, GL_FALSE,
                      glm::value_ptr(matrix));
 }
