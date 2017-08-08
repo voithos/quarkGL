@@ -58,15 +58,15 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
   }
 
   // Create and link shader program.
-  shaderProgram = glCreateProgram();
+  shaderProgram_ = glCreateProgram();
 
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
+  glAttachShader(shaderProgram_, vertexShader);
+  glAttachShader(shaderProgram_, fragmentShader);
+  glLinkProgram(shaderProgram_);
 
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+  glGetProgramiv(shaderProgram_, GL_LINK_STATUS, &success);
   if (!success) {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+    glGetProgramInfoLog(shaderProgram_, 512, NULL, infoLog);
     std::cout << "ERROR::SHADER::LINKING_FAILED\n" << infoLog << std::endl;
   }
 
@@ -75,24 +75,22 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
   glDeleteShader(fragmentShader);
 }
 
-unsigned int Shader::getProgramId() { return shaderProgram; }
-
-void Shader::use() { glUseProgram(shaderProgram); }
+void Shader::use() { glUseProgram(shaderProgram_); }
 
 void Shader::setBool(const std::string &name, bool value) const {
-  glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), (int)value);
+  glUniform1i(glGetUniformLocation(shaderProgram_, name.c_str()), (int)value);
 }
 
 void Shader::setInt(const std::string &name, int value) const {
-  glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), value);
+  glUniform1i(glGetUniformLocation(shaderProgram_, name.c_str()), value);
 }
 
 void Shader::setFloat(const std::string &name, float value) const {
-  glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value);
+  glUniform1f(glGetUniformLocation(shaderProgram_, name.c_str()), value);
 }
 
 void Shader::setMatrix4f(const std::string &name, glm::mat4 &matrix) const {
-  glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1,
+  glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name.c_str()), 1,
                      GL_FALSE, glm::value_ptr(matrix));
 }
 }

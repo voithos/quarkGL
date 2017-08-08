@@ -14,11 +14,12 @@ namespace qrk {
 
 class Shader {
 private:
-  unsigned int shaderProgram;
+  unsigned int shaderProgram_;
 
 public:
   Shader(const char *vertexPath, const char *fragmentPath);
-  unsigned int getProgramId();
+  unsigned int getProgramId() { return shaderProgram_; }
+
   void use();
   void setBool(const std::string &name, bool value) const;
   void setInt(const std::string &name, int value) const;
