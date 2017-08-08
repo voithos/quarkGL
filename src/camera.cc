@@ -1,4 +1,4 @@
-#include "camera.h"
+#include <qrk/camera.h>
 
 namespace qrk {
 

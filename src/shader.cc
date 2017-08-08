@@ -1,4 +1,4 @@
-#include "shader.h"
+#include <qrk/shader.h>
 
 namespace qrk {
 
