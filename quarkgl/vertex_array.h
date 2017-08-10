@@ -15,9 +15,9 @@ class VertexArray {
     unsigned int type;
   };
 
-  unsigned int vao_;
-  unsigned int vbo_;
-  unsigned int ebo_;
+  unsigned int vao_ = 0;
+  unsigned int vbo_ = 0;
+  unsigned int ebo_ = 0;
 
   unsigned int vertexSize_ = 0;
   unsigned int elementSize_ = 0;

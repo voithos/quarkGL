@@ -48,7 +48,11 @@ void VertexArray::loadElementData(const unsigned int* indices,
 }
 
 void VertexArray::addVertexAttrib(unsigned int size, unsigned int type) {
-  VertexAttrib attrib = {(unsigned int)attribs_.size(), size, type};
+  VertexAttrib attrib = {
+      .layoutPosition = static_cast<unsigned int>(attribs_.size()),
+      .size = size,
+      .type = type,
+  };
   attribs_.push_back(attrib);
   // TODO: Support types other than float.
   stride_ += size * sizeof(float);
@@ -59,11 +63,8 @@ void VertexArray::finalizeVertexAttribs() {
 
   int offset = 0;
   for (const VertexAttrib& attrib : attribs_) {
-    glVertexAttribPointer(/* layout position */ attrib.layoutPosition,
-                          /* size */ attrib.size,
-                          /* type */ attrib.type,
-                          /* normalized */ GL_FALSE,
-                          /* stride */ stride_,
+    glVertexAttribPointer(attrib.layoutPosition, attrib.size, attrib.type,
+                          /* normalized */ GL_FALSE, stride_,
                           // TODO: Support types other than float.
                           /* offset */ static_cast<const char*>(0) + offset);
     glEnableVertexAttribArray(attrib.layoutPosition);

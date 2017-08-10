@@ -211,7 +211,7 @@ int main() {
     glm::mat4 view = camera.getViewMatrix();
     glm::mat4 projection = glm::perspective(
         glm::radians(camera.getFov()),
-        (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        SCREEN_WIDTH / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f);
 
     glm::mat4 modelViewProjection = projection * view * model;
 
