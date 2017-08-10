@@ -5,6 +5,7 @@ cc_binary(
         "awesomeface.png",
         "container.jpg",
         "fragment.glsl",
+        "light_fragment.glsl",
         "vertex.glsl",
     ],
     linkopts = [
@@ -22,6 +23,7 @@ cc_binary(
     deps = [
         "//quarkgl:camera",
         "//quarkgl:shader",
+        "//quarkgl:vertex_array",
         "//third_party/glad",
         "//third_party/glm",
         "//third_party/stb_image",

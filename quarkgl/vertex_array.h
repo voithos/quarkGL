@@ -33,7 +33,7 @@ class VertexArray {
 
   void use();
   void loadVertexData(const std::vector<char>& data);
-  void loadVertexData(const char* data, unsigned int size);
+  void loadVertexData(const void* data, unsigned int size);
   void loadElementData(const std::vector<unsigned int>& indices);
   void loadElementData(const unsigned int* indices, unsigned int size);
   void addVertexAttrib(unsigned int size, unsigned int type);

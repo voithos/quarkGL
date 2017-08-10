@@ -18,7 +18,7 @@ void VertexArray::loadVertexData(const std::vector<char>& data) {
   vertexSize_ = data.size();
 }
 
-void VertexArray::loadVertexData(const char* data, unsigned int size) {
+void VertexArray::loadVertexData(const void* data, unsigned int size) {
   use();
 
   glGenBuffers(1, &vbo_);

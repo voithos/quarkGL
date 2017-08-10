@@ -77,19 +77,34 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 
 void Shader::use() { glUseProgram(shaderProgram_); }
 
-void Shader::setBool(const char* name, bool value) const {
+void Shader::setBool(const char* name, bool value) {
+  use();
   glUniform1i(glGetUniformLocation(shaderProgram_, name), (int)value);
 }
 
-void Shader::setInt(const char* name, int value) const {
+void Shader::setInt(const char* name, int value) {
+  use();
   glUniform1i(glGetUniformLocation(shaderProgram_, name), value);
 }
 
-void Shader::setFloat(const char* name, float value) const {
+void Shader::setFloat(const char* name, float value) {
+  use();
   glUniform1f(glGetUniformLocation(shaderProgram_, name), value);
 }
 
-void Shader::setMatrix4f(const char* name, glm::mat4& matrix) const {
+void Shader::setVec3(const char* name, glm::vec3& vector) {
+  use();
+  glUniform3fv(glGetUniformLocation(shaderProgram_, name), 1,
+               glm::value_ptr(vector));
+}
+
+void Shader::setVec3(const char* name, float v0, float v1, float v2) {
+  use();
+  glUniform3f(glGetUniformLocation(shaderProgram_, name), v0, v1, v2);
+}
+
+void Shader::setMat4(const char* name, glm::mat4& matrix) {
+  use();
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name), 1, GL_FALSE,
                      glm::value_ptr(matrix));
 }
