@@ -21,3 +21,14 @@ cc_library(
         "//third_party/glm",
     ],
 )
+
+cc_library(
+    name = "vertex_array",
+    srcs = ["vertex_array.cc"],
+    hdrs = ["vertex_array.h"],
+    include_prefix = "qrk",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//third_party/glad",
+    ],
+)
