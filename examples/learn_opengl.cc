@@ -75,48 +75,47 @@ void processInput(GLFWwindow* window) {
 
 // clang-format off
 float vertices[] = {
-  // positions
-  -0.5f, -0.5f, -0.5f,
-   0.5f, -0.5f, -0.5f,
-   0.5f,  0.5f, -0.5f,
-   0.5f,  0.5f, -0.5f,
-  -0.5f,  0.5f, -0.5f,
-  -0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+   0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+   0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+   0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+  -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+  -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-  -0.5f, -0.5f,  0.5f,
-   0.5f, -0.5f,  0.5f,
-   0.5f,  0.5f,  0.5f,
-   0.5f,  0.5f,  0.5f,
-  -0.5f,  0.5f,  0.5f,
-  -0.5f, -0.5f,  0.5f,
+  -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+   0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+   0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+   0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+  -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+  -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-  -0.5f,  0.5f,  0.5f,
-  -0.5f,  0.5f, -0.5f,
-  -0.5f, -0.5f, -0.5f,
-  -0.5f, -0.5f, -0.5f,
-  -0.5f, -0.5f,  0.5f,
-  -0.5f,  0.5f,  0.5f,
+  -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-   0.5f,  0.5f,  0.5f,
-   0.5f,  0.5f, -0.5f,
-   0.5f, -0.5f, -0.5f,
-   0.5f, -0.5f, -0.5f,
-   0.5f, -0.5f,  0.5f,
-   0.5f,  0.5f,  0.5f,
+   0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-  -0.5f, -0.5f, -0.5f,
-   0.5f, -0.5f, -0.5f,
-   0.5f, -0.5f,  0.5f,
-   0.5f, -0.5f,  0.5f,
-  -0.5f, -0.5f,  0.5f,
-  -0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+   0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+   0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+   0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+  -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+  -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-  -0.5f,  0.5f, -0.5f,
-   0.5f,  0.5f, -0.5f,
-   0.5f,  0.5f,  0.5f,
-   0.5f,  0.5f,  0.5f,
-  -0.5f,  0.5f,  0.5f,
-  -0.5f,  0.5f, -0.5f,
+  -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+   0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+   0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+   0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+  -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+  -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
 // clang-format on
 
@@ -180,6 +179,7 @@ int main() {
   qrk::Shader mainShader("examples/vertex.glsl", "examples/fragment.glsl");
   mainShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
   mainShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+  mainShader.setVec3("lightPos", lightPos);
 
   qrk::Shader lampShader("examples/vertex.glsl",
                          "examples/light_fragment.glsl");
@@ -187,12 +187,14 @@ int main() {
   qrk::VertexArray varray;
   varray.loadVertexData(vertices, sizeof(vertices));
   varray.addVertexAttrib(3, GL_FLOAT);
+  varray.addVertexAttrib(3, GL_FLOAT);
   varray.finalizeVertexAttribs();
 
   // Create a another VAO for the light, reusing the VBO.
   qrk::VertexArray lightVarray;
   lightVarray.use();
   glBindBuffer(GL_ARRAY_BUFFER, varray.getVbo());
+  lightVarray.addVertexAttrib(3, GL_FLOAT);
   lightVarray.addVertexAttrib(3, GL_FLOAT);
   lightVarray.finalizeVertexAttribs();
 
@@ -206,18 +208,18 @@ int main() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 model = glm::rotate(glm::mat4(), glm::radians(50.0f),
+    glm::mat4 model = glm::rotate(glm::mat4(), glm::radians(90.0f),
                                   glm::vec3(0.5f, 1.0f, 0.0f));
     glm::mat4 view = camera.getViewMatrix();
     glm::mat4 projection = glm::perspective(
         glm::radians(camera.getFov()),
         SCREEN_WIDTH / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f);
 
-    glm::mat4 modelViewProjection = projection * view * model;
-
     // Draw main cube.
     mainShader.use();
-    mainShader.setMat4("modelViewProjection", modelViewProjection);
+    mainShader.setMat4("model", model);
+    mainShader.setMat4("view", view);
+    mainShader.setMat4("projection", projection);
     varray.use();
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -225,9 +227,10 @@ int main() {
     model = glm::mat4();
     model = glm::translate(model, lightPos);
     model = glm::scale(model, glm::vec3(0.2f));
-    modelViewProjection = projection * view * model;
     lampShader.use();
-    lampShader.setMat4("modelViewProjection", modelViewProjection);
+    lampShader.setMat4("model", model);
+    lampShader.setMat4("view", view);
+    lampShader.setMat4("projection", projection);
     lightVarray.use();
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
