@@ -27,7 +27,7 @@ bool initialMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 worldLightPos(1.2f, 1.0f, 2.0f);
 
 qrk::Camera camera(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -179,7 +179,7 @@ int main() {
   qrk::Shader mainShader("examples/vertex.glsl", "examples/fragment.glsl");
   mainShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
   mainShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-  mainShader.setVec3("lightPos", lightPos);
+  mainShader.setVec3("worldLightPos", worldLightPos);
 
   qrk::Shader lampShader("examples/vertex.glsl",
                          "examples/light_fragment.glsl");
@@ -225,7 +225,7 @@ int main() {
 
     // Draw light source.
     model = glm::mat4();
-    model = glm::translate(model, lightPos);
+    model = glm::translate(model, worldLightPos);
     model = glm::scale(model, glm::vec3(0.2f));
     lampShader.use();
     lampShader.setMat4("model", model);
