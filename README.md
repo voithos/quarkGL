@@ -17,3 +17,21 @@ Then build the examples, and run them:
 
     $ bazel build examples:all
     $ bazel run examples:learn_opengl
+
+## Developing
+
+In addition to the build tooling, you may also want to build a [compilation
+database](http://clang.llvm.org/docs/JSONCompilationDatabase.html) in order to
+enable semantic completion in your editor. The database is processed through
+some Python tooling that requires the `google.protobuf` library in order to
+work properly.
+
+To install `google.protobuf`, first [install
+`pip`](https://pip.pypa.io/en/stable/installing/), the Python package
+installer, and then run:
+
+    $ sudo pip install protobuf
+
+Afterwards, execute the following script to generate the compilation database:
+
+    $ ./build_compile_commands.sh
