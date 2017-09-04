@@ -1,5 +1,5 @@
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef QUARKGL_SHADER_H_
+#define QUARKGL_SHADER_H_
 
 #include <fstream>
 #include <iostream>

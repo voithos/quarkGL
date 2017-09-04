@@ -1,5 +1,5 @@
-#ifndef CORE_H
-#define CORE_H
+#ifndef QUARKGL_CORE_H_
+#define QUARKGL_CORE_H_
 
 // OpenGL included by glad.
 #define GLFW_INCLUDE_NONE

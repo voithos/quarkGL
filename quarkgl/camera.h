@@ -1,5 +1,5 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef QUARKGL_CAMERA_H_
+#define QUARKGL_CAMERA_H_
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>

@@ -1,5 +1,5 @@
-#ifndef VERTEX_ARRAY_H
-#define VERTEX_ARRAY_H
+#ifndef QUARKGL_VERTEX_ARRAY_H_
+#define QUARKGL_VERTEX_ARRAY_H_
 
 #include <vector>
 
