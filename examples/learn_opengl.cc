@@ -3,8 +3,8 @@
 #include <sstream>
 #include <string>
 
-// OpenGL included by glad.
-#define GLFW_INCLUDE_NONE
+// Must precede glfw/glad, to include OpenGL functions.
+#include <qrk/core.h>
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -148,10 +148,7 @@ unsigned int createTexture(const char* filePath) {
 }
 
 int main() {
-  glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  qrk::init();
 
   GLFWwindow* window =
       glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL",
@@ -193,7 +190,7 @@ int main() {
   varray.addVertexAttrib(3, GL_FLOAT);
   varray.finalizeVertexAttribs();
 
-  // Create a another VAO for the light, reusing the VBO.
+  // Create another VAO for the light, reusing the VBO.
   qrk::VertexArray lightVarray;
   lightVarray.use();
   glBindBuffer(GL_ARRAY_BUFFER, varray.getVbo());
@@ -252,6 +249,6 @@ int main() {
     glfwPollEvents();
   }
 
-  glfwTerminate();
+  qrk::terminate();
   return 0;
 }

@@ -1,4 +1,16 @@
 cc_library(
+    name = "core",
+    srcs = ["core.cc"],
+    hdrs = ["core.h"],
+    include_prefix = "qrk",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//third_party/glad",
+        "@glfw//:glfw",
+    ],
+)
+
+cc_library(
     name = "camera",
     srcs = ["camera.cc"],
     hdrs = ["camera.h"],
