@@ -92,18 +92,19 @@ def IsHeaderFile(filename):
 
 
 def FlagsForFile(filename, **kwargs):
+    fallback = {
+        'flags': FLAGS,
+        'include_paths_relative_to_dir': DirectoryOfThisScript()
+    }
+
     path = os.path.realpath(filename)
     database = GetNearestCompilationDatabase(path)
-
     if not database:
-        return {
-            'flags': FLAGS,
-            'include_paths_relative_to_dir': DirectoryOfThisScript()
-        }
+        return fallback
 
     compilation_info = GetCompilationInfoForFile(database, filename)
     if not compilation_info:
-        return None
+        return fallback
 
     # Bear in mind that compilation_info.compiler_flags_ does NOT return a
     # python list, but a "list-like" StringVec object.
