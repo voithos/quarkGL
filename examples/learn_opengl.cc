@@ -75,47 +75,48 @@ void processInput(GLFWwindow* window) {
 
 // clang-format off
 float vertices[] = {
-  -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-   0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-   0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-   0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-  -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-  -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    // positions          // normals           // texture coords
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
 
-  -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-   0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-   0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-   0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-  -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-  -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
 
-  -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-  -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-  -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-  -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-  -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-  -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-   0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-   0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-   0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-   0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-   0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-   0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-  -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-   0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-   0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-   0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-  -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-  -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
 
-  -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-   0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-   0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-   0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-  -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-  -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 };
 // clang-format on
 
@@ -173,11 +174,16 @@ int main() {
 
   glEnable(GL_DEPTH_TEST);
 
+  // Load box texture.
+  glActiveTexture(GL_TEXTURE0);
+  createTexture("examples/container2.png");
+  glActiveTexture(GL_TEXTURE1);
+  createTexture("examples/container2_specular.png");
+
   qrk::Shader mainShader("examples/vertex.glsl", "examples/fragment.glsl");
-  mainShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-  mainShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-  mainShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-  mainShader.setFloat("material.shininess", 32.0f);
+  mainShader.setInt("material.diffuse", 0);
+  mainShader.setInt("material.specular", 1);
+  mainShader.setFloat("material.shininess", 64.0f);
 
   mainShader.setVec3("worldLightPos", worldLightPos);
 
@@ -188,6 +194,7 @@ int main() {
   varray.loadVertexData(vertices, sizeof(vertices));
   varray.addVertexAttrib(3, GL_FLOAT);
   varray.addVertexAttrib(3, GL_FLOAT);
+  varray.addVertexAttrib(2, GL_FLOAT);
   varray.finalizeVertexAttribs();
 
   // Create another VAO for the light, reusing the VBO.
@@ -196,6 +203,7 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, varray.getVbo());
   lightVarray.addVertexAttrib(3, GL_FLOAT);
   lightVarray.addVertexAttrib(3, GL_FLOAT);
+  lightVarray.addVertexAttrib(2, GL_FLOAT);
   lightVarray.finalizeVertexAttribs();
 
   while (!glfwWindowShouldClose(window)) {
@@ -208,8 +216,8 @@ int main() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 model = glm::rotate(glm::mat4(), glm::radians(90.0f),
-                                  glm::vec3(0.5f, 1.0f, 0.0f));
+    glm::mat4 model = glm::rotate(glm::mat4(), glm::radians(35.0f),
+                                  glm::vec3(0.0f, 1.0f, 0.25f));
     glm::mat4 view = camera.getViewMatrix();
     glm::mat4 projection = glm::perspective(
         glm::radians(camera.getFov()),
@@ -221,14 +229,8 @@ int main() {
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
 
-    glm::vec3 lightColor;
-    lightColor.x = sin(glfwGetTime() * 2.0f);
-    lightColor.y = sin(glfwGetTime() * 0.7f);
-    lightColor.z = sin(glfwGetTime() * 1.3f);
-    glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-    glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
-    mainShader.setVec3("light.ambient", ambientColor);
-    mainShader.setVec3("light.diffuse", diffuseColor);
+    mainShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+    mainShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
     mainShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
     varray.use();

@@ -4,6 +4,8 @@ cc_binary(
     data = [
         "awesomeface.png",
         "container.jpg",
+        "container2.png",
+        "container2_specular.png",
         "fragment.glsl",
         "light_fragment.glsl",
         "vertex.glsl",
