@@ -179,10 +179,14 @@ int main() {
   createTexture("examples/container2.png");
   glActiveTexture(GL_TEXTURE1);
   createTexture("examples/container2_specular.png");
+  glActiveTexture(GL_TEXTURE2);
+  createTexture("examples/matrix.jpg");
 
   qrk::Shader mainShader("examples/vertex.glsl", "examples/fragment.glsl");
+  // These correspond to the texture numbers above.
   mainShader.setInt("material.diffuse", 0);
   mainShader.setInt("material.specular", 1);
+  mainShader.setInt("material.emission", 2);
   mainShader.setFloat("material.shininess", 64.0f);
 
   mainShader.setVec3("worldLightPos", worldLightPos);
@@ -208,6 +212,8 @@ int main() {
 
   while (!glfwWindowShouldClose(window)) {
     float currentFrame = glfwGetTime();
+    mainShader.setFloat("time", currentFrame);
+
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 

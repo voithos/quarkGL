@@ -8,6 +8,7 @@ cc_binary(
         "container2_specular.png",
         "fragment.glsl",
         "light_fragment.glsl",
+        "matrix.jpg",
         "vertex.glsl",
     ],
     linkopts = [
