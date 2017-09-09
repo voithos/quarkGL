@@ -35,3 +35,9 @@ installer, and then run:
 Afterwards, execute the following script to generate the compilation database:
 
     $ ./build_compile_commands.sh
+
+## Acknowledgements
+
+This library was built as a way to learn modern OpenGL and graphics techniques.
+A big thank you goes to the wonderful tutorials by Joey de Vries at
+[learnopengl.com](https://learnopengl.com)!
