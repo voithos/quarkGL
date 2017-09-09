@@ -201,14 +201,17 @@ int main() {
   mainShader.setInt("material.specular", 1);
   mainShader.setInt("material.emission", 2);
   mainShader.setFloat("material.shininess", 64.0f);
+  mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
+  mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
+  mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
-  mainShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-  mainShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
-  mainShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+  mainShader.setVec3("pointLights[0].ambient", 0.2f, 0.2f, 0.2f);
+  mainShader.setVec3("pointLights[0].diffuse", 0.5f, 0.5f, 0.5f);
+  mainShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
 
-  mainShader.setFloat("light.attenuation.constant", 1.0f);
-  mainShader.setFloat("light.attenuation.linear", 0.09f);
-  mainShader.setFloat("light.attenuation.quadratic", 0.032f);
+  mainShader.setFloat("pointLights[0].attenuation.constant", 1.0f);
+  mainShader.setFloat("pointLights[0].attenuation.linear", 0.09f);
+  mainShader.setFloat("pointLights[0].attenuation.quadratic", 0.032f);
 
   qrk::Shader lampShader("examples/vertex.glsl",
                          "examples/light_fragment.glsl");
@@ -251,7 +254,7 @@ int main() {
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
     glm::vec3 viewLightPos = glm::vec3(view * glm::vec4(worldLightPos, 1.0));
-    mainShader.setVec3("light.position", viewLightPos);
+    mainShader.setVec3("pointLights[0].position", viewLightPos);
 
     varray.use();
     for (unsigned int i = 0;

@@ -1,7 +1,7 @@
 #version 330 core
-layout (location = 0) in vec3 vertexPos;
-layout (location = 1) in vec3 vertexNormal;
-layout (location = 2) in vec2 vertexTexCoords;
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec2 vertexTexCoords;
 
 out vec2 texCoords;
 out vec3 fragPos;
