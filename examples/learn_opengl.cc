@@ -118,6 +118,19 @@ float vertices[] = {
     -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 };
+
+glm::vec3 cubePositions[] = {
+  glm::vec3( 0.0f,  0.0f,  0.0f),
+  glm::vec3( 2.0f,  5.0f, -15.0f),
+  glm::vec3(-1.5f, -2.2f, -2.5f),
+  glm::vec3(-3.8f, -2.0f, -12.3f),
+  glm::vec3( 2.4f, -0.4f, -3.5f),
+  glm::vec3(-1.7f,  3.0f, -7.5f),
+  glm::vec3( 1.3f, -2.0f, -2.5f),
+  glm::vec3( 1.5f,  2.0f, -2.5f),
+  glm::vec3( 1.5f,  0.2f, -1.5f),
+  glm::vec3(-1.3f,  1.0f, -1.5f)
+};
 // clang-format on
 
 unsigned int createTexture(const char* filePath) {
@@ -189,7 +202,13 @@ int main() {
   mainShader.setInt("material.emission", 2);
   mainShader.setFloat("material.shininess", 64.0f);
 
-  mainShader.setVec3("worldLightPos", worldLightPos);
+  mainShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+  mainShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+  mainShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+  mainShader.setFloat("light.attenuation.constant", 1.0f);
+  mainShader.setFloat("light.attenuation.linear", 0.09f);
+  mainShader.setFloat("light.attenuation.quadratic", 0.032f);
 
   qrk::Shader lampShader("examples/vertex.glsl",
                          "examples/light_fragment.glsl");
@@ -222,8 +241,6 @@ int main() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 model = glm::rotate(glm::mat4(), glm::radians(35.0f),
-                                  glm::vec3(0.0f, 1.0f, 0.25f));
     glm::mat4 view = camera.getViewMatrix();
     glm::mat4 projection = glm::perspective(
         glm::radians(camera.getFov()),
@@ -231,20 +248,26 @@ int main() {
 
     // Draw main cube.
     mainShader.use();
-    mainShader.setMat4("model", model);
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
-
-    mainShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-    mainShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
-    mainShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    glm::vec3 viewLightPos = glm::vec3(view * glm::vec4(worldLightPos, 1.0));
+    mainShader.setVec3("light.position", viewLightPos);
 
     varray.use();
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    for (unsigned int i = 0;
+         i < sizeof(cubePositions) / sizeof(cubePositions[0]); i++) {
+      // Calculate the model matrix.
+      glm::mat4 model = glm::translate(glm::mat4(), cubePositions[i]);
+      float angle = 20.0f * i;
+      model =
+          glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+      mainShader.setMat4("model", model);
+
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 
     // Draw light source.
-    model = glm::mat4();
-    model = glm::translate(model, worldLightPos);
+    glm::mat4 model = glm::translate(glm::mat4(), worldLightPos);
     model = glm::scale(model, glm::vec3(0.2f));
     lampShader.use();
     lampShader.setMat4("model", model);

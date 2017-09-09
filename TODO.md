@@ -1,5 +1,6 @@
 # TODOs
 
+- [ ] Add exception hierarchy.
 - [ ] Add an auto-formatter for the GLSL code.
 - [ ] Switch to using .vert and .frag for shader extensions.
 - [ ] Add a 'window' class to qrk that can encapsulate the calls in the render loop.
