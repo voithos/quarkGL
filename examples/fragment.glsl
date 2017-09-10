@@ -38,6 +38,19 @@ struct PointLight {
   Attenuation attenuation;
 };
 
+struct SpotLight {
+  vec3 position;
+  vec3 direction;
+  float innerAngle;
+  float outerAngle;
+
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
+
+  Attenuation attenuation;
+};
+
 uniform float time;
 uniform Material material;
 
@@ -47,13 +60,16 @@ uniform DirectionalLight directionalLights[NUM_DIRECTIONAL_LIGHTS];
 #define NUM_POINT_LIGHTS 1
 uniform PointLight pointLights[NUM_POINT_LIGHTS];
 
+#define NUM_SPOT_LIGHTS 1
+uniform SpotLight spotLights[NUM_SPOT_LIGHTS];
+
 /**
  * Calculate the Phong shading model with ambient, diffuse, and specular
  * components. Does not include attenuation.
  */
 vec3 shadePhong(Material material, vec3 lightAmbient, vec3 lightDiffuse,
                 vec3 lightSpecular, vec3 lightDir, vec3 viewDir, vec3 normal,
-                vec2 texCoords) {
+                vec2 texCoords, float intensity) {
   vec3 diffuseMap = vec3(texture(material.diffuse, texCoords));
 
   // Ambient.
@@ -70,8 +86,8 @@ vec3 shadePhong(Material material, vec3 lightAmbient, vec3 lightDiffuse,
       pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
   vec3 specular = lightSpecular * (specularIntensity * specularMap);
 
-  // Combine components.
-  return ambient + diffuse + specular;
+  // Combine components, applying intensity.
+  return ambient + (diffuse + specular) * intensity;
 }
 
 /**
@@ -89,7 +105,7 @@ vec3 shadeDirectionalLight(Material material, DirectionalLight light,
   vec3 viewDir = normalize(-fragPos);
 
   return shadePhong(material, light.ambient, light.diffuse, light.specular,
-                    lightDir, viewDir, normal, texCoords);
+                    lightDir, viewDir, normal, texCoords, /* intensity */ 1.0);
 }
 
 vec3 shadePointLight(Material material, PointLight light, vec3 fragPos,
@@ -103,8 +119,39 @@ vec3 shadePointLight(Material material, PointLight light, vec3 fragPos,
 
   vec3 result =
       shadePhong(material, light.ambient, light.diffuse, light.specular,
-                 lightDir, viewDir, normal, texCoords);
-  // Attenuate the phong model.
+                 lightDir, viewDir, normal, texCoords, /* intensity */ 1.0);
+  // Apply attenuation.
+  return result * attenuation;
+}
+
+vec3 shadeSpotLight(Material material, SpotLight light, vec3 fragPos,
+                    vec3 normal, vec2 texCoords) {
+  vec3 lightDir = normalize(light.position - fragPos);
+
+  // Calculate cosine of the angle between the spotlight's direction vector and
+  // the direction from the light to the current fragment.
+  float theta = dot(lightDir, normalize(-light.direction));
+
+  // Calculate the intensity based on fragment position, having zero intensity
+  // when it falls outside the cone, partial intensity when it lies between
+  // innerAngle and outerAngle, and full intensity when it falls in the cone.
+  float innerAngleCosine = cos(light.innerAngle);
+  float outerAngleCosine = cos(light.outerAngle);
+  float epsilon = innerAngleCosine - outerAngleCosine;
+  // Things outside the spotlight will have 0 intensity.
+  float intensity = clamp((theta - outerAngleCosine) / epsilon, 0.0, 1.0);
+
+  // The rest is normal shading.
+  vec3 viewDir = normalize(-fragPos);
+
+  // Calculate attenuation from point light source.
+  float lightDist = length(light.position - fragPos);
+  float attenuation = calcAttenuation(light.attenuation, lightDist);
+
+  vec3 result =
+      shadePhong(material, light.ambient, light.diffuse, light.specular,
+                 lightDir, viewDir, normal, texCoords, intensity);
+  // Apply attenuation.
   return result * attenuation;
 }
 
@@ -136,6 +183,12 @@ void main() {
   for (int i = 0; i < NUM_POINT_LIGHTS; i++) {
     result +=
         shadePointLight(material, pointLights[i], fragPos, normal, texCoords);
+  }
+
+  // Shade with spot lights.
+  for (int i = 0; i < NUM_SPOT_LIGHTS; i++) {
+    result +=
+        shadeSpotLight(material, spotLights[i], fragPos, normal, texCoords);
   }
 
   // Add emissions.

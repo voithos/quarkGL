@@ -47,6 +47,7 @@ class Camera {
          float pitch = PITCH);
 
   glm::vec3 getPosition() { return position_; }
+  glm::vec3 getFront() { return front_; }
   float getFov() { return fov_; }
 
   glm::mat4 getViewMatrix();

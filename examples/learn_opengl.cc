@@ -216,6 +216,16 @@ int main() {
   mainShader.setFloat("pointLights[0].attenuation.linear", 0.09f);
   mainShader.setFloat("pointLights[0].attenuation.quadratic", 0.032f);
 
+  mainShader.setVec3("spotLights[0].position", 0.0f, 0.0f, 0.0f);
+  mainShader.setFloat("spotLights[0].innerAngle", glm::radians(10.5f));
+  mainShader.setFloat("spotLights[0].outerAngle", glm::radians(19.5f));
+  mainShader.setVec3("spotLights[0].ambient", 0.1f, 0.1f, 0.1f);
+  mainShader.setVec3("spotLights[0].diffuse", 0.5f, 0.5f, 0.5f);
+  mainShader.setVec3("spotLights[0].specular", 1.0f, 1.0f, 1.0f);
+  mainShader.setFloat("spotLights[0].attenuation.constant", 1.0f);
+  mainShader.setFloat("spotLights[0].attenuation.linear", 0.09f);
+  mainShader.setFloat("spotLights[0].attenuation.quadratic", 0.032f);
+
   qrk::Shader lampShader("examples/vertex.glsl",
                          "examples/light_fragment.glsl");
 
@@ -257,10 +267,13 @@ int main() {
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
     glm::vec3 viewLightDir =
-        glm::vec3(view * glm::vec4(-0.2f, -1.0f, -0.3f, 0.0));
-    glm::vec3 viewLightPos = glm::vec3(view * glm::vec4(worldLightPos, 1.0));
+        glm::vec3(view * glm::vec4(-0.2f, -1.0f, -0.3f, 0.0f));
+    glm::vec3 viewLightPos = glm::vec3(view * glm::vec4(worldLightPos, 1.0f));
     mainShader.setVec3("directionalLights[0].direction", viewLightDir);
     mainShader.setVec3("pointLights[0].position", viewLightPos);
+    glm::vec3 viewCameraPos =
+        glm::vec3(view * glm::vec4(camera.getFront(), 0.0f));
+    mainShader.setVec3("spotLights[0].direction", viewCameraPos);
 
     varray.use();
     for (unsigned int i = 0;
