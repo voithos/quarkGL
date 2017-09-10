@@ -195,7 +195,8 @@ int main() {
   glActiveTexture(GL_TEXTURE2);
   createTexture("examples/matrix.jpg");
 
-  qrk::Shader mainShader("examples/vertex.glsl", "examples/fragment.glsl");
+  qrk::Shader mainShader("examples/main_shader.vert",
+                         "examples/main_shader.frag");
   // These correspond to the texture numbers above.
   mainShader.setInt("material.diffuse", 0);
   mainShader.setInt("material.specular", 1);
@@ -226,8 +227,8 @@ int main() {
   mainShader.setFloat("spotLights[0].attenuation.linear", 0.09f);
   mainShader.setFloat("spotLights[0].attenuation.quadratic", 0.032f);
 
-  qrk::Shader lampShader("examples/vertex.glsl",
-                         "examples/light_fragment.glsl");
+  qrk::Shader lampShader("examples/main_shader.vert",
+                         "examples/lamp_shader.frag");
 
   qrk::VertexArray varray;
   varray.loadVertexData(vertices, sizeof(vertices));

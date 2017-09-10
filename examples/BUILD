@@ -6,10 +6,10 @@ cc_binary(
         "container.jpg",
         "container2.png",
         "container2_specular.png",
-        "fragment.glsl",
-        "light_fragment.glsl",
+        "lamp_shader.frag",
+        "main_shader.frag",
+        "main_shader.vert",
         "matrix.jpg",
-        "vertex.glsl",
     ],
     linkopts = [
         "-lGL",
