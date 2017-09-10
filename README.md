@@ -41,3 +41,12 @@ Afterwards, execute the following script to generate the compilation database:
 This library was built as a way to learn modern OpenGL and graphics techniques.
 A big thank you goes to the wonderful tutorials by Joey de Vries at
 [learnopengl.com](https://learnopengl.com)!
+
+## Open Source
+quarkGL uses several open source libraries itself. Thanks goes to the following
+projects that were used:
+
+- GLFW
+- GLAD
+- GLM
+- stb_image
