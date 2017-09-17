@@ -91,6 +91,17 @@ def IsHeaderFile(filename):
     return extension in HEADER_EXTENSIONS
 
 
+def AddDefaultIncludes(flags):
+    includes = ['-I/usr/include/c++/5']
+    try:
+        std_idx = next(i for i, flag in enumerate(flags)
+                       if flag.startswith('-std=c++'))
+        return flags[:std_idx + 1] + includes + flags[std_idx + 1:]
+    except:
+        # No anchor, so just add it at the end.
+        return flags + includes
+
+
 def FlagsForFile(filename, **kwargs):
     fallback = {
         'flags': FLAGS,
@@ -109,6 +120,9 @@ def FlagsForFile(filename, **kwargs):
     # Bear in mind that compilation_info.compiler_flags_ does NOT return a
     # python list, but a "list-like" StringVec object.
     final_flags = list(compilation_info.compiler_flags_)
+
+    # Libclang sometimes has problems with standard C++11 includes.
+    final_flags = AddDefaultIncludes(final_flags)
 
     return {
         'flags': final_flags,
