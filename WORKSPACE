@@ -6,6 +6,14 @@ new_http_archive(
     urls = ["https://github.com/glfw/glfw/archive/3.2.1.tar.gz"],
 )
 
+new_http_archive(
+    name = "assimp",
+    build_file = "BUILD.assimp",
+    sha256 = "60080d8ab4daaab309f65b3cffd99f19eb1af8d05623fff469b9b652818e286e",
+    strip_prefix = "assimp-4.0.1",
+    urls = ["https://github.com/assimp/assimp/archive/v4.0.1.tar.gz"],
+)
+
 # proto_library rules implicitly depend on @com_google_protobuf//:protoc,
 # which is the proto-compiler.
 # This statement defines the @com_google_protobuf repo.
