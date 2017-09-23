@@ -1,11 +1,11 @@
 #ifndef QUARKGL_CAMERA_H_
 #define QUARKGL_CAMERA_H_
 
+#include <vector>
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include <vector>
 
 namespace qrk {
 

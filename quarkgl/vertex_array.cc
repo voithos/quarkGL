@@ -9,6 +9,8 @@ VertexArray::VertexArray() {
 
 void VertexArray::use() { glBindVertexArray(vao_); }
 
+void VertexArray::unuse() { glBindVertexArray(0); }
+
 void VertexArray::loadVertexData(const std::vector<char>& data) {
   use();
 

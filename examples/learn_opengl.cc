@@ -198,9 +198,9 @@ int main() {
   qrk::Shader mainShader("examples/main_shader.vert",
                          "examples/main_shader.frag");
   // These correspond to the texture numbers above.
-  mainShader.setInt("material.diffuse", 0);
-  mainShader.setInt("material.specular", 1);
-  mainShader.setInt("material.emission", 2);
+  mainShader.setInt("material.diffuse[0]", 0);
+  mainShader.setInt("material.specular[0]", 1);
+  mainShader.setInt("material.emission[0]", 2);
   mainShader.setFloat("material.shininess", 64.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);

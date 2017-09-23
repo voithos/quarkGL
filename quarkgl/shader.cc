@@ -76,6 +76,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 }
 
 void Shader::use() { glUseProgram(shaderProgram_); }
+void Shader::unuse() { glUseProgram(0); }
 
 void Shader::setBool(const char* name, bool value) {
   use();

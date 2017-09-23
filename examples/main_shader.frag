@@ -11,10 +11,13 @@ struct Attenuation {
   float quadratic;
 };
 
+#define NUM_DIFFUSE_TEXTURES 1
+#define NUM_SPECULAR_TEXTURES 1
+#define NUM_EMISSION_TEXTURES 1
 struct Material {
-  sampler2D diffuse;
-  sampler2D specular;
-  sampler2D emission;
+  sampler2D diffuse[NUM_DIFFUSE_TEXTURES];
+  sampler2D specular[NUM_SPECULAR_TEXTURES];
+  sampler2D emission[NUM_EMISSION_TEXTURES];
   float shininess;
 
   Attenuation emissionAttenuation;
@@ -70,24 +73,30 @@ uniform SpotLight spotLights[NUM_SPOT_LIGHTS];
 vec3 shadePhong(Material material, vec3 lightAmbient, vec3 lightDiffuse,
                 vec3 lightSpecular, vec3 lightDir, vec3 viewDir, vec3 normal,
                 vec2 texCoords, float intensity) {
-  vec3 diffuseMap = vec3(texture(material.diffuse, texCoords));
+  vec3 result = vec3(0.0);
 
-  // Ambient.
-  vec3 ambient = lightAmbient * diffuseMap;
-
-  // Diffuse.
+  // Ambient and diffuse components.
   float diffuseIntensity = max(dot(normal, lightDir), 0.0);
-  vec3 diffuse = lightDiffuse * (diffuseIntensity * diffuseMap);
+  for (int i = 0; i < NUM_DIFFUSE_TEXTURES; i++) {
+    vec3 diffuseMap = vec3(texture(material.diffuse[i], texCoords));
 
-  // Specular.
-  vec3 specularMap = vec3(texture(material.specular, texCoords));
+    // Ambient component.
+    result += lightAmbient * diffuseMap;
+
+    // Diffuse component.
+    result += (lightDiffuse * (diffuseIntensity * diffuseMap)) * intensity;
+  }
+
+  // Specular component.
   vec3 reflectDir = reflect(-lightDir, normal);
   float specularIntensity =
       pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-  vec3 specular = lightSpecular * (specularIntensity * specularMap);
+  for (int i = 0; i < NUM_SPECULAR_TEXTURES; i++) {
+    vec3 specularMap = vec3(texture(material.specular[i], texCoords));
+    result += (lightSpecular * (specularIntensity * specularMap)) * intensity;
+  }
 
-  // Combine components, applying intensity.
-  return ambient + (diffuse + specular) * intensity;
+  return result;
 }
 
 /**
@@ -156,16 +165,20 @@ vec3 shadeSpotLight(Material material, SpotLight light, vec3 fragPos,
 }
 
 vec3 shadeEmission(Material material, vec3 fragPos, vec2 texCoords) {
+  vec3 result = vec3(0.0);
+
   // Calculate emission attenuation towards camera.
   float fragDist = length(fragPos);
   float attenuation = calcAttenuation(material.emissionAttenuation, fragDist);
 
-  // Emission.
-  vec3 emission = vec3(texture(material.emission, texCoords)) * attenuation;
+  // Emission component.
+  for (int i = 0; i < NUM_EMISSION_TEXTURES; i++) {
+    result += vec3(texture(material.emission[i], texCoords)) * attenuation;
+  }
 
   // Special effect.
   // TODO: Remove.
-  return (sin(time * 0.5) * 0.2 + 0.2) * emission;
+  return (sin(time * 0.5) * 0.2 + 0.2) * result;
 }
 
 void main() {

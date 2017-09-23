@@ -1,5 +1,7 @@
 # TODOs
 
+- [ ] use/unuse -> activate/deactive.
+- [ ] Add clang-tidy.
 - [ ] Add an abstraction over shader code, allowing e.g. imports / usage.
 - [ ] Add a 'light' class that can work with the shader.
 - [ ] Add unit tests.

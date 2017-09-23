@@ -21,6 +21,7 @@ class Shader {
   unsigned int getProgramId() { return shaderProgram_; }
 
   void use();
+  void unuse();
   void setBool(const char* name, bool value);
   void setInt(const char* name, int value);
   void setFloat(const char* name, float value);
