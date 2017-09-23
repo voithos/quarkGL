@@ -1,6 +1,5 @@
 # TODOs
 
-- [ ] use/unuse -> activate/deactive.
 - [ ] Add clang-tidy.
 - [ ] Add an abstraction over shader code, allowing e.g. imports / usage.
 - [ ] Add a 'light' class that can work with the shader.
@@ -12,6 +11,7 @@
 - [ ] Add a material class that can maintain diffuse/specular maps.
 
 ## Done
+- [x] use/unuse -> activate/deactive.
 - [x] Add an auto-formatter for the GLSL code.
 - [x] Include attenuation in the lighting model.
 - [x] Add lighting support to qrk, allowing:

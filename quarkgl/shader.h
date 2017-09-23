@@ -20,8 +20,8 @@ class Shader {
   Shader(const char* vertexPath, const char* fragmentPath);
   unsigned int getProgramId() { return shaderProgram_; }
 
-  void use();
-  void unuse();
+  void activate();
+  void deactive();
   void setBool(const char* name, bool value);
   void setInt(const char* name, int value);
   void setFloat(const char* name, float value);

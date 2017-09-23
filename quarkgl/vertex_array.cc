@@ -4,15 +4,15 @@ namespace qrk {
 
 VertexArray::VertexArray() {
   glGenVertexArrays(1, &vao_);
-  use();
+  activate();
 }
 
-void VertexArray::use() { glBindVertexArray(vao_); }
+void VertexArray::activate() { glBindVertexArray(vao_); }
 
-void VertexArray::unuse() { glBindVertexArray(0); }
+void VertexArray::deactivate() { glBindVertexArray(0); }
 
 void VertexArray::loadVertexData(const std::vector<char>& data) {
-  use();
+  activate();
 
   glGenBuffers(1, &vbo_);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_);
@@ -21,7 +21,7 @@ void VertexArray::loadVertexData(const std::vector<char>& data) {
 }
 
 void VertexArray::loadVertexData(const void* data, unsigned int size) {
-  use();
+  activate();
 
   glGenBuffers(1, &vbo_);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_);
@@ -30,7 +30,7 @@ void VertexArray::loadVertexData(const void* data, unsigned int size) {
 }
 
 void VertexArray::loadElementData(const std::vector<unsigned int>& indices) {
-  use();
+  activate();
 
   glGenBuffers(1, &ebo_);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
@@ -41,7 +41,7 @@ void VertexArray::loadElementData(const std::vector<unsigned int>& indices) {
 
 void VertexArray::loadElementData(const unsigned int* indices,
                                   unsigned int size) {
-  use();
+  activate();
 
   glGenBuffers(1, &ebo_);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
@@ -61,7 +61,7 @@ void VertexArray::addVertexAttrib(unsigned int size, unsigned int type) {
 }
 
 void VertexArray::finalizeVertexAttribs() {
-  use();
+  activate();
 
   int offset = 0;
   for (const VertexAttrib& attrib : attribs_) {

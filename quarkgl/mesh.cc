@@ -54,8 +54,9 @@ void Mesh::draw(Shader shader) {
   glActiveTexture(GL_TEXTURE0);
 
   // Draw using the VAO.
-  vertexArray_.use();
+  shader.activate();
+  vertexArray_.activate();
   glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
-  vertexArray_.unuse();
+  vertexArray_.deactivate();
 }
 }

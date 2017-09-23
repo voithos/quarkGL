@@ -239,7 +239,7 @@ int main() {
 
   // Create another VAO for the light, reusing the VBO.
   qrk::VertexArray lightVarray;
-  lightVarray.use();
+  lightVarray.activate();
   glBindBuffer(GL_ARRAY_BUFFER, varray.getVbo());
   lightVarray.addVertexAttrib(3, GL_FLOAT);
   lightVarray.addVertexAttrib(3, GL_FLOAT);
@@ -264,7 +264,7 @@ int main() {
         SCREEN_WIDTH / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f);
 
     // Draw main cubes.
-    mainShader.use();
+    mainShader.activate();
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
     glm::vec3 viewLightDir =
@@ -276,7 +276,7 @@ int main() {
         glm::vec3(view * glm::vec4(camera.getFront(), 0.0f));
     mainShader.setVec3("spotLights[0].direction", viewCameraPos);
 
-    varray.use();
+    varray.activate();
     for (unsigned int i = 0;
          i < sizeof(cubePositions) / sizeof(cubePositions[0]); i++) {
       // Calculate the model matrix.
@@ -292,11 +292,11 @@ int main() {
     // Draw light source.
     glm::mat4 model = glm::translate(glm::mat4(), worldLightPos);
     model = glm::scale(model, glm::vec3(0.2f));
-    lampShader.use();
+    lampShader.activate();
     lampShader.setMat4("model", model);
     lampShader.setMat4("view", view);
     lampShader.setMat4("projection", projection);
-    lightVarray.use();
+    lightVarray.activate();
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glfwSwapBuffers(window);

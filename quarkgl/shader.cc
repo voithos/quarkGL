@@ -75,37 +75,37 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
   glDeleteShader(fragmentShader);
 }
 
-void Shader::use() { glUseProgram(shaderProgram_); }
-void Shader::unuse() { glUseProgram(0); }
+void Shader::activate() { glUseProgram(shaderProgram_); }
+void Shader::deactive() { glUseProgram(0); }
 
 void Shader::setBool(const char* name, bool value) {
-  use();
+  activate();
   glUniform1i(glGetUniformLocation(shaderProgram_, name), (int)value);
 }
 
 void Shader::setInt(const char* name, int value) {
-  use();
+  activate();
   glUniform1i(glGetUniformLocation(shaderProgram_, name), value);
 }
 
 void Shader::setFloat(const char* name, float value) {
-  use();
+  activate();
   glUniform1f(glGetUniformLocation(shaderProgram_, name), value);
 }
 
 void Shader::setVec3(const char* name, glm::vec3& vector) {
-  use();
+  activate();
   glUniform3fv(glGetUniformLocation(shaderProgram_, name), 1,
                glm::value_ptr(vector));
 }
 
 void Shader::setVec3(const char* name, float v0, float v1, float v2) {
-  use();
+  activate();
   glUniform3f(glGetUniformLocation(shaderProgram_, name), v0, v1, v2);
 }
 
 void Shader::setMat4(const char* name, glm::mat4& matrix) {
-  use();
+  activate();
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name), 1, GL_FALSE,
                      glm::value_ptr(matrix));
 }

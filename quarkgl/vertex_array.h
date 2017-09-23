@@ -31,8 +31,8 @@ class VertexArray {
   unsigned int getVbo() { return vbo_; }
   unsigned int getEbo() { return ebo_; }
 
-  void use();
-  void unuse();
+  void activate();
+  void deactivate();
   void loadVertexData(const std::vector<char>& data);
   void loadVertexData(const void* data, unsigned int size);
   void loadElementData(const std::vector<unsigned int>& indices);
