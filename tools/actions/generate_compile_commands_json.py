@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 # This reads the _compile_command files :generate_compile_commands_action
-# generates a outputs a compile_commands.json file at the top of the source
-# tree for things like clang-tidy to read.
+# outputs a compile_commands.json file at the top of the source tree for things
+# like clang-tidy to read.
 
 # Overall usage directions: run Bazel with
 # --experimental_action_listener=//tools/actions:generate_compile_commands_listener

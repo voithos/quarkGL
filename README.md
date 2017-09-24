@@ -13,6 +13,10 @@ the appropriate tools and headers (on Ubuntu/Debian):
 
     $ sudo apt-get install build-essential xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
+To get linter support, also run:
+
+    $ sudo apt-get install clang-tidy
+
 Then build the examples, and run them:
 
     $ bazel build examples:all
@@ -22,9 +26,9 @@ Then build the examples, and run them:
 
 In addition to the build tooling, you may also want to build a [compilation
 database](http://clang.llvm.org/docs/JSONCompilationDatabase.html) in order to
-enable semantic completion in your editor. The database is processed through
-some Python tooling that requires the `google.protobuf` library in order to
-work properly.
+enable the linter and semantic completion in your editor. The database is
+processed through some Python tooling that requires the `google.protobuf`
+library in order to work properly.
 
 To install `google.protobuf`, first [install
 `pip`](https://pip.pypa.io/en/stable/installing/), the Python package
@@ -35,6 +39,11 @@ installer, and then run:
 Afterwards, execute the following script to generate the compilation database:
 
     $ ./build_compile_commands.sh
+
+Once the `compile_commands.json` file exists, run the following to execute the
+linter:
+
+    $ ./run_linter.sh
 
 ## Acknowledgements
 
