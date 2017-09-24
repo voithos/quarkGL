@@ -102,6 +102,11 @@ def AddDefaultIncludes(flags):
         return flags + includes
 
 
+def PruneUnrecognizedFlags(flags):
+    unrecognized_flags = ('-fno-canonical-system-headers', )
+    return [flag for flag in flags if flag not in unrecognized_flags]
+
+
 def FlagsForFile(filename, **kwargs):
     fallback = {
         'flags': FLAGS,
@@ -123,6 +128,7 @@ def FlagsForFile(filename, **kwargs):
 
     # Libclang sometimes has problems with standard C++11 includes.
     final_flags = AddDefaultIncludes(final_flags)
+    final_flags = PruneUnrecognizedFlags(final_flags)
 
     return {
         'flags': final_flags,
