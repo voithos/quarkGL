@@ -12,6 +12,7 @@
 import sys
 import pathlib
 import os.path
+import re
 import subprocess
 import textwrap
 
@@ -39,7 +40,18 @@ def _get_command(path, command_directory):
         }''' % (command_directory, command.replace('"', '\\"'), file))
 
 
-def _get_compile_commands(path, command_directory):
+def _get_header_command(command, header='h'):
+    '''Duplicate a command for a header file.
+    Args:
+      command: The command JSON string.
+    Returns:
+      a string to stick in compile_commands.json.
+    '''
+    return re.sub(r'("file": ".*\.)(c|cc|cpp|cxx|c\+\+|C)"',
+                  r'\1' + header + r'"', command)
+
+
+def _get_compile_commands(path, command_directory, autogen_headers=None):
     '''Traverse a path and returns parsed command JSON strings.
     Args:
       path: A directory pathlib.Path to look for _compile_command files under.
@@ -47,16 +59,30 @@ def _get_compile_commands(path, command_directory):
     Yields:
       strings to stick in compile_commands.json.
     '''
+    if autogen_headers is None:
+        autogen_headers = []
+
     for f in path.iterdir():
         if f.is_dir():
-            yield from _get_compile_commands(f, command_directory)
+            yield from _get_compile_commands(f, command_directory,
+                                             autogen_headers)
         elif f.name.endswith('_compile_command'):
             command = _get_command(f, command_directory)
             if command:
                 yield command
 
+                for header in autogen_headers:
+                    header_command = _get_header_command(command, header)
+                    if header_command != command:
+                        yield header_command
+
 
 def main(argv):
+    if len(argv) > 1:
+        autogen_headers = argv[1:]
+    else:
+        autogen_headers = []
+
     source_path = os.path.join(os.path.dirname(__file__), '../..')
     action_outs = os.path.join(
         source_path, 'bazel-bin/../extra_actions',
@@ -66,7 +92,8 @@ def main(argv):
         ('bazel', 'info', 'execution_root'),
         cwd=source_path).decode('utf-8').rstrip()
     commands = list(
-        _get_compile_commands(pathlib.Path(action_outs), command_directory))
+        _get_compile_commands(
+            pathlib.Path(action_outs), command_directory, autogen_headers))
 
     with open(os.path.join(source_path, 'compile_commands.json'), 'w') as f:
         f.write('[')

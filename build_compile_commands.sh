@@ -9,4 +9,6 @@ else
 fi
 
 bazel build --experimental_action_listener=//tools/actions:generate_compile_commands_listener ${TARGETS[@]}
-python3 ./tools/actions/generate_compile_commands_json.py
+
+# Optional arguments represent header file extensions to autogenerate commands for.
+python3 ./tools/actions/generate_compile_commands_json.py h
