@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $(basename $0) BAZEL_TARGET"
-    exit 1
+if [[ "$#" -eq 0 ]]; then
+  TARGETS[0]="quarkgl:all"
+  TARGETS[1]="examples:all"
+else
+  TARGETS="$@"
 fi
 
-bazel build --experimental_action_listener=//tools/actions:generate_compile_commands_listener $1
+bazel build --experimental_action_listener=//tools/actions:generate_compile_commands_listener ${TARGETS[@]}
 python3 ./tools/actions/generate_compile_commands_json.py
-exit 0
