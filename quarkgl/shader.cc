@@ -34,12 +34,12 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
   // Compile vertex shader.
   vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+  glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
   glCompileShader(vertexShader);
 
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
   if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+    glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
     std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
               << infoLog << std::endl;
   }
@@ -47,12 +47,12 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
   // Compile fragment shader.
   fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+  glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
   glCompileShader(fragmentShader);
 
   glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
   if (!success) {
-    glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+    glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
     std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
               << infoLog << std::endl;
   }
@@ -66,7 +66,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 
   glGetProgramiv(shaderProgram_, GL_LINK_STATUS, &success);
   if (!success) {
-    glGetProgramInfoLog(shaderProgram_, 512, NULL, infoLog);
+    glGetProgramInfoLog(shaderProgram_, 512, nullptr, infoLog);
     std::cout << "ERROR::SHADER::LINKING_FAILED\n" << infoLog << std::endl;
   }
 
@@ -80,7 +80,8 @@ void Shader::deactive() { glUseProgram(0); }
 
 void Shader::setBool(const char* name, bool value) {
   activate();
-  glUniform1i(glGetUniformLocation(shaderProgram_, name), (int)value);
+  glUniform1i(glGetUniformLocation(shaderProgram_, name),
+              static_cast<int>(value));
 }
 
 void Shader::setInt(const char* name, int value) {
@@ -109,4 +110,4 @@ void Shader::setMat4(const char* name, glm::mat4& matrix) {
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name), 1, GL_FALSE,
                      glm::value_ptr(matrix));
 }
-}
+}  // namespace qrk

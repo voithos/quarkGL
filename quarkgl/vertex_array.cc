@@ -65,12 +65,13 @@ void VertexArray::finalizeVertexAttribs() {
 
   int offset = 0;
   for (const VertexAttrib& attrib : attribs_) {
-    glVertexAttribPointer(attrib.layoutPosition, attrib.size, attrib.type,
-                          /* normalized */ GL_FALSE, stride_,
-                          // TODO: Support types other than float.
-                          /* offset */ static_cast<const char*>(0) + offset);
+    glVertexAttribPointer(
+        attrib.layoutPosition, attrib.size, attrib.type,
+        /* normalized */ GL_FALSE, stride_,
+        // TODO: Support types other than float.
+        /* offset */ static_cast<const char*>(nullptr) + offset);
     glEnableVertexAttribArray(attrib.layoutPosition);
     offset += attrib.size * sizeof(float);
   }
 }
-}
+}  // namespace qrk

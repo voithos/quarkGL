@@ -40,6 +40,6 @@ class VertexArray {
   void addVertexAttrib(unsigned int size, unsigned int type);
   void finalizeVertexAttribs();
 };
-}
+}  // namespace qrk
 
 #endif

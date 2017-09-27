@@ -29,6 +29,6 @@ class Shader {
   void setVec3(const char* name, float v0, float v1, float v2);
   void setMat4(const char* name, glm::mat4& matrix);
 };
-}
+}  // namespace qrk
 
 #endif

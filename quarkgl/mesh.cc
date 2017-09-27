@@ -56,7 +56,7 @@ void Mesh::draw(Shader shader) {
   // Draw using the VAO.
   shader.activate();
   vertexArray_.activate();
-  glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, nullptr);
   vertexArray_.deactivate();
 }
-}
+}  // namespace qrk

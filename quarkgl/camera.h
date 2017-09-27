@@ -56,6 +56,6 @@ class Camera {
                         bool constrainPitch = true);
   void processMouseScroll(float yoffset);
 };
-}
+}  // namespace qrk
 
 #endif

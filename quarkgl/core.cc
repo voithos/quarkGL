@@ -9,4 +9,4 @@ void init() {
 }
 
 void terminate() { glfwTerminate(); }
-}
+}  // namespace qrk

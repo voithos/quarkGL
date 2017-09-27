@@ -46,6 +46,6 @@ class Mesh {
   std::vector<unsigned int> getIndices() { return indices_; }
   std::vector<Texture> getTextures() { return textures_; }
 };
-}
+}  // namespace qrk
 
 #endif

@@ -10,6 +10,6 @@
 namespace qrk {
 void init();
 void terminate();
-}
+}  // namespace qrk
 
 #endif

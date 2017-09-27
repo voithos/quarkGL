@@ -63,4 +63,4 @@ void Camera::processMouseMove(float xoffset, float yoffset,
 void Camera::processMouseScroll(float yoffset) {
   fov_ = glm::clamp(fov_ - yoffset, MIN_FOV, MAX_FOV);
 }
-}
+}  // namespace qrk
