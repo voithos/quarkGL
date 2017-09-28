@@ -1,3 +1,5 @@
+# TODO: Expose a single :quarkgl library and make the rest private.
+
 cc_library(
     name = "core",
     srcs = ["core.cc"],
@@ -43,9 +45,18 @@ cc_library(
     include_prefix = "qrk",
     visibility = ["//visibility:public"],
     deps = [
+        ":shared",
         "//third_party/glad",
         "//third_party/glm",
     ],
+)
+
+cc_library(
+    name = "shared",
+    hdrs = ["shared.h"],
+    include_prefix = "qrk",
+    visibility = ["//visibility:public"],
+    deps = [],
 )
 
 cc_library(

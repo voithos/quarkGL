@@ -10,7 +10,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <qrk/shared.h>
+
 namespace qrk {
+
+class ShaderException : QuarkException {
+  using QuarkException::QuarkException;
+};
 
 class Shader {
  private:
