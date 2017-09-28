@@ -13,9 +13,11 @@ the appropriate tools and headers (on Ubuntu/Debian):
 
     $ sudo apt-get install build-essential xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
-To get linter support, also run:
+To get the linters, also run (you'll need to [install
+pip](https://pip.pypa.io/en/stable/installing/) to get cpplint):
 
     $ sudo apt-get install clang-tidy
+    $ sudo pip install cpplint
 
 Then build the examples, and run them:
 
@@ -43,7 +45,7 @@ Afterwards, execute the following script to generate the compilation database:
 Once the `compile_commands.json` file exists, run the following to execute the
 linter:
 
-    $ ./run_linter.sh
+    $ ./run_linters.sh
 
 ## Acknowledgements
 
