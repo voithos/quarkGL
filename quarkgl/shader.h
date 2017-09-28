@@ -25,9 +25,9 @@ class Shader {
   void setBool(const char* name, bool value);
   void setInt(const char* name, int value);
   void setFloat(const char* name, float value);
-  void setVec3(const char* name, glm::vec3& vector);
+  void setVec3(const char* name, const glm::vec3& vector);
   void setVec3(const char* name, float v0, float v1, float v2);
-  void setMat4(const char* name, glm::mat4& matrix);
+  void setMat4(const char* name, const glm::mat4& matrix);
 };
 }  // namespace qrk
 

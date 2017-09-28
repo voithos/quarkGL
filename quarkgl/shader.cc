@@ -94,7 +94,7 @@ void Shader::setFloat(const char* name, float value) {
   glUniform1f(glGetUniformLocation(shaderProgram_, name), value);
 }
 
-void Shader::setVec3(const char* name, glm::vec3& vector) {
+void Shader::setVec3(const char* name, const glm::vec3& vector) {
   activate();
   glUniform3fv(glGetUniformLocation(shaderProgram_, name), 1,
                glm::value_ptr(vector));
@@ -105,7 +105,7 @@ void Shader::setVec3(const char* name, float v0, float v1, float v2) {
   glUniform3f(glGetUniformLocation(shaderProgram_, name), v0, v1, v2);
 }
 
-void Shader::setMat4(const char* name, glm::mat4& matrix) {
+void Shader::setMat4(const char* name, const glm::mat4& matrix) {
   activate();
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name), 1, GL_FALSE,
                      glm::value_ptr(matrix));
