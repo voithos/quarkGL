@@ -1,9 +1,6 @@
 #ifndef QUARKGL_SHADER_H_
 #define QUARKGL_SHADER_H_
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <string>
 
 #include <glad/glad.h>
@@ -14,7 +11,7 @@
 
 namespace qrk {
 
-class ShaderException : QuarkException {
+class ShaderException : public QuarkException {
   using QuarkException::QuarkException;
 };
 

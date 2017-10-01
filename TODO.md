@@ -1,6 +1,5 @@
 # TODOs
 
-- [ ] Add an abstraction over shader code, allowing e.g. imports / usage.
 - [ ] Add a 'light' class that can work with the shader.
 - [ ] Add unit tests.
 - [ ] Add more documentation.
@@ -9,6 +8,7 @@
 - [ ] Add a material class that can maintain diffuse/specular maps.
 
 ## Done
+- [x] Add an abstraction over shader code, allowing e.g. imports / usage.
 - [x] Add exception hierarchy.
 - [x] Add an auto-formatter for the GLSL code.
 - [x] Include attenuation in the lighting model.

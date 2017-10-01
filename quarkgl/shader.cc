@@ -1,28 +1,14 @@
 #include <qrk/shader.h>
+#include <qrk/shader_loader.h>
 
 namespace qrk {
 
-std::string readFile(const char* path) {
-  std::ifstream file;
-  file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-  file.open(path);
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  return buffer.str();
-}
-
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
   // Read file contents.
-  std::string vertexSourceString;
-  std::string fragmentSourceString;
-
-  try {
-    vertexSourceString = readFile(vertexPath);
-    fragmentSourceString = readFile(fragmentPath);
-  } catch (std::ifstream::failure e) {
-    std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
-  }
+  ShaderLoader vertexLoader(vertexPath, ShaderType::VERTEX);
+  std::string vertexSourceString = vertexLoader.load();
+  ShaderLoader fragmentLoader(fragmentPath, ShaderType::FRAGMENT);
+  std::string fragmentSourceString = fragmentLoader.load();
 
   const char* vertexShaderSource = vertexSourceString.c_str();
   const char* fragmentShaderSource = fragmentSourceString.c_str();
@@ -40,8 +26,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
+    throw ShaderException("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" +
+                          std::string(infoLog));
   }
 
   // Compile fragment shader.
@@ -53,8 +39,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
   glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-    std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
+    throw ShaderException("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" +
+                          std::string(infoLog));
   }
 
   // Create and link shader program.
@@ -67,7 +53,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
   glGetProgramiv(shaderProgram_, GL_LINK_STATUS, &success);
   if (!success) {
     glGetProgramInfoLog(shaderProgram_, 512, nullptr, infoLog);
-    std::cout << "ERROR::SHADER::LINKING_FAILED\n" << infoLog << std::endl;
+    throw ShaderException("ERROR::SHADER::LINKING_FAILED\n" +
+                          std::string(infoLog));
   }
 
   // Delete shaders now that they're linked.

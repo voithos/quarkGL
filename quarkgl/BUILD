@@ -45,9 +45,21 @@ cc_library(
     include_prefix = "qrk",
     visibility = ["//visibility:public"],
     deps = [
+        ":shader_loader",
         ":shared",
         "//third_party/glad",
         "//third_party/glm",
+    ],
+)
+
+cc_library(
+    name = "shader_loader",
+    srcs = ["shader_loader.cc"],
+    hdrs = ["shader_loader.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":shared",
+        ":utils",
     ],
 )
 
@@ -56,6 +68,13 @@ cc_library(
     hdrs = ["shared.h"],
     include_prefix = "qrk",
     visibility = ["//visibility:public"],
+    deps = [],
+)
+
+cc_library(
+    name = "utils",
+    hdrs = ["utils.h"],
+    include_prefix = "qrk",
     deps = [],
 )
 
