@@ -6,8 +6,10 @@
 - [ ] Add a 'window' class to qrk that can encapsulate the calls in the render loop.
 - [ ] Add a mechanism for working with textures.
 - [ ] Add a material class that can maintain diffuse/specular maps.
+- [ ] Add logging support.
 
 ## Done
+- [x] Add caching for shader loader.
 - [x] Add an abstraction over shader code, allowing e.g. imports / usage.
 - [x] Add exception hierarchy.
 - [x] Add an auto-formatter for the GLSL code.

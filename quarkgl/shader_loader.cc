@@ -69,9 +69,16 @@ ShaderLoader::ShaderLoader(const char* shaderPath, const ShaderType shaderType)
   checkShaderType(shaderPath);
 }
 
-std::string ShaderLoader::load(std::string const& shaderPath) {
-  checkShaderType(shaderPath);
+std::string ShaderLoader::lookupOrLoad(std::string const& shaderPath) {
+  std::string resolvedPath = resolvePath(shaderPath);
 
+  auto item = codeCache_.find(resolvedPath);
+  if (item != codeCache_.end()) {
+    // Cache hit; return code.
+    return item->second;
+  }
+
+  // Cache miss; read code from file.
   std::string shaderCode;
   try {
     shaderCode = readFile(shaderPath);
@@ -83,8 +90,23 @@ std::string ShaderLoader::load(std::string const& shaderPath) {
         std::string(shaderPath) + "', traceback below (most recent last):\n" +
         traceback);
   }
+  // Don't cache the code just yet, because we need to preprocess it.
+  return shaderCode;
+}
 
-  return preprocessShader(shaderPath, shaderCode);
+std::string ShaderLoader::load(std::string const& shaderPath) {
+  checkShaderType(shaderPath);
+
+  auto shaderCode = lookupOrLoad(shaderPath);
+  auto processedCode = preprocessShader(shaderPath, shaderCode);
+  cacheShaderCode(shaderPath, processedCode);
+  return processedCode;
+}
+
+void ShaderLoader::cacheShaderCode(std::string const& shaderPath,
+                                   std::string const& shaderCode) {
+  std::string resolvedPath = resolvePath(shaderPath);
+  codeCache_[resolvedPath] = shaderCode;
 }
 
 std::string ShaderLoader::preprocessShader(std::string const& shaderPath,
