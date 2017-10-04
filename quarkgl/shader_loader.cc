@@ -115,17 +115,18 @@ std::string ShaderLoader::preprocessShader(std::string const& shaderPath,
   includeChain_.push_back(resolvedPath);
 
   std::regex includePattern(
-      R"((^|\r?\n)\s*#pragma\s+qrk_include\s+(".*"|<.*>)(?=\r?\n|$))");
+      R"(((^|\r?\n)\s*)#pragma\s+qrk_include\s+(".*"|<.*>)(?=\r?\n|$))");
   std::string processedCode = regex_replace(
       shaderCode, includePattern, [this, shaderPath](const std::smatch& m) {
+        std::string whitespace = m[1];
         // Extract the path.
-        std::string incl = m[2];
+        std::string incl = m[3];
         char inclType = incl[0];
         std::string path = trim(incl.substr(1, incl.size() - 2));
 
         if (inclType == '<') {
           // qrk include.
-          return load("quarkgl/shaders/" + path);
+          return whitespace + load("quarkgl/shaders/" + path);
         } else {
           // Standard include.
           size_t i = shaderPath.find_last_of("/");
@@ -133,7 +134,7 @@ std::string ShaderLoader::preprocessShader(std::string const& shaderPath,
           // string if the current shader is at project root.
           std::string prefix =
               i != std::string::npos ? shaderPath.substr(0, i + 1) : "";
-          return load(prefix + path);
+          return whitespace + load(prefix + path);
         }
       });
 
