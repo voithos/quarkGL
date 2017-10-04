@@ -7,16 +7,16 @@ in vec3 fragNormal;
 out vec4 fragColor;
 
 uniform float time;
-uniform Material material;
+uniform QrkMaterial material;
 
 void main() {
   vec3 normal = normalize(fragNormal);
 
   // Shade with normal lights.
-  vec3 result = shadeAllLights(material, fragPos, normal, texCoords);
+  vec3 result = qrk_shadeAllLights(material, fragPos, normal, texCoords);
 
   // Add emissions.
-  result += shadeEmission(material, fragPos, texCoords);
+  result += qrk_shadeEmission(material, fragPos, texCoords);
 
   fragColor = vec4(result, 1.0);
 }
