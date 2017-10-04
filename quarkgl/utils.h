@@ -20,11 +20,7 @@ static inline std::string rtrim(std::string s) {
   return s;
 }
 
-static inline std::string trim(std::string s) {
-  ltrim(s);
-  rtrim(s);
-  return s;
-}
+static inline std::string trim(std::string s) { return ltrim(rtrim(s)); }
 
 bool string_has_suffix(const std::string& str, const std::string& suffix) {
   return str.size() >= suffix.size() &&
