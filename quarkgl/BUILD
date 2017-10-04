@@ -56,6 +56,10 @@ cc_library(
     name = "shader_loader",
     srcs = ["shader_loader.cc"],
     hdrs = ["shader_loader.h"],
+    data = glob([
+        "shaders/*.vert",
+        "shaders/*.frag",
+    ]),
     include_prefix = "qrk",
     deps = [
         ":shared",
