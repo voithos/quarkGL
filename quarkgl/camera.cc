@@ -2,14 +2,15 @@
 
 namespace qrk {
 
-Camera::Camera(glm::vec3 position, glm::vec3 worldUp, float yaw, float pitch)
+Camera::Camera(glm::vec3 position, glm::vec3 worldUp, float yaw, float pitch,
+               float speed, float sensitivity, float fov)
     : position_(position),
       worldUp_(worldUp),
       yaw_(yaw),
       pitch_(pitch),
-      speed_(SPEED),
-      sensitivity_(SENSITIVITY),
-      fov_(FOV) {
+      speed_(speed),
+      sensitivity_(sensitivity),
+      fov_(fov) {
   updateCameraVectors();
 }
 
