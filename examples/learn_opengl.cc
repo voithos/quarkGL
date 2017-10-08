@@ -200,26 +200,26 @@ int main() {
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
-  mainShader.setVec3("directionalLights[0].ambient", 0.1f, 0.1f, 0.1f);
-  mainShader.setVec3("directionalLights[0].diffuse", 0.5f, 0.5f, 0.5f);
-  mainShader.setVec3("directionalLights[0].specular", 1.0f, 1.0f, 1.0f);
+  mainShader.setVec3("qrk_directionalLights[0].ambient", 0.1f, 0.1f, 0.1f);
+  mainShader.setVec3("qrk_directionalLights[0].diffuse", 0.5f, 0.5f, 0.5f);
+  mainShader.setVec3("qrk_directionalLights[0].specular", 1.0f, 1.0f, 1.0f);
 
-  mainShader.setVec3("pointLights[0].ambient", 0.2f, 0.2f, 0.2f);
-  mainShader.setVec3("pointLights[0].diffuse", 0.5f, 0.5f, 0.5f);
-  mainShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-  mainShader.setFloat("pointLights[0].attenuation.constant", 1.0f);
-  mainShader.setFloat("pointLights[0].attenuation.linear", 0.09f);
-  mainShader.setFloat("pointLights[0].attenuation.quadratic", 0.032f);
+  mainShader.setVec3("qrk_pointLights[0].ambient", 0.2f, 0.2f, 0.2f);
+  mainShader.setVec3("qrk_pointLights[0].diffuse", 0.5f, 0.5f, 0.5f);
+  mainShader.setVec3("qrk_pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+  mainShader.setFloat("qrk_pointLights[0].attenuation.constant", 1.0f);
+  mainShader.setFloat("qrk_pointLights[0].attenuation.linear", 0.09f);
+  mainShader.setFloat("qrk_pointLights[0].attenuation.quadratic", 0.032f);
 
-  mainShader.setVec3("spotLights[0].position", 0.0f, 0.0f, 0.0f);
-  mainShader.setFloat("spotLights[0].innerAngle", glm::radians(10.5f));
-  mainShader.setFloat("spotLights[0].outerAngle", glm::radians(19.5f));
-  mainShader.setVec3("spotLights[0].ambient", 0.1f, 0.1f, 0.1f);
-  mainShader.setVec3("spotLights[0].diffuse", 0.5f, 0.5f, 0.5f);
-  mainShader.setVec3("spotLights[0].specular", 1.0f, 1.0f, 1.0f);
-  mainShader.setFloat("spotLights[0].attenuation.constant", 1.0f);
-  mainShader.setFloat("spotLights[0].attenuation.linear", 0.09f);
-  mainShader.setFloat("spotLights[0].attenuation.quadratic", 0.032f);
+  mainShader.setVec3("qrk_spotLights[0].position", 0.0f, 0.0f, 0.0f);
+  mainShader.setFloat("qrk_spotLights[0].innerAngle", glm::radians(10.5f));
+  mainShader.setFloat("qrk_spotLights[0].outerAngle", glm::radians(19.5f));
+  mainShader.setVec3("qrk_spotLights[0].ambient", 0.1f, 0.1f, 0.1f);
+  mainShader.setVec3("qrk_spotLights[0].diffuse", 0.5f, 0.5f, 0.5f);
+  mainShader.setVec3("qrk_spotLights[0].specular", 1.0f, 1.0f, 1.0f);
+  mainShader.setFloat("qrk_spotLights[0].attenuation.constant", 1.0f);
+  mainShader.setFloat("qrk_spotLights[0].attenuation.linear", 0.09f);
+  mainShader.setFloat("qrk_spotLights[0].attenuation.quadratic", 0.032f);
 
   qrk::Shader lampShader("examples/main_shader.vert",
                          "examples/lamp_shader.frag");
@@ -264,11 +264,11 @@ int main() {
     glm::vec3 viewLightDir =
         glm::vec3(view * glm::vec4(-0.2f, -1.0f, -0.3f, 0.0f));
     glm::vec3 viewLightPos = glm::vec3(view * glm::vec4(worldLightPos, 1.0f));
-    mainShader.setVec3("directionalLights[0].direction", viewLightDir);
-    mainShader.setVec3("pointLights[0].position", viewLightPos);
+    mainShader.setVec3("qrk_directionalLights[0].direction", viewLightDir);
+    mainShader.setVec3("qrk_pointLights[0].position", viewLightPos);
     glm::vec3 viewCameraPos =
         glm::vec3(view * glm::vec4(camera.getFront(), 0.0f));
-    mainShader.setVec3("spotLights[0].direction", viewCameraPos);
+    mainShader.setVec3("qrk_spotLights[0].direction", viewCameraPos);
 
     varray.activate();
     for (unsigned int i = 0;
