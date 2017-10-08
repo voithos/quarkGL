@@ -1,4 +1,5 @@
 #version 330 core
+#pragma qrk_include <core.frag>
 #pragma qrk_include <standard_lights.frag>
 in vec2 texCoords;
 in vec3 fragPos;
@@ -6,7 +7,6 @@ in vec3 fragNormal;
 
 out vec4 fragColor;
 
-uniform float time;
 uniform QrkMaterial material;
 
 void main() {

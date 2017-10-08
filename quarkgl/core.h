@@ -10,6 +10,7 @@
 namespace qrk {
 void init();
 void terminate();
+float time();
 }  // namespace qrk
 
 #endif

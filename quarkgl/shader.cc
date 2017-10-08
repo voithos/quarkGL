@@ -1,3 +1,4 @@
+#include <qrk/core.h>
 #include <qrk/shader.h>
 #include <qrk/shader_loader.h>
 
@@ -64,6 +65,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 
 void Shader::activate() { glUseProgram(shaderProgram_); }
 void Shader::deactive() { glUseProgram(0); }
+
+void Shader::setCoreUniforms() { setFloat("qrk_time", qrk::time()); }
 
 void Shader::setBool(const char* name, bool value) {
   activate();

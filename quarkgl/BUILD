@@ -45,6 +45,7 @@ cc_library(
     include_prefix = "qrk",
     visibility = ["//visibility:public"],
     deps = [
+        ":core",
         ":shader_loader",
         ":shared",
         "//third_party/glad",

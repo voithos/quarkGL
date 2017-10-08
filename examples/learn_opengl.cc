@@ -241,9 +241,9 @@ int main() {
   lightVarray.finalizeVertexAttribs();
 
   while (!glfwWindowShouldClose(window)) {
-    float currentFrame = glfwGetTime();
-    mainShader.setFloat("time", currentFrame);
+    mainShader.setCoreUniforms();
 
+    float currentFrame = qrk::time();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 

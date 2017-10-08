@@ -9,4 +9,6 @@ void init() {
 }
 
 void terminate() { glfwTerminate(); }
+
+float time() { return glfwGetTime(); }
 }  // namespace qrk
