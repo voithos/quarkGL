@@ -26,6 +26,7 @@ cc_binary(
     deps = [
         "//quarkgl:camera",
         "//quarkgl:core",
+        "//quarkgl:light",
         "//quarkgl:shader",
         "//quarkgl:vertex_array",
         "//third_party/glad",

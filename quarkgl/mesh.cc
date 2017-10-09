@@ -25,7 +25,7 @@ void Mesh::draw(Shader shader) {
   unsigned int specularIdx = 0;
   unsigned int emissionIdx = 0;
 
-  int textureIdx = 0;
+  unsigned int textureIdx = 0;
   for (const Texture& texture : textures_) {
     glActiveTexture(GL_TEXTURE0 + textureIdx);
     glBindTexture(GL_TEXTURE_2D, texture.id);

@@ -66,7 +66,18 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 void Shader::activate() { glUseProgram(shaderProgram_); }
 void Shader::deactive() { glUseProgram(0); }
 
-void Shader::setCoreUniforms() { setFloat("qrk_time", qrk::time()); }
+void Shader::addUniformSource(std::shared_ptr<UniformSource> source) {
+  uniformSources_.push_back(source);
+}
+
+void Shader::updateUniforms() {
+  // Update core uniforms.
+  setFloat("qrk_time", qrk::time());
+
+  for (auto uniformSource : uniformSources_) {
+    uniformSource->updateUniforms(*this);
+  }
+}
 
 void Shader::setBool(const char* name, bool value) {
   activate();

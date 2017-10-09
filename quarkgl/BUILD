@@ -25,6 +25,19 @@ cc_library(
 )
 
 cc_library(
+    name = "light",
+    srcs = ["light.cc"],
+    hdrs = ["light.h"],
+    include_prefix = "qrk",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":shader",
+        ":shared",
+        "//third_party/glm",
+    ],
+)
+
+cc_library(
     name = "mesh",
     srcs = ["mesh.cc"],
     hdrs = ["mesh.h"],

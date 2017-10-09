@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -14,6 +15,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <qrk/camera.h>
+#include <qrk/light.h>
 #include <qrk/shader.h>
 #include <qrk/vertex_array.h>
 
@@ -26,8 +28,6 @@ bool initialMouse = true;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
-glm::vec3 worldLightPos(1.2f, 1.0f, 2.0f);
 
 qrk::Camera camera(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -191,6 +191,7 @@ int main() {
 
   qrk::Shader mainShader("examples/main_shader.vert",
                          "examples/main_shader.frag");
+
   // These correspond to the texture numbers above.
   mainShader.setInt("material.diffuse[0]", 0);
   mainShader.setInt("material.specular[0]", 1);
@@ -200,26 +201,18 @@ int main() {
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
-  mainShader.setVec3("qrk_directionalLights[0].ambient", 0.1f, 0.1f, 0.1f);
-  mainShader.setVec3("qrk_directionalLights[0].diffuse", 0.5f, 0.5f, 0.5f);
-  mainShader.setVec3("qrk_directionalLights[0].specular", 1.0f, 1.0f, 1.0f);
+  // Create light registry and add lights.
+  qrk::LightRegistry registry;
+  mainShader.addUniformSource(std::shared_ptr<qrk::UniformSource>(&registry));
 
-  mainShader.setVec3("qrk_pointLights[0].ambient", 0.2f, 0.2f, 0.2f);
-  mainShader.setVec3("qrk_pointLights[0].diffuse", 0.5f, 0.5f, 0.5f);
-  mainShader.setVec3("qrk_pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-  mainShader.setFloat("qrk_pointLights[0].attenuation.constant", 1.0f);
-  mainShader.setFloat("qrk_pointLights[0].attenuation.linear", 0.09f);
-  mainShader.setFloat("qrk_pointLights[0].attenuation.quadratic", 0.032f);
+  qrk::DirectionalLight directionalLight(glm::vec3(-0.2f, -1.0f, -0.3f));
+  registry.addLight(std::shared_ptr<qrk::Light>(&directionalLight));
 
-  mainShader.setVec3("qrk_spotLights[0].position", 0.0f, 0.0f, 0.0f);
-  mainShader.setFloat("qrk_spotLights[0].innerAngle", glm::radians(10.5f));
-  mainShader.setFloat("qrk_spotLights[0].outerAngle", glm::radians(19.5f));
-  mainShader.setVec3("qrk_spotLights[0].ambient", 0.1f, 0.1f, 0.1f);
-  mainShader.setVec3("qrk_spotLights[0].diffuse", 0.5f, 0.5f, 0.5f);
-  mainShader.setVec3("qrk_spotLights[0].specular", 1.0f, 1.0f, 1.0f);
-  mainShader.setFloat("qrk_spotLights[0].attenuation.constant", 1.0f);
-  mainShader.setFloat("qrk_spotLights[0].attenuation.linear", 0.09f);
-  mainShader.setFloat("qrk_spotLights[0].attenuation.quadratic", 0.032f);
+  qrk::PointLight pointLight(glm::vec3(1.2f, 1.0f, 2.0f));
+  registry.addLight(std::shared_ptr<qrk::Light>(&pointLight));
+
+  qrk::SpotLight spotLight(glm::vec3(0.0f, 0.0f, 0.0f));
+  registry.addLight(std::shared_ptr<qrk::Light>(&spotLight));
 
   qrk::Shader lampShader("examples/main_shader.vert",
                          "examples/lamp_shader.frag");
@@ -241,8 +234,6 @@ int main() {
   lightVarray.finalizeVertexAttribs();
 
   while (!glfwWindowShouldClose(window)) {
-    mainShader.setCoreUniforms();
-
     float currentFrame = qrk::time();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
@@ -261,14 +252,12 @@ int main() {
     mainShader.activate();
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
-    glm::vec3 viewLightDir =
-        glm::vec3(view * glm::vec4(-0.2f, -1.0f, -0.3f, 0.0f));
-    glm::vec3 viewLightPos = glm::vec3(view * glm::vec4(worldLightPos, 1.0f));
-    mainShader.setVec3("qrk_directionalLights[0].direction", viewLightDir);
-    mainShader.setVec3("qrk_pointLights[0].position", viewLightPos);
-    glm::vec3 viewCameraPos =
-        glm::vec3(view * glm::vec4(camera.getFront(), 0.0f));
-    mainShader.setVec3("qrk_spotLights[0].direction", viewCameraPos);
+
+    spotLight.setPosition(camera.getPosition());
+    spotLight.setDirection(camera.getFront());
+
+    registry.applyViewTransform(view);
+    mainShader.updateUniforms();
 
     varray.activate();
     for (unsigned int i = 0;
@@ -284,7 +273,7 @@ int main() {
     }
 
     // Draw light source.
-    glm::mat4 model = glm::translate(glm::mat4(), worldLightPos);
+    glm::mat4 model = glm::translate(glm::mat4(), pointLight.getPosition());
     model = glm::scale(model, glm::vec3(0.2f));
     lampShader.activate();
     lampShader.setMat4("model", model);

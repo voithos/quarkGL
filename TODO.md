@@ -1,6 +1,11 @@
 # TODOs
 
-- [ ] Add a 'light' class that can work with the shader.
+- [ ] Figure out what's going on with double-free.
+- [ ] getViewMatrix -> getViewTransform
+- [ ] Remove some duplication from light class impl
+- [ ] Add deltaTime uniforms, etc
+- [ ] Add a core function (on window?) that calls a callback with a try/catch around for exception output
+- [ ] Getting duplicate items in compile_commands.json.
 - [ ] Add unit tests.
 - [ ] Add more documentation.
 - [ ] Add a 'window' class to qrk that can encapsulate the calls in the render loop.
@@ -9,6 +14,7 @@
 - [ ] Add logging support.
 
 ## Done
+- [x] Add a 'light' class that can work with the shader.
 - [x] Add caching for shader loader.
 - [x] Add an abstraction over shader code, allowing e.g. imports / usage.
 - [x] Add exception hierarchy.
