@@ -13,11 +13,6 @@ class ShaderLoaderException : public QuarkException {
   using QuarkException::QuarkException;
 };
 
-enum class ShaderType {
-  VERTEX,
-  FRAGMENT,
-};
-
 class ShaderLoader {
  private:
   const char* shaderPath_;

@@ -29,6 +29,11 @@ class Shader {
   unsigned int shaderProgram_;
   std::vector<std::shared_ptr<UniformSource>> uniformSources_;
 
+  void loadAndCompileShaderProgram(const char* vertexPath,
+                                   const char* fragmentPath);
+  unsigned int loadAndCompileShader(const char* shaderPath,
+                                    const ShaderType type);
+
  public:
   Shader(const char* vertexPath, const char* fragmentPath);
   unsigned int getProgramId() { return shaderProgram_; }

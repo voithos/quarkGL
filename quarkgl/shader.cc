@@ -5,44 +5,19 @@
 namespace qrk {
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
-  // Read file contents.
-  ShaderLoader vertexLoader(vertexPath, ShaderType::VERTEX);
-  std::string vertexSourceString = vertexLoader.load();
-  ShaderLoader fragmentLoader(fragmentPath, ShaderType::FRAGMENT);
-  std::string fragmentSourceString = fragmentLoader.load();
+  loadAndCompileShaderProgram(vertexPath, fragmentPath);
+}
 
-  const char* vertexShaderSource = vertexSourceString.c_str();
-  const char* fragmentShaderSource = fragmentSourceString.c_str();
+void Shader::loadAndCompileShaderProgram(const char* vertexPath,
+                                         const char* fragmentPath) {
+  // Load and compile individual shaders.
+  unsigned int vertexShader =
+      loadAndCompileShader(vertexPath, ShaderType::VERTEX);
+  unsigned int fragmentShader =
+      loadAndCompileShader(fragmentPath, ShaderType::FRAGMENT);
 
-  unsigned int vertexShader, fragmentShader;
   int success;
   char infoLog[512];
-
-  // Compile vertex shader.
-  vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-  glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-  glCompileShader(vertexShader);
-
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-    throw ShaderException("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" +
-                          std::string(infoLog));
-  }
-
-  // Compile fragment shader.
-  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-  glCompileShader(fragmentShader);
-
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-    throw ShaderException("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" +
-                          std::string(infoLog));
-  }
 
   // Create and link shader program.
   shaderProgram_ = glCreateProgram();
@@ -61,6 +36,36 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
   // Delete shaders now that they're linked.
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
+}
+
+unsigned int Shader::loadAndCompileShader(const char* shaderPath,
+                                          const ShaderType type) {
+  // Read file contents.
+  ShaderLoader shaderLoader(shaderPath, type);
+  std::string sourceString = shaderLoader.load();
+
+  const char* shaderSource = sourceString.c_str();
+
+  unsigned int shader;
+  int success;
+  char infoLog[512];
+
+  // Compile vertex shader.
+  GLenum glShaderType =
+      type == ShaderType::VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
+  shader = glCreateShader(glShaderType);
+
+  glShaderSource(shader, 1, &shaderSource, nullptr);
+  glCompileShader(shader);
+
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+  if (!success) {
+    glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+    std::string typeString(shaderTypeToString(type));
+    throw ShaderException("ERROR::SHADER::" + typeString +
+                          "::COMPILATION_FAILED\n" + std::string(infoLog));
+  }
+  return shader;
 }
 
 void Shader::activate() { glUseProgram(shaderProgram_); }
