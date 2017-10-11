@@ -1,6 +1,5 @@
 # TODOs
 
-- [ ] getViewMatrix -> getViewTransform
 - [ ] Remove some duplication from light class impl
 - [ ] Add deltaTime uniforms, etc
 - [ ] Add a core function (on window?) that calls a callback with a try/catch around for exception output
@@ -13,6 +12,7 @@
 - [ ] Add logging support.
 
 ## Done
+- [x] getViewMatrix -> getViewTransform
 - [x] Figure out what's going on with double-free.
 - [x] Add a 'light' class that can work with the shader.
 - [x] Add caching for shader loader.

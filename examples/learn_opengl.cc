@@ -246,7 +246,7 @@ int main() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 view = camera.getViewTransform();
     glm::mat4 projection = glm::perspective(
         glm::radians(camera.getFov()),
         SCREEN_WIDTH / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f);

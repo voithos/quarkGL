@@ -52,7 +52,7 @@ class Camera {
   glm::vec3 getFront() { return front_; }
   float getFov() { return fov_; }
 
-  glm::mat4 getViewMatrix();
+  glm::mat4 getViewTransform();
   void processKeyboard(CameraDirection direction, float deltaTime);
   void processMouseMove(float xoffset, float yoffset,
                         bool constrainPitch = true);

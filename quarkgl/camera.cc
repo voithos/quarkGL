@@ -25,7 +25,7 @@ void Camera::updateCameraVectors() {
   up_ = glm::normalize(glm::cross(right_, front_));
 }
 
-glm::mat4 Camera::getViewMatrix() {
+glm::mat4 Camera::getViewTransform() {
   return glm::lookAt(position_, position_ + front_, up_);
 }
 
