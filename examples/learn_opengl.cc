@@ -202,17 +202,20 @@ int main() {
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
   // Create light registry and add lights.
-  qrk::LightRegistry registry;
-  mainShader.addUniformSource(std::shared_ptr<qrk::UniformSource>(&registry));
+  auto registry = std::make_shared<qrk::LightRegistry>();
+  mainShader.addUniformSource(registry);
 
-  qrk::DirectionalLight directionalLight(glm::vec3(-0.2f, -1.0f, -0.3f));
-  registry.addLight(std::shared_ptr<qrk::Light>(&directionalLight));
+  auto directionalLight =
+      std::make_shared<qrk::DirectionalLight>(glm::vec3(-0.2f, -1.0f, -0.3f));
+  registry->addLight(directionalLight);
 
-  qrk::PointLight pointLight(glm::vec3(1.2f, 1.0f, 2.0f));
-  registry.addLight(std::shared_ptr<qrk::Light>(&pointLight));
+  auto pointLight =
+      std::make_shared<qrk::PointLight>(glm::vec3(1.2f, 1.0f, 2.0f));
+  registry->addLight(pointLight);
 
-  qrk::SpotLight spotLight(glm::vec3(0.0f, 0.0f, 0.0f));
-  registry.addLight(std::shared_ptr<qrk::Light>(&spotLight));
+  auto spotLight =
+      std::make_shared<qrk::SpotLight>(glm::vec3(0.0f, 0.0f, 0.0f));
+  registry->addLight(spotLight);
 
   qrk::Shader lampShader("examples/main_shader.vert",
                          "examples/lamp_shader.frag");
@@ -253,10 +256,10 @@ int main() {
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
 
-    spotLight.setPosition(camera.getPosition());
-    spotLight.setDirection(camera.getFront());
+    spotLight->setPosition(camera.getPosition());
+    spotLight->setDirection(camera.getFront());
 
-    registry.applyViewTransform(view);
+    registry->applyViewTransform(view);
     mainShader.updateUniforms();
 
     varray.activate();
@@ -273,7 +276,7 @@ int main() {
     }
 
     // Draw light source.
-    glm::mat4 model = glm::translate(glm::mat4(), pointLight.getPosition());
+    glm::mat4 model = glm::translate(glm::mat4(), pointLight->getPosition());
     model = glm::scale(model, glm::vec3(0.2f));
     lampShader.activate();
     lampShader.setMat4("model", model);

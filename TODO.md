@@ -1,6 +1,5 @@
 # TODOs
 
-- [ ] Figure out what's going on with double-free.
 - [ ] getViewMatrix -> getViewTransform
 - [ ] Remove some duplication from light class impl
 - [ ] Add deltaTime uniforms, etc
@@ -14,6 +13,7 @@
 - [ ] Add logging support.
 
 ## Done
+- [x] Figure out what's going on with double-free.
 - [x] Add a 'light' class that can work with the shader.
 - [x] Add caching for shader loader.
 - [x] Add an abstraction over shader code, allowing e.g. imports / usage.
