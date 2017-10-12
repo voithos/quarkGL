@@ -2,6 +2,8 @@
 
 namespace qrk {
 void LightRegistry::addLight(std::shared_ptr<Light> light) {
+  // TODO: Throw an error if this exceeds the max light count supported in the
+  // shader.
   lights_.push_back(light);
 
   switch (light->getLightType()) {

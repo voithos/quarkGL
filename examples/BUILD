@@ -1,15 +1,10 @@
 cc_binary(
     name = "learn_opengl",
     srcs = ["learn_opengl.cc"],
-    data = [
-        "awesomeface.png",
-        "container.jpg",
-        "container2.png",
-        "container2_specular.png",
+    data = glob(["nanosuit/*"]) + [
         "lamp_shader.frag",
         "main_shader.frag",
         "main_shader.vert",
-        "matrix.jpg",
     ],
     linkopts = [
         "-lGL",
@@ -27,6 +22,7 @@ cc_binary(
         "//quarkgl:camera",
         "//quarkgl:core",
         "//quarkgl:light",
+        "//quarkgl:model",
         "//quarkgl:shader",
         "//quarkgl:vertex_array",
         "//third_party/glad",

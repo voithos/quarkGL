@@ -1,6 +1,8 @@
 # TODOs
 
+- [ ] Fix model textures.
 - [ ] Remove some duplication from light class impl
+- [ ] Add a material class that can maintain diffuse/specular maps, similar to the light class.
 - [ ] Add deltaTime uniforms, etc
 - [ ] Add a core function (on window?) that calls a callback with a try/catch around for exception output
 - [ ] Getting duplicate items in compile_commands.json.
@@ -8,7 +10,6 @@
 - [ ] Add more documentation.
 - [ ] Add a 'window' class to qrk that can encapsulate the calls in the render loop.
 - [ ] Add a mechanism for working with textures.
-- [ ] Add a material class that can maintain diffuse/specular maps.
 - [ ] Add logging support.
 
 ## Done

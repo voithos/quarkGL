@@ -16,6 +16,7 @@
 
 #include <qrk/camera.h>
 #include <qrk/light.h>
+#include <qrk/model.h>
 #include <qrk/shader.h>
 #include <qrk/vertex_array.h>
 
@@ -120,41 +121,6 @@ float vertices[] = {
 };
 // clang-format on
 
-glm::vec3 cubePositions[] = {
-    glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
-    glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
-    glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
-    glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
-    glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
-
-unsigned int createTexture(const char* filePath) {
-  unsigned int texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
-
-  // Set texture-wrapping/filtering options.
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  int width, height, numChannels;
-  stbi_set_flip_vertically_on_load(true);
-  unsigned char* data = stbi_load(filePath, &width, &height, &numChannels, 0);
-  if (data) {
-    glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0,
-                 /* texture format */ GL_RGB, width, height, 0,
-                 /* tex data format */ numChannels == 3 ? GL_RGB : GL_RGBA,
-                 GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-  } else {
-    std::cout << "ERROR::TEXTURE::LOAD_FAILED\n" << filePath << std::endl;
-  }
-  stbi_image_free(data);
-
-  return texture;
-}
-
 int main() {
   qrk::init();
 
@@ -182,20 +148,10 @@ int main() {
   glEnable(GL_DEPTH_TEST);
 
   // Load box texture.
-  glActiveTexture(GL_TEXTURE0);
-  createTexture("examples/container2.png");
-  glActiveTexture(GL_TEXTURE1);
-  createTexture("examples/container2_specular.png");
-  glActiveTexture(GL_TEXTURE2);
-  createTexture("examples/matrix.jpg");
-
   qrk::Shader mainShader("examples/main_shader.vert",
                          "examples/main_shader.frag");
 
   // These correspond to the texture numbers above.
-  mainShader.setInt("material.diffuse[0]", 0);
-  mainShader.setInt("material.specular[0]", 1);
-  mainShader.setInt("material.emission[0]", 2);
   mainShader.setFloat("material.shininess", 64.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
@@ -220,21 +176,16 @@ int main() {
   qrk::Shader lampShader("examples/main_shader.vert",
                          "examples/lamp_shader.frag");
 
-  qrk::VertexArray varray;
-  varray.loadVertexData(vertices, sizeof(vertices));
-  varray.addVertexAttrib(3, GL_FLOAT);
-  varray.addVertexAttrib(3, GL_FLOAT);
-  varray.addVertexAttrib(2, GL_FLOAT);
-  varray.finalizeVertexAttribs();
-
-  // Create another VAO for the light, reusing the VBO.
+  // Create a VAO for the light.
   qrk::VertexArray lightVarray;
-  lightVarray.activate();
-  glBindBuffer(GL_ARRAY_BUFFER, varray.getVbo());
+  lightVarray.loadVertexData(vertices, sizeof(vertices));
   lightVarray.addVertexAttrib(3, GL_FLOAT);
   lightVarray.addVertexAttrib(3, GL_FLOAT);
   lightVarray.addVertexAttrib(2, GL_FLOAT);
   lightVarray.finalizeVertexAttribs();
+
+  // Load model.
+  qrk::Model nanosuit("examples/nanosuit/nanosuit.obj");
 
   while (!glfwWindowShouldClose(window)) {
     float currentFrame = qrk::time();
@@ -251,7 +202,7 @@ int main() {
         glm::radians(camera.getFov()),
         SCREEN_WIDTH / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f);
 
-    // Draw main cubes.
+    // Setup shader and lights.
     mainShader.activate();
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
@@ -262,24 +213,22 @@ int main() {
     registry->applyViewTransform(view);
     mainShader.updateUniforms();
 
-    varray.activate();
-    for (unsigned int i = 0;
-         i < sizeof(cubePositions) / sizeof(cubePositions[0]); i++) {
-      // Calculate the model matrix.
-      glm::mat4 model = glm::translate(glm::mat4(), cubePositions[i]);
-      float angle = 20.0f * i;
-      model =
-          glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-      mainShader.setMat4("model", model);
+    // Draw main model.
+    // Translate the model down so it's in the center.
+    glm::mat4 model =
+        glm::translate(glm::mat4(), glm::vec3(0.0f, -1.75f, 0.0f));
+    // Scale it down, since it's too big.
+    model = glm::scale(model, glm::vec3(0.2f));
+    mainShader.setMat4("model", model);
 
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
+    nanosuit.draw(mainShader);
 
     // Draw light source.
-    glm::mat4 model = glm::translate(glm::mat4(), pointLight->getPosition());
-    model = glm::scale(model, glm::vec3(0.2f));
+    glm::mat4 lightModel =
+        glm::translate(glm::mat4(), pointLight->getPosition());
+    lightModel = glm::scale(lightModel, glm::vec3(0.2f));
     lampShader.activate();
-    lampShader.setMat4("model", model);
+    lampShader.setMat4("model", lightModel);
     lampShader.setMat4("view", view);
     lampShader.setMat4("projection", projection);
     lightVarray.activate();

@@ -1,5 +1,3 @@
-#include <linux/limits.h>
-#include <stdlib.h>
 #include <fstream>
 #include <iostream>
 #include <regex>
@@ -18,12 +16,6 @@ std::string readFile(std::string const& path) {
   std::stringstream buffer;
   buffer << file.rdbuf();
   return buffer.str();
-}
-
-std::string resolvePath(std::string const& path) {
-  char resolvedPath[PATH_MAX];
-  realpath(path.c_str(), resolvedPath);
-  return std::string(resolvedPath);
 }
 
 void ShaderLoader::checkShaderType(std::string const& shaderPath) {

@@ -4,19 +4,21 @@ namespace qrk {
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
            std::vector<Texture> textures)
     : vertices_(vertices), indices_(indices), textures_(textures) {
-  // Load VBO and EBO.
+  // Load VBO.
   vertexArray_.loadVertexData(&vertices_[0], vertices.size() * sizeof(Vertex));
-  vertexArray_.loadElementData(&indices_[0],
-                               indices.size() * sizeof(unsigned int));
 
   // Positions.
-  vertexArray_.addVertexAttrib(sizeof(glm::vec3), GL_FLOAT);
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
   // Normals.
-  vertexArray_.addVertexAttrib(sizeof(glm::vec3), GL_FLOAT);
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
   // Texture coordinates.
-  vertexArray_.addVertexAttrib(sizeof(glm::vec2), GL_FLOAT);
+  vertexArray_.addVertexAttrib(2, GL_FLOAT);
 
   vertexArray_.finalizeVertexAttribs();
+
+  // Load EBO.
+  vertexArray_.loadElementData(&indices_[0],
+                               indices.size() * sizeof(unsigned int));
 }
 
 void Mesh::draw(Shader shader) {
@@ -60,6 +62,7 @@ void Mesh::draw(Shader shader) {
   // Draw using the VAO.
   shader.activate();
   vertexArray_.activate();
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexArray_.getEbo());
   glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, nullptr);
   vertexArray_.deactivate();
 }

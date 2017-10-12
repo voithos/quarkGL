@@ -52,6 +52,23 @@ cc_library(
 )
 
 cc_library(
+    name = "model",
+    srcs = ["model.cc"],
+    hdrs = ["model.h"],
+    include_prefix = "qrk",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":mesh",
+        ":shader",
+        ":shared",
+        "//third_party/glad",
+        "//third_party/glm",
+        "//third_party/stb_image",
+        "@assimp//:assimp",
+    ],
+)
+
+cc_library(
     name = "shader",
     srcs = ["shader.cc"],
     hdrs = ["shader.h"],
