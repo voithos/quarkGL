@@ -8,21 +8,25 @@ struct QrkAttenuation {
 };
 
 #ifndef QRK_MAX_DIFFUSE_TEXTURES
-#define QRK_MAX_DIFFUSE_TEXTURES 1
+#define QRK_MAX_DIFFUSE_TEXTURES 10
 #endif
 
 #ifndef QRK_MAX_SPECULAR_TEXTURES
-#define QRK_MAX_SPECULAR_TEXTURES 1
+#define QRK_MAX_SPECULAR_TEXTURES 10
 #endif
 
 #ifndef QRK_MAX_EMISSION_TEXTURES
-#define QRK_MAX_EMISSION_TEXTURES 1
+#define QRK_MAX_EMISSION_TEXTURES 10
 #endif
 
 struct QrkMaterial {
   sampler2D diffuse[QRK_MAX_DIFFUSE_TEXTURES];
+  int diffuseCount;
   sampler2D specular[QRK_MAX_SPECULAR_TEXTURES];
+  int specularCount;
   sampler2D emission[QRK_MAX_EMISSION_TEXTURES];
+  int emissionCount;
+
   float shininess;
 
   QrkAttenuation emissionAttenuation;
@@ -70,7 +74,7 @@ vec3 qrk_shadePhong(QrkMaterial material, vec3 lightAmbient, vec3 lightDiffuse,
 
   // Ambient and diffuse components.
   float diffuseIntensity = max(dot(normal, lightDir), 0.0);
-  for (int i = 0; i < QRK_MAX_DIFFUSE_TEXTURES; i++) {
+  for (int i = 0; i < material.diffuseCount; i++) {
     vec3 diffuseMap = vec3(texture(material.diffuse[i], texCoords));
 
     // Ambient component.
@@ -84,7 +88,7 @@ vec3 qrk_shadePhong(QrkMaterial material, vec3 lightAmbient, vec3 lightDiffuse,
   vec3 reflectDir = reflect(-lightDir, normal);
   float specularIntensity =
       pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-  for (int i = 0; i < QRK_MAX_SPECULAR_TEXTURES; i++) {
+  for (int i = 0; i < material.specularCount; i++) {
     vec3 specularMap = vec3(texture(material.specular[i], texCoords));
     result += (lightSpecular * (specularIntensity * specularMap)) * intensity;
   }
@@ -171,7 +175,7 @@ vec3 qrk_shadeEmission(QrkMaterial material, vec3 fragPos, vec2 texCoords) {
       qrk_calcAttenuation(material.emissionAttenuation, fragDist);
 
   // Emission component.
-  for (int i = 0; i < QRK_MAX_EMISSION_TEXTURES; i++) {
+  for (int i = 0; i < material.emissionCount; i++) {
     result += vec3(texture(material.emission[i], texCoords)) * attenuation;
   }
 

@@ -53,6 +53,10 @@ void Mesh::draw(Shader shader) {
   }
   glActiveTexture(GL_TEXTURE0);
 
+  shader.setInt("material.diffuseCount", diffuseIdx);
+  shader.setInt("material.specularCount", specularIdx);
+  shader.setInt("material.emissionCount", emissionIdx);
+
   // Draw using the VAO.
   shader.activate();
   vertexArray_.activate();
