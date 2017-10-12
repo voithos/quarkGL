@@ -156,7 +156,7 @@ class PointLight : public Light {
   void applyViewTransform(const glm::mat4& view);
 
  public:
-  PointLight(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+  PointLight(glm::vec3 position = glm::vec3(0.0f),
              glm::vec3 ambient = DEFAULT_AMBIENT,
              glm::vec3 diffuse = DEFAULT_DIFFUSE,
              glm::vec3 specular = DEFAULT_SPECULAR,
