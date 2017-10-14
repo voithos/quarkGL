@@ -29,6 +29,7 @@ void Mesh::draw(Shader shader) {
 
   unsigned int textureIdx = 0;
   for (const Texture& texture : textures_) {
+    // TODO: Take into account GL_MAX_TEXTURE_UNITS here.
     glActiveTexture(GL_TEXTURE0 + textureIdx);
     glBindTexture(GL_TEXTURE_2D, texture.id);
 
@@ -50,11 +51,9 @@ void Mesh::draw(Shader shader) {
         break;
     }
 
-    shader.setInt(ss.str().c_str(), texture.id);
+    shader.setInt(ss.str(), texture.id);
     textureIdx++;
   }
-  glActiveTexture(GL_TEXTURE0);
-
   shader.setInt("material.diffuseCount", diffuseIdx);
   shader.setInt("material.specularCount", specularIdx);
   shader.setInt("material.emissionCount", emissionIdx);
@@ -62,8 +61,10 @@ void Mesh::draw(Shader shader) {
   // Draw using the VAO.
   shader.activate();
   vertexArray_.activate();
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexArray_.getEbo());
   glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, nullptr);
   vertexArray_.deactivate();
+
+  // Reset.
+  glActiveTexture(GL_TEXTURE0);
 }
 }  // namespace qrk

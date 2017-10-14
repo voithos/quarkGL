@@ -103,17 +103,6 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 }
 
 unsigned int loadTexture(const char* path) {
-  unsigned int texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
-
-  // Set texture-wrapping/filtering options.
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
   int width, height, numChannels;
   unsigned char* data = stbi_load(path, &width, &height, &numChannels, 0);
 
@@ -131,6 +120,7 @@ unsigned int loadTexture(const char* path) {
   } else if (numChannels == 4) {
     dataFormat = GL_RGBA;
   } else {
+    stbi_image_free(data);
     throw ModelLoaderException(
         "ERROR::MODEL::TEXTURE::UNSUPPORTED_TEXTURE_FORMAT\n"
         "Texture '" +
@@ -138,10 +128,22 @@ unsigned int loadTexture(const char* path) {
         std::to_string(numChannels));
   }
 
+  unsigned int texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+
   glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0,
                /* texture format */ dataFormat, width, height, 0,
                /* tex data format */ dataFormat, GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
+
+  // Set texture-wrapping/filtering options.
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
   stbi_image_free(data);
 
   return texture;
