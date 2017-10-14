@@ -48,7 +48,7 @@ DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec3 ambient,
 void DirectionalLight::updateUniforms(Shader& shader) {
   checkState();
 
-  if (hasViewDependentChanged_) {
+  if (hasViewBeenApplied_) {
     shader.setVec3(uniformName_ + ".direction", viewDirection_);
   }
   if (hasLightChanged_) {
@@ -76,7 +76,7 @@ PointLight::PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse,
 void PointLight::updateUniforms(Shader& shader) {
   checkState();
 
-  if (hasViewDependentChanged_) {
+  if (hasViewBeenApplied_) {
     shader.setVec3(uniformName_ + ".position", viewPosition_);
   }
   if (hasLightChanged_) {
@@ -113,7 +113,7 @@ SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, float innerAngle,
 void SpotLight::updateUniforms(Shader& shader) {
   checkState();
 
-  if (hasViewDependentChanged_) {
+  if (hasViewBeenApplied_) {
     shader.setVec3(uniformName_ + ".position", viewPosition_);
     shader.setVec3(uniformName_ + ".direction", viewDirection_);
   }

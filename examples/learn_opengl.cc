@@ -152,7 +152,7 @@ int main() {
                          "examples/main_shader.frag");
 
   // These correspond to the texture numbers above.
-  mainShader.setFloat("material.shininess", 32.0f);
+  mainShader.setFloat("material.shininess", 8.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
@@ -163,10 +163,12 @@ int main() {
 
   auto directionalLight =
       std::make_shared<qrk::DirectionalLight>(glm::vec3(-0.2f, -1.0f, -0.3f));
+  directionalLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
   registry->addLight(directionalLight);
 
   auto pointLight =
       std::make_shared<qrk::PointLight>(glm::vec3(1.2f, 1.0f, 2.0f));
+  pointLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
   registry->addLight(pointLight);
 
   qrk::Shader lampShader("examples/main_shader.vert",
