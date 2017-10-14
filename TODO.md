@@ -1,6 +1,8 @@
 # TODOs
 
 - [ ] Fix model textures.
+- [ ] Use GLuint, GLenum, GLint, etc
+- [ ] Add a logging system, and log e.g. invalid glGetUniformLocation() calls
 - [ ] Remove some duplication from light class impl
 - [ ] Add a material class that can maintain diffuse/specular maps, similar to the light class.
 - [ ] Add deltaTime uniforms, etc

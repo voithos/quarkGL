@@ -68,6 +68,15 @@ unsigned int Shader::loadAndCompileShader(const char* shaderPath,
   return shader;
 }
 
+int Shader::safeGetUniformLocation(const char* name) {
+  int uniform = glGetUniformLocation(shaderProgram_, name);
+  if (uniform == -1) {
+    // TODO: Log a message; either uniform is invalid, or it got optimized away
+    // by the shader.
+  }
+  return uniform;
+}
+
 void Shader::activate() { glUseProgram(shaderProgram_); }
 void Shader::deactive() { glUseProgram(0); }
 
@@ -86,34 +95,32 @@ void Shader::updateUniforms() {
 
 void Shader::setBool(const char* name, bool value) {
   activate();
-  glUniform1i(glGetUniformLocation(shaderProgram_, name),
-              static_cast<int>(value));
+  glUniform1i(safeGetUniformLocation(name), static_cast<int>(value));
 }
 
 void Shader::setInt(const char* name, int value) {
   activate();
-  glUniform1i(glGetUniformLocation(shaderProgram_, name), value);
+  glUniform1i(safeGetUniformLocation(name), value);
 }
 
 void Shader::setFloat(const char* name, float value) {
   activate();
-  glUniform1f(glGetUniformLocation(shaderProgram_, name), value);
+  glUniform1f(safeGetUniformLocation(name), value);
 }
 
 void Shader::setVec3(const char* name, const glm::vec3& vector) {
   activate();
-  glUniform3fv(glGetUniformLocation(shaderProgram_, name), 1,
-               glm::value_ptr(vector));
+  glUniform3fv(safeGetUniformLocation(name), 1, glm::value_ptr(vector));
 }
 
 void Shader::setVec3(const char* name, float v0, float v1, float v2) {
   activate();
-  glUniform3f(glGetUniformLocation(shaderProgram_, name), v0, v1, v2);
+  glUniform3f(safeGetUniformLocation(name), v0, v1, v2);
 }
 
 void Shader::setMat4(const char* name, const glm::mat4& matrix) {
   activate();
-  glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name), 1, GL_FALSE,
+  glUniformMatrix4fv(safeGetUniformLocation(name), 1, GL_FALSE,
                      glm::value_ptr(matrix));
 }
 }  // namespace qrk

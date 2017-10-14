@@ -33,6 +33,7 @@ class Shader {
                                    const char* fragmentPath);
   unsigned int loadAndCompileShader(const char* shaderPath,
                                     const ShaderType type);
+  int safeGetUniformLocation(const char* name);
 
  public:
   Shader(const char* vertexPath, const char* fragmentPath);
