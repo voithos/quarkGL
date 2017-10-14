@@ -152,7 +152,7 @@ int main() {
                          "examples/main_shader.frag");
 
   // These correspond to the texture numbers above.
-  mainShader.setFloat("material.shininess", 64.0f);
+  mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
@@ -168,10 +168,6 @@ int main() {
   auto pointLight =
       std::make_shared<qrk::PointLight>(glm::vec3(1.2f, 1.0f, 2.0f));
   registry->addLight(pointLight);
-
-  auto spotLight =
-      std::make_shared<qrk::SpotLight>(glm::vec3(0.0f, 0.0f, 0.0f));
-  registry->addLight(spotLight);
 
   qrk::Shader lampShader("examples/main_shader.vert",
                          "examples/lamp_shader.frag");
@@ -206,9 +202,6 @@ int main() {
     mainShader.activate();
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
-
-    spotLight->setPosition(camera.getPosition());
-    spotLight->setDirection(camera.getFront());
 
     registry->applyViewTransform(view);
     mainShader.updateUniforms();

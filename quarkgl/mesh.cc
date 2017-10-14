@@ -27,10 +27,10 @@ void Mesh::draw(Shader shader) {
   unsigned int specularIdx = 0;
   unsigned int emissionIdx = 0;
 
-  unsigned int textureIdx = 0;
+  unsigned int textureUnit = 0;
   for (const Texture& texture : textures_) {
     // TODO: Take into account GL_MAX_TEXTURE_UNITS here.
-    glActiveTexture(GL_TEXTURE0 + textureIdx);
+    glActiveTexture(GL_TEXTURE0 + textureUnit);
     glBindTexture(GL_TEXTURE_2D, texture.id);
 
     std::ostringstream ss;
@@ -51,8 +51,9 @@ void Mesh::draw(Shader shader) {
         break;
     }
 
-    shader.setInt(ss.str(), texture.id);
-    textureIdx++;
+    // Set the sampler to the correct texture unit.
+    shader.setInt(ss.str(), textureUnit);
+    textureUnit++;
   }
   shader.setInt("material.diffuseCount", diffuseIdx);
   shader.setInt("material.specularCount", specularIdx);

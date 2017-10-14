@@ -1,6 +1,6 @@
 # TODOs
 
-- [ ] Fix model textures.
+- [ ] Shading doesn't look quite right
 - [ ] Use GLuint, GLenum, GLint, etc
 - [ ] Add a logging system, and log e.g. invalid glGetUniformLocation() calls
 - [ ] Remove some duplication from light class impl
@@ -15,6 +15,7 @@
 - [ ] Add logging support.
 
 ## Done
+- [x] Fix model textures.
 - [x] getViewMatrix -> getViewTransform
 - [x] Figure out what's going on with double-free.
 - [x] Add a 'light' class that can work with the shader.
