@@ -27,9 +27,6 @@ float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
 bool initialMouse = true;
 
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
 qrk::Camera camera(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -55,7 +52,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
   camera.processMouseMove(xoffset, yoffset);
 }
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, float deltaTime) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
@@ -123,16 +120,15 @@ float vertices[] = {
 
 int main() {
   qrk::Window win(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL");
+  win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   auto window = win.getGlfwRef();
+
+  glfwSetInputMode(win.getGlfwRef(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   // TODO: Clean these calls up by moving them into qrk::Window.
   glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
   glfwSetScrollCallback(window, scrollCallback);
   glfwSetCursorPosCallback(window, mouseCallback);
-
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-  glEnable(GL_DEPTH_TEST);
 
   // Load box texture.
   qrk::Shader mainShader("examples/main_shader.vert",
@@ -172,15 +168,8 @@ int main() {
   // Load model.
   qrk::Model nanosuit("examples/nanosuit/nanosuit.obj");
 
-  while (!glfwWindowShouldClose(window)) {
-    float currentFrame = qrk::time();
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
-
-    processInput(window);
-
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  win.loop([&](float deltaTime) {
+    processInput(window, deltaTime);
 
     glm::mat4 view = camera.getViewTransform();
     glm::mat4 projection = glm::perspective(
@@ -215,10 +204,7 @@ int main() {
     lampShader.setMat4("projection", projection);
     lightVarray.activate();
     glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-  }
+  });
 
   return 0;
 }

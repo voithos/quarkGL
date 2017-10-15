@@ -23,6 +23,8 @@ Window::Window(int width, int height, const char* title, bool fullscreen) {
   if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
     throw WindowException("ERROR::WINDOW::GLAD_INITIALIZATION_FAILED");
   }
+
+  enableDepthTest();
 }
 
 Window::~Window() {
@@ -58,4 +60,28 @@ void Window::makeWindowed() {
                        /* ypos */ 0, size.width, size.height,
                        /* refreshRate */ GLFW_DONT_CARE);
 }
+
+void Window::loop(std::function<void(float)> callback) {
+  // TODO: Add exception handling here.
+  while (!glfwWindowShouldClose(window_)) {
+    float currentTime = qrk::time();
+    deltaTime_ = currentTime - lastTime_;
+    lastTime_ = currentTime;
+
+    // Clear the appropriate buffers.
+    glClearColor(clearColor_.r, clearColor_.g, clearColor_.b, clearColor_.a);
+    auto clearBits = GL_COLOR_BUFFER_BIT;
+    if (depthTestEnabled_) {
+      clearBits |= GL_DEPTH_BUFFER_BIT;
+    }
+    glClear(clearBits);
+
+    // Call the loop function.
+    callback(deltaTime_);
+
+    glfwSwapBuffers(window_);
+    glfwPollEvents();
+  }
+}
+
 }  // namespace qrk

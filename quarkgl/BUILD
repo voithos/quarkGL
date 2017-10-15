@@ -134,6 +134,7 @@ cc_library(
         ":core",
         ":shared",
         "//third_party/glad",
+        "//third_party/glm",
         "@glfw//:glfw",
     ],
 )
