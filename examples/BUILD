@@ -1,11 +1,11 @@
 cc_binary(
     name = "learn_opengl",
     srcs = ["learn_opengl.cc"],
-    data = glob(["nanosuit/*"]) + [
-        "lamp_shader.frag",
-        "main_shader.frag",
-        "main_shader.vert",
-    ],
+    data = glob([
+        "nanosuit/*",
+        "*.frag",
+        "*.vert",
+    ]),
     linkopts = [
         "-lGL",
         "-lGLU",

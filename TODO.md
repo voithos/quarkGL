@@ -14,6 +14,7 @@
 - [ ] Add more documentation.
 - [ ] Add a mechanism for working with textures.
 - [ ] Add logging support.
+- [ ] Add support for the stencil buffer
 
 ## Done
 - [x] Add a 'window' class to qrk that can encapsulate the calls in the render loop.
