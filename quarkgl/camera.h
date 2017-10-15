@@ -16,6 +16,7 @@ enum class CameraDirection {
   RIGHT,
 };
 
+// TODO: Change all these to constexpr.
 const float DEFAULT_YAW = 270.0f;
 const float DEFAULT_PITCH = 0.0f;
 const float DEFAULT_SPEED = 2.5f;

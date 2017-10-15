@@ -1,6 +1,5 @@
 # TODOs
 
-- [ ] Add some depth-related shader functions
 - [ ] Add a mechanism to enable/disable depth testing
 - [ ] Add a mechanism to switch to higher precision depth buffer (or maybe default)
 - [ ] Add a mechanism to set #define's in the shader
@@ -13,11 +12,12 @@
 - [ ] Getting duplicate items in compile_commands.json.
 - [ ] Add unit tests.
 - [ ] Add more documentation.
-- [ ] Add a 'window' class to qrk that can encapsulate the calls in the render loop.
 - [ ] Add a mechanism for working with textures.
 - [ ] Add logging support.
 
 ## Done
+- [x] Add a 'window' class to qrk that can encapsulate the calls in the render loop.
+- [x] Add some depth-related shader functions
 - [x] Shading doesn't look quite right
 - [x] Fix model textures.
 - [x] getViewMatrix -> getViewTransform

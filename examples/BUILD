@@ -25,9 +25,9 @@ cc_binary(
         "//quarkgl:model",
         "//quarkgl:shader",
         "//quarkgl:vertex_array",
+        "//quarkgl:window",
         "//third_party/glad",
         "//third_party/glm",
-        "//third_party/stb_image",
         "@glfw//:glfw",
     ],
 )

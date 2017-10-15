@@ -123,3 +123,17 @@ cc_library(
         "//third_party/glad",
     ],
 )
+
+cc_library(
+    name = "window",
+    srcs = ["window.cc"],
+    hdrs = ["window.h"],
+    include_prefix = "qrk",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":core",
+        ":shared",
+        "//third_party/glad",
+        "@glfw//:glfw",
+    ],
+)

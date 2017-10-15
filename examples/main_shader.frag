@@ -20,6 +20,4 @@ void main() {
   result += qrk_shadeEmission(material, fragPos, texCoords);
 
   fragColor = vec4(result, 1.0);
-
-  fragColor = qrk_depthColor(.1, 5);
 }

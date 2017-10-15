@@ -9,7 +9,6 @@
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include <stb/stb_image.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -19,6 +18,7 @@
 #include <qrk/model.h>
 #include <qrk/shader.h>
 #include <qrk/vertex_array.h>
+#include <qrk/window.h>
 
 const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 600;
@@ -122,18 +122,10 @@ float vertices[] = {
 // clang-format on
 
 int main() {
-  qrk::init();
+  qrk::Window win(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL");
+  auto window = win.getGlfwRef();
 
-  GLFWwindow* window =
-      glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL",
-                       /* monitor */ nullptr, /* share */ nullptr);
-  if (window == nullptr) {
-    std::cout << "Failed to create GLFW window" << std::endl;
-    glfwTerminate();
-    return -1;
-  }
-  glfwMakeContextCurrent(window);
-
+  // TODO: Clean these calls up by moving them into qrk::Window.
   glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
   glfwSetScrollCallback(window, scrollCallback);
   glfwSetCursorPosCallback(window, mouseCallback);
@@ -233,6 +225,5 @@ int main() {
     glfwPollEvents();
   }
 
-  qrk::terminate();
   return 0;
 }
