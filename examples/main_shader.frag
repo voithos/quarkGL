@@ -1,6 +1,7 @@
 #version 330 core
 #pragma qrk_include < core.frag >
 #pragma qrk_include < standard_lights.frag >
+#pragma qrk_include < depth.frag >
 in vec2 texCoords;
 in vec3 fragPos;
 in vec3 fragNormal;
@@ -19,4 +20,6 @@ void main() {
   result += qrk_shadeEmission(material, fragPos, texCoords);
 
   fragColor = vec4(result, 1.0);
+
+  fragColor = qrk_depthColor(.1, 5);
 }

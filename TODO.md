@@ -1,6 +1,9 @@
 # TODOs
 
-- [ ] Shading doesn't look quite right
+- [ ] Add some depth-related shader functions
+- [ ] Add a mechanism to enable/disable depth testing
+- [ ] Add a mechanism to switch to higher precision depth buffer (or maybe default)
+- [ ] Add a mechanism to set #define's in the shader
 - [ ] Use GLuint, GLenum, GLint, etc
 - [ ] Add a logging system, and log e.g. invalid glGetUniformLocation() calls
 - [ ] Remove some duplication from light class impl
@@ -15,6 +18,7 @@
 - [ ] Add logging support.
 
 ## Done
+- [x] Shading doesn't look quite right
 - [x] Fix model textures.
 - [x] getViewMatrix -> getViewTransform
 - [x] Figure out what's going on with double-free.
