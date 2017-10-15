@@ -21,13 +21,13 @@ struct Attenuation {
   float quadratic;
 };
 
-const Attenuation DEFAULT_ATTENUATION = {1.0f, 0.09f, 0.032f};
-const glm::vec3 DEFAULT_AMBIENT = glm::vec3(0.1f, 0.1f, 0.1f);
-const glm::vec3 DEFAULT_DIFFUSE = glm::vec3(0.5f, 0.5f, 0.5f);
-const glm::vec3 DEFAULT_SPECULAR = glm::vec3(1.0f, 1.0f, 1.0f);
+constexpr Attenuation DEFAULT_ATTENUATION = {1.0f, 0.09f, 0.032f};
+constexpr glm::vec3 DEFAULT_AMBIENT = glm::vec3(0.1f, 0.1f, 0.1f);
+constexpr glm::vec3 DEFAULT_DIFFUSE = glm::vec3(0.5f, 0.5f, 0.5f);
+constexpr glm::vec3 DEFAULT_SPECULAR = glm::vec3(1.0f, 1.0f, 1.0f);
 
-const float DEFAULT_INNER_ANGLE = glm::radians(10.5f);
-const float DEFAULT_OUTER_ANGLE = glm::radians(19.5f);
+constexpr float DEFAULT_INNER_ANGLE = glm::radians(10.5f);
+constexpr float DEFAULT_OUTER_ANGLE = glm::radians(19.5f);
 
 enum class LightType {
   DIRECTIONAL_LIGHT,

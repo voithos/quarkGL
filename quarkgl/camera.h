@@ -16,15 +16,14 @@ enum class CameraDirection {
   RIGHT,
 };
 
-// TODO: Change all these to constexpr.
-const float DEFAULT_YAW = 270.0f;
-const float DEFAULT_PITCH = 0.0f;
-const float DEFAULT_SPEED = 2.5f;
-const float DEFAULT_SENSITIVITY = 0.1f;
-const float DEFAULT_FOV = 45.0f;
+constexpr float DEFAULT_YAW = 270.0f;
+constexpr float DEFAULT_PITCH = 0.0f;
+constexpr float DEFAULT_SPEED = 2.5f;
+constexpr float DEFAULT_SENSITIVITY = 0.1f;
+constexpr float DEFAULT_FOV = 45.0f;
 
-const float MIN_FOV = 1.0f;
-const float MAX_FOV = 45.0f;
+constexpr float MIN_FOV = 1.0f;
+constexpr float MAX_FOV = 45.0f;
 
 class Camera {
  private:

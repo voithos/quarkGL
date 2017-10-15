@@ -17,7 +17,7 @@ class ModelLoaderException : public QuarkException {
   using QuarkException::QuarkException;
 };
 
-const auto DEFAULT_LOAD_FLAGS =
+constexpr auto DEFAULT_LOAD_FLAGS =
     aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs;
 
 inline const aiTextureType textureTypeToAiTextureType(TextureType type) {
