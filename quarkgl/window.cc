@@ -12,11 +12,17 @@ Window::Window(int width, int height, const char* title, bool fullscreen) {
 
   window_ =
       glfwCreateWindow(width, height, title, monitor, /* share */ nullptr);
+
   if (window_ == nullptr) {
     qrk::terminate();
     throw WindowException("ERROR::WINDOW::CREATE_FAILED");
   }
+
   activate();
+
+  if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+    throw WindowException("ERROR::WINDOW::GLAD_INITIALIZATION_FAILED");
+  }
 }
 
 Window::~Window() {

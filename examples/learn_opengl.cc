@@ -132,11 +132,6 @@ int main() {
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-  if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-    std::cout << "Failed to initialize GLAD" << std::endl;
-    return -1;
-  }
-
   glEnable(GL_DEPTH_TEST);
 
   // Load box texture.
