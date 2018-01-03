@@ -1,8 +1,8 @@
 # TODOs
 
-- [ ] Add a mechanism to enable/disable depth testing
 - [ ] Add a mechanism to switch to higher precision depth buffer (or maybe default)
 - [ ] Add a mechanism to set #define's in the shader
+- [ ] Add support for the stencil buffer
 - [ ] Use GLuint, GLenum, GLint, etc
 - [ ] Add a logging system, and log e.g. invalid glGetUniformLocation() calls
 - [ ] Remove some duplication from light class impl
@@ -14,9 +14,9 @@
 - [ ] Add more documentation.
 - [ ] Add a mechanism for working with textures.
 - [ ] Add logging support.
-- [ ] Add support for the stencil buffer
 
 ## Done
+- [x] Add a mechanism to enable/disable depth testing
 - [x] Add a 'window' class to qrk that can encapsulate the calls in the render loop.
 - [x] Add some depth-related shader functions
 - [x] Shading doesn't look quite right
