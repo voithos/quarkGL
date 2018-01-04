@@ -19,5 +19,5 @@ void main() {
   // Add emissions.
   result += qrk_shadeEmission(material, fragPos, texCoords);
 
-  fragColor = vec4(result, 1.0);
+  fragColor = vec4(result, qrk_materialAlpha(material, texCoords));
 }

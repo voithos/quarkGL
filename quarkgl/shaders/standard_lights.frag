@@ -63,4 +63,17 @@ vec3 qrk_shadeAllLights(QrkMaterial material, vec3 fragPos, vec3 normal,
   return directional + point + spot;
 }
 
+/**
+ * Calculate a material's alpha based on its set of diffuse textures.
+ * TODO: Research whether or not it makes sense to consider specular/emission
+ * maps as well (I don't think it does).
+ */
+float qrk_materialAlpha(QrkMaterial material, vec2 texCoords) {
+  float sum = 0.0;
+  for (int i = 0; i < material.diffuseCount; i++) {
+    sum += texture(material.diffuse[i], texCoords).a;
+  }
+  return min(sum, 1.0);
+}
+
 #endif

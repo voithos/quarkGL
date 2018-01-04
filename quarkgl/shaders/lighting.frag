@@ -64,6 +64,44 @@ struct QrkSpotLight {
 };
 
 /**
+ * Return a transparency value for weighing.
+ * If the alpha is nonzero, return it directly, otherwise return 1.0 (fully
+ * opaque). This is useful for textures that don't have an alpha layer.
+ * TODO: This doesn't make it possible for textures to have 0 transparency
+ * pixels properly. While it's questionable whether that is useful, a
+ * potentially better solution might be to pass in a "has alpha" flag for each
+ * texture as part of the material.
+ */
+float qrk_optAlpha(float alpha) { return alpha + (1.0 - sign(alpha)) * 1.0; }
+
+/** Return the sum of transparency values for all diffuse textures. */
+float qrk_sumDiffuseAlpha(QrkMaterial material, vec2 texCoords) {
+  float sum = 0;
+  for (int i = 0; i < material.diffuseCount; i++) {
+    sum += qrk_optAlpha(texture(material.diffuse[i], texCoords).a);
+  }
+  return sum;
+}
+
+/** Return the sum of transparency values for all specular textures. */
+float qrk_sumSpecularAlpha(QrkMaterial material, vec2 texCoords) {
+  float sum = 0;
+  for (int i = 0; i < material.specularCount; i++) {
+    sum += qrk_optAlpha(texture(material.specular[i], texCoords).a);
+  }
+  return sum;
+}
+
+/** Return the sum of transparency values for all emission textures. */
+float qrk_sumEmissionAlpha(QrkMaterial material, vec2 texCoords) {
+  float sum = 0;
+  for (int i = 0; i < material.emissionCount; i++) {
+    sum += qrk_optAlpha(texture(material.emission[i], texCoords).a);
+  }
+  return sum;
+}
+
+/**
  * Calculate the Phong shading model with ambient, diffuse, and specular
  * components. Does not include attenuation.
  */
@@ -73,24 +111,32 @@ vec3 qrk_shadePhong(QrkMaterial material, vec3 lightAmbient, vec3 lightDiffuse,
   vec3 result = vec3(0.0);
 
   // Ambient and diffuse components.
+  float diffuseAlphaSum = qrk_sumDiffuseAlpha(material, texCoords);
   float diffuseIntensity = max(dot(normal, lightDir), 0.0);
   for (int i = 0; i < material.diffuseCount; i++) {
-    vec3 diffuseMap = vec3(texture(material.diffuse[i], texCoords));
+    vec4 diffuseMap = texture(material.diffuse[i], texCoords);
+    float alphaRatio = qrk_optAlpha(diffuseMap.a) / diffuseAlphaSum;
 
     // Ambient component.
-    result += lightAmbient * diffuseMap;
+    result += lightAmbient * vec3(diffuseMap) * alphaRatio;
 
     // Diffuse component.
-    result += (lightDiffuse * (diffuseIntensity * diffuseMap)) * intensity;
+    result +=
+        (lightDiffuse * (diffuseIntensity * vec3(diffuseMap) * alphaRatio)) *
+        intensity;
   }
 
   // Specular component.
+  float specularAlphaSum = qrk_sumSpecularAlpha(material, texCoords);
   vec3 reflectDir = reflect(-lightDir, normal);
   float specularIntensity =
       pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
   for (int i = 0; i < material.specularCount; i++) {
-    vec3 specularMap = vec3(texture(material.specular[i], texCoords));
-    result += (lightSpecular * (specularIntensity * specularMap)) * intensity;
+    vec4 specularMap = texture(material.specular[i], texCoords);
+    float alphaRatio = qrk_optAlpha(specularMap.a) / specularAlphaSum;
+    result +=
+        (lightSpecular * (specularIntensity * vec3(specularMap) * alphaRatio)) *
+        intensity;
   }
 
   return result;
@@ -175,8 +221,11 @@ vec3 qrk_shadeEmission(QrkMaterial material, vec3 fragPos, vec2 texCoords) {
       qrk_calcAttenuation(material.emissionAttenuation, fragDist);
 
   // Emission component.
+  float emissionAlphaSum = qrk_sumEmissionAlpha(material, texCoords);
   for (int i = 0; i < material.emissionCount; i++) {
-    result += vec3(texture(material.emission[i], texCoords)) * attenuation;
+    vec4 emissionMap = texture(material.emission[i], texCoords);
+    float alphaRatio = qrk_optAlpha(emissionMap.a) / emissionAlphaSum;
+    result += vec3(emissionMap) * alphaRatio * attenuation;
   }
 
   return result;

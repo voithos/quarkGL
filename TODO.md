@@ -12,10 +12,12 @@
 - [ ] Add more documentation.
 - [ ] Add a mechanism for working with textures.
 - [ ] Add logging support.
+- [ ] Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
 ## Examples to make
 
 - Stencil buffer demo
+- Blending (alpha transparency) demo
 
 ## Done
 - [x] Add support for the stencil buffer

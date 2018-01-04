@@ -33,6 +33,7 @@ class Window {
   GLFWwindow* window_;
   bool depthTestEnabled_ = false;
   bool stencilTestEnabled_ = false;
+  bool blendingEnabled_ = false;
 
   float lastTime_ = 0.0f;
   float deltaTime_ = 0.0f;
@@ -47,31 +48,23 @@ class Window {
   void activate();
 
   void enableDepthTest() {
-    if (!depthTestEnabled_) {
-      glEnable(GL_DEPTH_TEST);
-      depthTestEnabled_ = true;
-    }
+    glEnable(GL_DEPTH_TEST);
+    depthTestEnabled_ = true;
   }
   void disableDepthTest() {
-    if (depthTestEnabled_) {
-      glDisable(GL_DEPTH_TEST);
-      depthTestEnabled_ = false;
-    }
+    glDisable(GL_DEPTH_TEST);
+    depthTestEnabled_ = false;
   }
 
   // TODO: Consider extracting stencil logic out to a separate class.
   void enableStencilTest() {
-    if (!stencilTestEnabled_) {
-      glEnable(GL_STENCIL_TEST);
-      glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-      stencilTestEnabled_ = true;
-    }
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    stencilTestEnabled_ = true;
   }
   void disableStencilTest() {
-    if (stencilTestEnabled_) {
-      glDisable(GL_STENCIL_TEST);
-      stencilTestEnabled_ = false;
-    }
+    glDisable(GL_STENCIL_TEST);
+    stencilTestEnabled_ = false;
   }
 
   void enableStencilUpdates() { glStencilMask(0xFF); }
@@ -85,6 +78,12 @@ class Window {
     // liveness.
     glStencilFunc(func, 1, 0xFF);
   }
+
+  void enableBlending() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
+  void disableBlending() { glDisable(GL_BLEND); }
 
   WindowSize getSize();
   void setSize(int width, int height);
