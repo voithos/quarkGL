@@ -61,3 +61,4 @@ projects that were used:
 - GLAD
 - GLM
 - stb_image
+- assimp
