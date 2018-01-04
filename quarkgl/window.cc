@@ -74,6 +74,9 @@ void Window::loop(std::function<void(float)> callback) {
     if (depthTestEnabled_) {
       clearBits |= GL_DEPTH_BUFFER_BIT;
     }
+    if (stencilTestEnabled_) {
+      clearBits |= GL_STENCIL_BUFFER_BIT;
+    }
     glClear(clearBits);
 
     // Call the loop function.

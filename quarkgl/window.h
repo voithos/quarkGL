@@ -31,7 +31,8 @@ struct WindowSize {
 class Window {
  private:
   GLFWwindow* window_;
-  bool depthTestEnabled_ = true;
+  bool depthTestEnabled_ = false;
+  bool stencilTestEnabled_ = false;
 
   float lastTime_ = 0.0f;
   float deltaTime_ = 0.0f;
@@ -46,12 +47,43 @@ class Window {
   void activate();
 
   void enableDepthTest() {
-    glEnable(GL_DEPTH_TEST);
-    depthTestEnabled_ = true;
+    if (!depthTestEnabled_) {
+      glEnable(GL_DEPTH_TEST);
+      depthTestEnabled_ = true;
+    }
   }
   void disableDepthTest() {
-    glDisable(GL_DEPTH_TEST);
-    depthTestEnabled_ = false;
+    if (depthTestEnabled_) {
+      glDisable(GL_DEPTH_TEST);
+      depthTestEnabled_ = false;
+    }
+  }
+
+  // TODO: Consider extracting stencil logic out to a separate class.
+  void enableStencilTest() {
+    if (!stencilTestEnabled_) {
+      glEnable(GL_STENCIL_TEST);
+      glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+      stencilTestEnabled_ = true;
+    }
+  }
+  void disableStencilTest() {
+    if (stencilTestEnabled_) {
+      glDisable(GL_STENCIL_TEST);
+      stencilTestEnabled_ = false;
+    }
+  }
+
+  void enableStencilUpdates() { glStencilMask(0xFF); }
+  void disableStencilUpdates() { glStencilMask(0x00); }
+
+  void stencilAlwaysDraw() { setStencilFunc(GL_ALWAYS); }
+  void stencilDrawWhenMatching() { setStencilFunc(GL_EQUAL); }
+  void stencilDrawWhenNotMatching() { setStencilFunc(GL_NOTEQUAL); }
+  void setStencilFunc(GLenum func) {
+    // Set the stencil test to use the given `func` when comparing for fragment
+    // liveness.
+    glStencilFunc(func, 1, 0xFF);
   }
 
   WindowSize getSize();
