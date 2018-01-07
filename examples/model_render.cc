@@ -1,8 +1,4 @@
-#include <fstream>
 #include <iostream>
-#include <memory>
-#include <sstream>
-#include <string>
 
 // Must precede glfw/glad, to include OpenGL functions.
 #include <qrk/core.h>
@@ -119,7 +115,7 @@ float vertices[] = {
 // clang-format on
 
 int main() {
-  qrk::Window win(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL");
+  qrk::Window win(SCREEN_WIDTH, SCREEN_HEIGHT, "Model render");
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   auto window = win.getGlfwRef();
 
@@ -158,6 +154,7 @@ int main() {
                          "examples/lamp_shader.frag");
 
   // Create a VAO for the light.
+  // TODO: Make this into a sphere.
   qrk::VertexArray lightVarray;
   lightVarray.loadVertexData(vertices, sizeof(vertices));
   lightVarray.addVertexAttrib(3, GL_FLOAT);

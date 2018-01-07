@@ -17,6 +17,7 @@
 
 ## Examples to make
 
+- Lighting demo (light types, spotlight)
 - Stencil buffer demo
 - Blending (alpha transparency) demo
 

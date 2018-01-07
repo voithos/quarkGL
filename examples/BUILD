@@ -1,23 +1,26 @@
+# TODO: Pull these into a common location.
+QRK_LINKOPTS = [
+    "-lGL",
+    "-lGLU",
+    "-lX11",
+    "-lXxf86vm",
+    "-lXinerama",
+    "-lXcursor",
+    "-lpthread",
+    "-lXrandr",
+    "-lXi",
+    "-ldl",
+]
+
 cc_binary(
-    name = "learn_opengl",
-    srcs = ["learn_opengl.cc"],
-    data = glob([
-        "nanosuit/*",
-        "*.frag",
-        "*.vert",
-    ]),
-    linkopts = [
-        "-lGL",
-        "-lGLU",
-        "-lX11",
-        "-lXxf86vm",
-        "-lXinerama",
-        "-lXcursor",
-        "-lpthread",
-        "-lXrandr",
-        "-lXi",
-        "-ldl",
-    ],
+    name = "model_render",
+    srcs = ["model_render.cc"],
+    data = [
+        "lamp_shader.frag",
+        "main_shader.frag",
+        "main_shader.vert",
+    ] + glob(["nanosuit/*"]),
+    linkopts = QRK_LINKOPTS,
     deps = [
         "//quarkgl:camera",
         "//quarkgl:core",
