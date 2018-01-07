@@ -47,6 +47,7 @@ class Window {
 
   void activate();
 
+  // TODO: Consider extracting depth test logic.
   void enableDepthTest() {
     glEnable(GL_DEPTH_TEST);
     depthTestEnabled_ = true;
@@ -79,11 +80,15 @@ class Window {
     glStencilFunc(func, 1, 0xFF);
   }
 
+  // TODO: Consider extracting blending logic.
   void enableBlending() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
   void disableBlending() { glDisable(GL_BLEND); }
+
+  void enableCulling() { glEnable(GL_CULL_FACE); }
+  void disableCulling() { glDisable(GL_CULL_FACE); }
 
   WindowSize getSize();
   void setSize(int width, int height);

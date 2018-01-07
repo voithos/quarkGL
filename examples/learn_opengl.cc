@@ -168,6 +168,7 @@ int main() {
   // Load model.
   qrk::Model nanosuit("examples/nanosuit/nanosuit.obj");
 
+  win.enableCulling();
   win.loop([&](float deltaTime) {
     processInput(window, deltaTime);
 
