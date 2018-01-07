@@ -43,6 +43,10 @@ Attachment Framebuffer::attachTexture(BufferType type) {
   glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, GL_TEXTURE_2D, texture,
                          /* mipmap level */ 0);
 
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    throw FramebufferException("ERROR::FRAMEBUFFER::INCOMPLETE");
+  }
+
   deactivate();
 
   return saveAttachment(texture, AttachmentTarget::TEXTURE);
@@ -64,6 +68,10 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   GLenum attachmentType = bufferTypeToAttachmentType(type);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachmentType, GL_RENDERBUFFER,
                             rbo);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    throw FramebufferException("ERROR::FRAMEBUFFER::INCOMPLETE");
+  }
 
   deactivate();
 
