@@ -59,8 +59,19 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//third_party/glad",
-        "//third_party/glm",
         "@assimp//:assimp",
+    ],
+)
+
+cc_library(
+    name = "framebuffer",
+    srcs = ["framebuffer.cc"],
+    hdrs = ["framebuffer.h"],
+    include_prefix = "qrk",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":window",
+        "//third_party/glad",
     ],
 )
 

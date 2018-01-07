@@ -20,10 +20,9 @@ inline const char* shaderTypeToString(ShaderType type) {
       return "VERTEX";
     case ShaderType::FRAGMENT:
       return "FRAGMENT";
-    default:
-      throw QuarkException("ERROR::SHADER::INVALID_SHADER_TYPE\n" +
-                           std::to_string(static_cast<int>(type)));
   }
+  throw QuarkException("ERROR::SHADER::INVALID_SHADER_TYPE\n" +
+                       std::to_string(static_cast<int>(type)));
 }
 
 }  // namespace qrk

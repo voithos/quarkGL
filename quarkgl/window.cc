@@ -36,8 +36,8 @@ Window::~Window() {
 
 void Window::activate() { glfwMakeContextCurrent(window_); }
 
-WindowSize Window::getSize() {
-  WindowSize size;
+ScreenSize Window::getSize() {
+  ScreenSize size;
   glfwGetWindowSize(window_, &size.width, &size.height);
   return size;
 }

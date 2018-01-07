@@ -34,10 +34,9 @@ inline const aiTextureType textureTypeToAiTextureType(TextureType type) {
       return aiTextureType_SPECULAR;
     case TextureType::EMISSION:
       return aiTextureType_EMISSIVE;
-    default:
-      throw QuarkException("ERROR::TEXTURE::INVALID_TEXTURE_TYPE\n" +
-                           std::to_string(static_cast<int>(type)));
   }
+  throw QuarkException("ERROR::TEXTURE::INVALID_TEXTURE_TYPE\n" +
+                       std::to_string(static_cast<int>(type)));
 }
 
 struct Texture {

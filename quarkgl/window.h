@@ -23,7 +23,7 @@ constexpr int DEFAULT_HEIGHT = 600;
 constexpr char const* DEFAULT_TITLE = "quarkGL";
 const glm::vec4 DEFAULT_CLEAR_COLOR = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-struct WindowSize {
+struct ScreenSize {
   int width;
   int height;
 };
@@ -90,7 +90,7 @@ class Window {
   void enableCulling() { glEnable(GL_CULL_FACE); }
   void disableCulling() { glDisable(GL_CULL_FACE); }
 
-  WindowSize getSize();
+  ScreenSize getSize();
   void setSize(int width, int height);
   glm::vec4 getClearColor() { return clearColor_; }
   void setClearColor(glm::vec4 color) { clearColor_ = color; }
