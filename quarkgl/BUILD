@@ -54,11 +54,14 @@ cc_library(
 
 cc_library(
     name = "texture",
+    srcs = ["texture.cc"],
     hdrs = ["texture.h"],
     include_prefix = "qrk",
     visibility = ["//visibility:public"],
     deps = [
+        ":shared",
         "//third_party/glad",
+        "//third_party/stb_image",
         "@assimp//:assimp",
     ],
 )

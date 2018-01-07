@@ -34,3 +34,26 @@ cc_binary(
         "@glfw//:glfw",
     ],
 )
+
+cc_binary(
+    name = "post_processing",
+    srcs = ["post_processing.cc"],
+    data = [
+        "texture_simple.frag",
+        "texture_simple.vert",
+        "metal.png",
+        "container.jpg",
+    ] + glob(["nanosuit/*"]),
+    linkopts = QRK_LINKOPTS,
+    deps = [
+        "//quarkgl:camera",
+        "//quarkgl:core",
+        "//quarkgl:shader",
+        "//quarkgl:texture",
+        "//quarkgl:vertex_array",
+        "//quarkgl:window",
+        "//third_party/glad",
+        "//third_party/glm",
+        "@glfw//:glfw",
+    ],
+)

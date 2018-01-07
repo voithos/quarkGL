@@ -19,6 +19,7 @@
 const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 600;
 
+// TODO: Abstract first-person camera controls.
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
 bool initialMouse = true;
@@ -126,11 +127,9 @@ int main() {
   glfwSetScrollCallback(window, scrollCallback);
   glfwSetCursorPosCallback(window, mouseCallback);
 
-  // Load box texture.
   qrk::Shader mainShader("examples/main_shader.vert",
                          "examples/main_shader.frag");
 
-  // These correspond to the texture numbers above.
   mainShader.setFloat("material.shininess", 8.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);

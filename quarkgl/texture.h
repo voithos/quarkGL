@@ -10,6 +10,10 @@
 
 namespace qrk {
 
+class TextureException : public QuarkException {
+  using QuarkException::QuarkException;
+};
+
 enum class TextureType {
   DIFFUSE,
   SPECULAR,
@@ -35,9 +39,12 @@ inline const aiTextureType textureTypeToAiTextureType(TextureType type) {
     case TextureType::EMISSION:
       return aiTextureType_EMISSIVE;
   }
-  throw QuarkException("ERROR::TEXTURE::INVALID_TEXTURE_TYPE\n" +
-                       std::to_string(static_cast<int>(type)));
+  throw TextureException("ERROR::TEXTURE::INVALID_TEXTURE_TYPE\n" +
+                         std::to_string(static_cast<int>(type)));
 }
+
+// TODO: Consider putting this in a TextureLoader class.
+unsigned int loadTexture(const char* path);
 
 struct Texture {
   unsigned int id;

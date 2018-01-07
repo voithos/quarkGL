@@ -1,5 +1,6 @@
 # TODOs
 
+- [ ] Add a wireframe mode.
 - [ ] Add a mechanism for working with textures.
 - [ ] Add support for framebuffers.
 - [ ] Add a mechanism to set #define's in the shader
