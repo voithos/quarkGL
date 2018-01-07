@@ -27,6 +27,7 @@ class VertexArray {
 
  public:
   VertexArray();
+  // TODO: Can we have a destructor here?
   unsigned int getVao() { return vao_; }
   unsigned int getVbo() { return vbo_; }
   unsigned int getEbo() { return ebo_; }

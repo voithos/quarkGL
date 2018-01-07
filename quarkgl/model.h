@@ -11,6 +11,7 @@
 #include <qrk/mesh.h>
 #include <qrk/shader.h>
 #include <qrk/shared.h>
+#include <qrk/texture.h>
 
 namespace qrk {
 class ModelLoaderException : public QuarkException {
@@ -19,17 +20,6 @@ class ModelLoaderException : public QuarkException {
 
 constexpr auto DEFAULT_LOAD_FLAGS =
     aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs;
-
-inline const aiTextureType textureTypeToAiTextureType(TextureType type) {
-  switch (type) {
-    case TextureType::DIFFUSE:
-      return aiTextureType_DIFFUSE;
-    case TextureType::SPECULAR:
-      return aiTextureType_SPECULAR;
-    case TextureType::EMISSION:
-      return aiTextureType_EMISSIVE;
-  }
-}
 
 class Model {
  private:

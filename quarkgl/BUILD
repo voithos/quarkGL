@@ -45,9 +45,22 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":shader",
+        ":texture",
         ":vertex_array",
         "//third_party/glad",
         "//third_party/glm",
+    ],
+)
+
+cc_library(
+    name = "texture",
+    hdrs = ["texture.h"],
+    include_prefix = "qrk",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//third_party/glad",
+        "//third_party/glm",
+        "@assimp//:assimp",
     ],
 )
 
@@ -61,6 +74,7 @@ cc_library(
         ":mesh",
         ":shader",
         ":shared",
+        ":texture",
         "//third_party/glad",
         "//third_party/glm",
         "//third_party/stb_image",

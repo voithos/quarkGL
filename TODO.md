@@ -1,5 +1,7 @@
 # TODOs
 
+- [ ] Add a mechanism for working with textures.
+- [ ] Add support for framebuffers.
 - [ ] Add a mechanism to set #define's in the shader
 - [ ] Use GLuint, GLenum, GLint, etc
 - [ ] Add a logging system, and log e.g. invalid glGetUniformLocation() calls
@@ -10,7 +12,6 @@
 - [ ] Getting duplicate items in compile_commands.json.
 - [ ] Add unit tests.
 - [ ] Add more documentation.
-- [ ] Add a mechanism for working with textures.
 - [ ] Add logging support.
 - [ ] Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
