@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <glm/glm.hpp>
+
 #include <qrk/shared.h>
 #include <qrk/window.h>
 
@@ -98,7 +100,13 @@ class Framebuffer {
   int height_;
   std::vector<Attachment> attachments_;
 
+  bool hasColorAttachment_ = false;
+  bool hasDepthAttachment_ = false;
+  bool hasStencilAttachment_ = false;
+  glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
+
   Attachment saveAttachment(unsigned int id, AttachmentTarget target);
+  void updateFlags(BufferType type);
 
  public:
   Framebuffer(int width, int height);
@@ -107,6 +115,10 @@ class Framebuffer {
 
   void activate();
   void deactivate();
+
+  glm::vec4 getClearColor() { return clearColor_; }
+  void setClearColor(glm::vec4 color) { clearColor_ = color; }
+  void clear();
 
   ScreenSize getSize();
 

@@ -21,7 +21,6 @@ class WindowException : public QuarkException {
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 constexpr char const* DEFAULT_TITLE = "quarkGL";
-const glm::vec4 DEFAULT_CLEAR_COLOR = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 struct ScreenSize {
   int width;

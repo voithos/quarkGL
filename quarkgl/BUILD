@@ -75,6 +75,7 @@ cc_library(
     deps = [
         ":window",
         "//third_party/glad",
+        "//third_party/glm",
     ],
 )
 
@@ -131,7 +132,9 @@ cc_library(
     hdrs = ["shared.h"],
     include_prefix = "qrk",
     visibility = ["//visibility:public"],
-    deps = [],
+    deps = [
+        "//third_party/glm",
+    ],
 )
 
 cc_library(

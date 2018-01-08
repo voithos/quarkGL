@@ -10,6 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <qrk/camera.h>
+#include <qrk/framebuffer.h>
 #include <qrk/shader.h>
 #include <qrk/texture.h>
 #include <qrk/vertex_array.h>
@@ -121,6 +122,16 @@ float planeVertices[] = {
     -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
      5.0f, -0.5f, -5.0f,  2.0f, 2.0f
 };
+float quadVertices[] = {  
+    // positions   // texture coords
+    -1.0f,  1.0f,  0.0f, 1.0f,
+    -1.0f, -1.0f,  0.0f, 0.0f,
+     1.0f, -1.0f,  1.0f, 0.0f,
+
+    -1.0f,  1.0f,  0.0f, 1.0f,
+     1.0f, -1.0f,  1.0f, 0.0f,
+     1.0f,  1.0f,  1.0f, 1.0f
+};
 // clang-format on
 
 int main() {
@@ -137,6 +148,7 @@ int main() {
 
   qrk::Shader mainShader("examples/texture_simple.vert",
                          "examples/texture_simple.frag");
+  qrk::Shader screenShader("examples/quad.vert", "examples/quad.frag");
 
   // Create a VAO for the boxes.
   qrk::VertexArray cubeVarray;
@@ -152,12 +164,28 @@ int main() {
   planeVarray.addVertexAttrib(2, GL_FLOAT);
   planeVarray.finalizeVertexAttribs();
 
+  // Create a VAO for the screen quad.
+  qrk::VertexArray quadVarray;
+  quadVarray.loadVertexData(quadVertices, sizeof(quadVertices));
+  quadVarray.addVertexAttrib(2, GL_FLOAT);
+  quadVarray.addVertexAttrib(2, GL_FLOAT);
+  quadVarray.finalizeVertexAttribs();
+
   // Load textures.
   unsigned int cubeTexture = qrk::loadTexture("examples/container.jpg");
   unsigned int floorTexture = qrk::loadTexture("examples/metal.png");
 
+  // Framebuffer.
+  qrk::Framebuffer fb(win.getSize());
+  auto colorAttachment = fb.attachTexture(qrk::BufferType::COLOR);
+  auto depthAttachment =
+      fb.attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
+
   win.loop([&](float deltaTime) {
     processInput(window, deltaTime);
+
+    fb.activate();
+    fb.clear();
 
     glm::mat4 view = camera.getViewTransform();
     glm::mat4 projection = glm::perspective(
@@ -190,6 +218,15 @@ int main() {
     mainShader.setMat4("model", glm::mat4());
     glDrawArrays(GL_TRIANGLES, 0, 6);
     planeVarray.deactivate();
+
+    fb.deactivate();
+
+    screenShader.activate();
+    quadVarray.activate();
+    glBindTexture(GL_TEXTURE_2D, colorAttachment.id);
+    win.disableDepthTest();
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    win.enableDepthTest();
   });
 
   return 0;

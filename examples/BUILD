@@ -41,6 +41,8 @@ cc_binary(
     data = [
         "texture_simple.frag",
         "texture_simple.vert",
+        "quad.frag",
+        "quad.vert",
         "metal.png",
         "container.jpg",
     ] + glob(["nanosuit/*"]),
@@ -48,6 +50,7 @@ cc_binary(
     deps = [
         "//quarkgl:camera",
         "//quarkgl:core",
+        "//quarkgl:framebuffer",
         "//quarkgl:shader",
         "//quarkgl:texture",
         "//quarkgl:vertex_array",

@@ -3,10 +3,14 @@
 
 #include <stdexcept>
 
+#include <glm/glm.hpp>
+
 namespace qrk {
 class QuarkException : public std::runtime_error {
   using std::runtime_error::runtime_error;
 };
+
+const glm::vec4 DEFAULT_CLEAR_COLOR = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 // TODO: Pull to a common shader helper file.
 enum class ShaderType {

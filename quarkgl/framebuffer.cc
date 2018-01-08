@@ -49,6 +49,7 @@ Attachment Framebuffer::attachTexture(BufferType type) {
 
   deactivate();
 
+  updateFlags(type);
   return saveAttachment(texture, AttachmentTarget::TEXTURE);
 }
 
@@ -75,6 +76,7 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
 
   deactivate();
 
+  updateFlags(type);
   return saveAttachment(rbo, AttachmentTarget::RENDERBUFFER);
 }
 
@@ -83,6 +85,42 @@ Attachment Framebuffer::saveAttachment(unsigned int id,
   Attachment attachment = {.id = id, .target = target};
   attachments_.push_back(attachment);
   return attachment;
+}
+
+void Framebuffer::updateFlags(BufferType type) {
+  switch (type) {
+    case BufferType::COLOR:
+      hasColorAttachment_ = true;
+      return;
+    case BufferType::DEPTH:
+      hasDepthAttachment_ = true;
+      return;
+    case BufferType::STENCIL:
+      hasStencilAttachment_ = true;
+      return;
+    case BufferType::DEPTH_AND_STENCIL:
+      hasDepthAttachment_ = true;
+      hasStencilAttachment_ = true;
+      return;
+  }
+  throw FramebufferException("ERROR::FRAMEBUFFER::INVALID_BUFFER_TYPE\n" +
+                             std::to_string(static_cast<int>(type)));
+}
+
+void Framebuffer::clear() {
+  glClearColor(clearColor_.r, clearColor_.g, clearColor_.b, clearColor_.a);
+
+  GLbitfield clearBits = 0;
+  if (hasColorAttachment_) {
+    clearBits |= GL_COLOR_BUFFER_BIT;
+  }
+  if (hasDepthAttachment_) {
+    clearBits |= GL_DEPTH_BUFFER_BIT;
+  }
+  if (hasStencilAttachment_) {
+    clearBits |= GL_STENCIL_BUFFER_BIT;
+  }
+  glClear(clearBits);
 }
 
 }  // namespace qrk

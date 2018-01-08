@@ -1,5 +1,7 @@
 # TODOs
 
+- [ ] Add a way to load shader code from a string (with import support).
+- [ ] Allow rendering a VAO with a given shader.
 - [ ] Add a wireframe mode.
 - [ ] Add a mechanism for working with textures.
 - [ ] Add support for framebuffers.
