@@ -222,6 +222,7 @@ int main() {
     fb.deactivate();
 
     screenShader.activate();
+    screenShader.setInt("screenTexture", 0);
     quadVarray.activate();
     glBindTexture(GL_TEXTURE_2D, colorAttachment.id);
     win.disableDepthTest();
