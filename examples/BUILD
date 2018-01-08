@@ -16,9 +16,9 @@ cc_binary(
     name = "model_render",
     srcs = ["model_render.cc"],
     data = [
-        "lamp_shader.frag",
-        "main_shader.frag",
-        "main_shader.vert",
+        "lamp.frag",
+        "phong.frag",
+        "phong.vert",
     ] + glob(["nanosuit/*"]),
     linkopts = QRK_LINKOPTS,
     deps = [

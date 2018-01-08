@@ -127,8 +127,7 @@ int main() {
   glfwSetScrollCallback(window, scrollCallback);
   glfwSetCursorPosCallback(window, mouseCallback);
 
-  qrk::Shader mainShader("examples/main_shader.vert",
-                         "examples/main_shader.frag");
+  qrk::Shader mainShader("examples/phong.vert", "examples/phong.frag");
 
   mainShader.setFloat("material.shininess", 8.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
@@ -149,8 +148,7 @@ int main() {
   pointLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
   registry->addLight(pointLight);
 
-  qrk::Shader lampShader("examples/main_shader.vert",
-                         "examples/lamp_shader.frag");
+  qrk::Shader lampShader("examples/phong.vert", "examples/lamp.frag");
 
   // Create a VAO for the light.
   // TODO: Make this into a sphere.
