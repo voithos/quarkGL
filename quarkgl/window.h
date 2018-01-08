@@ -22,11 +22,6 @@ constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 constexpr char const* DEFAULT_TITLE = "quarkGL";
 
-struct ScreenSize {
-  int width;
-  int height;
-};
-
 class Window {
  private:
   GLFWwindow* window_;

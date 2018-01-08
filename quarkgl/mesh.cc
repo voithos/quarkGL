@@ -10,6 +10,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
   // Positions.
   vertexArray_.addVertexAttrib(3, GL_FLOAT);
   // Normals.
+  // TODO: Allow drawing meshes that don't have normals.
   vertexArray_.addVertexAttrib(3, GL_FLOAT);
   // Texture coordinates.
   vertexArray_.addVertexAttrib(2, GL_FLOAT);

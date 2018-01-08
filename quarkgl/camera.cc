@@ -3,14 +3,18 @@
 namespace qrk {
 
 Camera::Camera(glm::vec3 position, glm::vec3 worldUp, float yaw, float pitch,
-               float speed, float sensitivity, float fov)
+               float speed, float sensitivity, float fov, float aspectRatio,
+               float near, float far)
     : position_(position),
       worldUp_(worldUp),
       yaw_(yaw),
       pitch_(pitch),
       speed_(speed),
       sensitivity_(sensitivity),
-      fov_(fov) {
+      fov_(fov),
+      aspectRatio_(aspectRatio),
+      near_(near),
+      far_(far) {
   updateCameraVectors();
 }
 
@@ -27,6 +31,10 @@ void Camera::updateCameraVectors() {
 
 glm::mat4 Camera::getViewTransform() {
   return glm::lookAt(position_, position_ + front_, up_);
+}
+
+glm::mat4 Camera::getPerspectiveTransform() {
+  return glm::perspective(glm::radians(getFov()), aspectRatio_, near_, far_);
 }
 
 void Camera::processKeyboard(CameraDirection direction, float deltaTime) {

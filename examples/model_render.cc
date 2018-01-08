@@ -118,6 +118,7 @@ float vertices[] = {
 int main() {
   qrk::Window win(SCREEN_WIDTH, SCREEN_HEIGHT, "Model render");
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+  camera.setAspectRatio(win.getSize());
   auto window = win.getGlfwRef();
 
   glfwSetInputMode(win.getGlfwRef(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -167,9 +168,7 @@ int main() {
     processInput(window, deltaTime);
 
     glm::mat4 view = camera.getViewTransform();
-    glm::mat4 projection = glm::perspective(
-        glm::radians(camera.getFov()),
-        SCREEN_WIDTH / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f);
+    glm::mat4 projection = camera.getPerspectiveTransform();
 
     // Setup shader and lights.
     mainShader.activate();
