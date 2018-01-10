@@ -122,7 +122,7 @@ float planeVertices[] = {
     -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
      5.0f, -0.5f, -5.0f,  2.0f, 2.0f
 };
-float quadVertices[] = {  
+float quadVertices[] = {
     // positions   // texture coords
     -1.0f,  1.0f,  0.0f, 1.0f,
     -1.0f, -1.0f,  0.0f, 0.0f,

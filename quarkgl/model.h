@@ -34,7 +34,7 @@ class Model {
                                             TextureType type);
 
  public:
-  Model(const char* path);
+  explicit Model(const char* path);
   void draw(Shader shader);
 };
 

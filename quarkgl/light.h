@@ -103,7 +103,7 @@ class DirectionalLight : public Light {
  protected:
   std::string getUniformName(unsigned int lightIdx) {
     return "qrk_directionalLights[" + std::to_string(lightIdx) + "]";
-  };
+  }
   void updateUniforms(Shader& shader);
   void applyViewTransform(const glm::mat4& view);
 
@@ -151,7 +151,7 @@ class PointLight : public Light {
  protected:
   std::string getUniformName(unsigned int lightIdx) {
     return "qrk_pointLights[" + std::to_string(lightIdx) + "]";
-  };
+  }
   void updateUniforms(Shader& shader);
   void applyViewTransform(const glm::mat4& view);
 
@@ -210,7 +210,7 @@ class SpotLight : public Light {
  protected:
   std::string getUniformName(unsigned int lightIdx) {
     return "qrk_spotLights[" + std::to_string(lightIdx) + "]";
-  };
+  }
   void updateUniforms(Shader& shader);
   void applyViewTransform(const glm::mat4& view);
 

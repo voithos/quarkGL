@@ -110,7 +110,8 @@ class Framebuffer {
 
  public:
   Framebuffer(int width, int height);
-  Framebuffer(ScreenSize size) : Framebuffer(size.width, size.height) {}
+  explicit Framebuffer(ScreenSize size)
+      : Framebuffer(size.width, size.height) {}
   ~Framebuffer();
 
   void activate();
