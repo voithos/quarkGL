@@ -135,12 +135,13 @@ float quadVertices[] = {
 // clang-format on
 
 int main() {
-  qrk::Window win(SCREEN_WIDTH, SCREEN_HEIGHT, "Post processing");
-  win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-  camera.setAspectRatio(win.getSize());
-  auto window = win.getGlfwRef();
+  auto win = std::make_shared<qrk::Window>(SCREEN_WIDTH, SCREEN_HEIGHT,
+                                           "Post processing");
+  win->setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+  camera.setAspectRatio(win->getSize());
+  auto window = win->getGlfwRef();
 
-  glfwSetInputMode(win.getGlfwRef(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(win->getGlfwRef(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   // TODO: Clean these calls up by moving them into qrk::Window.
   glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
@@ -177,11 +178,13 @@ int main() {
   unsigned int floorTexture = qrk::loadTexture("examples/metal.png");
 
   // Framebuffer.
-  qrk::Framebuffer fb(win.getSize());
+  qrk::Framebuffer fb(win->getSize());
   auto colorAttachment = fb.attachTexture(qrk::BufferType::COLOR);
   fb.attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
 
-  win.loop([&](float deltaTime) {
+  screenShader.addUniformSource(win);
+
+  win->loop([&](float deltaTime) {
     processInput(window, deltaTime);
 
     fb.activate();
@@ -219,13 +222,14 @@ int main() {
 
     fb.deactivate();
 
+    screenShader.updateUniforms();
     screenShader.activate();
     screenShader.setInt("screenTexture", 0);
     quadVarray.activate();
     glBindTexture(GL_TEXTURE_2D, colorAttachment.id);
-    win.disableDepthTest();
+    win->disableDepthTest();
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    win.enableDepthTest();
+    win->enableDepthTest();
   });
 
   return 0;

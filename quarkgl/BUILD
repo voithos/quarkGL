@@ -164,6 +164,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":core",
+        ":shader",
         ":shared",
         "//third_party/glad",
         "//third_party/glm",

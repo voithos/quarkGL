@@ -10,6 +10,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+#include <qrk/shader.h>
 #include <qrk/shared.h>
 
 namespace qrk {
@@ -22,7 +23,7 @@ constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 constexpr char const* DEFAULT_TITLE = "quarkGL";
 
-class Window {
+class Window : public UniformSource {
  private:
   GLFWwindow* window_;
   bool depthTestEnabled_ = false;
@@ -83,6 +84,8 @@ class Window {
 
   void enableCulling() { glEnable(GL_CULL_FACE); }
   void disableCulling() { glDisable(GL_CULL_FACE); }
+
+  void updateUniforms(Shader& shader);
 
   ScreenSize getSize();
   void setSize(int width, int height);

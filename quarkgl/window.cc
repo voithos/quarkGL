@@ -36,6 +36,12 @@ Window::~Window() {
 
 void Window::activate() { glfwMakeContextCurrent(window_); }
 
+void Window::updateUniforms(Shader& shader) {
+  ScreenSize size = getSize();
+  shader.setInt("qrk_windowWidth", size.width);
+  shader.setInt("qrk_windowHeight", size.height);
+}
+
 ScreenSize Window::getSize() {
   ScreenSize size;
   glfwGetWindowSize(window_, &size.width, &size.height);
