@@ -97,20 +97,24 @@ void Window::makeWindowed() {
 void Window::processInput(float deltaTime) {
   if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     if (escBehavior_ == EscBehavior::TOGGLE_MOUSE_CAPTURE) {
-      toggleMouseCapture();
+      auto inputMode = glfwGetInputMode(window_, GLFW_CURSOR);
+      if (inputMode == GLFW_CURSOR_NORMAL) {
+        enableMouseCapture();
+      } else {
+        disableMouseCapture();
+      }
     } else if (escBehavior_ == EscBehavior::CLOSE) {
       glfwSetWindowShouldClose(window_, true);
     }
   }
 }
 
-void Window::toggleMouseCapture() {
-  auto inputMode = glfwGetInputMode(window_, GLFW_CURSOR);
-  if (inputMode == GLFW_CURSOR_DISABLED) {
-    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-  } else {
-    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-  }
+void Window::enableMouseCapture() {
+  glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void Window::disableMouseCapture() {
+  glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void Window::loop(std::function<void(float)> callback) {

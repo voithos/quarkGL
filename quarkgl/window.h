@@ -109,8 +109,10 @@ class Window : public UniformSource {
   void makeFullscreen();
   void makeWindowed();
 
+  EscBehavior getEscBehavior() { return escBehavior_; }
   void setEscBehavior(EscBehavior behavior) { escBehavior_ = behavior; }
-  void toggleMouseCapture();
+  void enableMouseCapture();
+  void disableMouseCapture();
 
   void loop(std::function<void(float)> callback);
 

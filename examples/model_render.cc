@@ -110,7 +110,7 @@ float vertices[] = {
 int main() {
   qrk::Window win(SCREEN_WIDTH, SCREEN_HEIGHT, "Model render");
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-  win.toggleMouseCapture();
+  win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::TOGGLE_MOUSE_CAPTURE);
   camera.setAspectRatio(win.getSize());
   auto window = win.getGlfwRef();
