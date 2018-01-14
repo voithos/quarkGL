@@ -30,6 +30,7 @@ Window::Window(int width, int height, const char* title, bool fullscreen) {
   // A few options are enabled by default.
   enableDepthTest();
   enableResizeUpdates();
+  enableKeyInput();
 }
 
 Window::~Window() {
@@ -73,6 +74,23 @@ void Window::disableResizeUpdates() {
   resizeUpdatesEnabled_ = false;
 }
 
+void Window::enableKeyInput() {
+  if (keyInputEnabled_) return;
+  auto callback = [](GLFWwindow* window, int key, int scancode, int action,
+                     int mods) {
+    auto self = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    self->keyCallback(key, scancode, action, mods);
+  };
+  glfwSetKeyCallback(window_, callback);
+  keyInputEnabled_ = true;
+}
+
+void Window::disableKeyInput() {
+  if (!keyInputEnabled_) return;
+  glfwSetKeyCallback(window_, nullptr);
+  keyInputEnabled_ = false;
+}
+
 void Window::framebufferSizeCallback(GLFWwindow* window, int width,
                                      int height) {
   // TODO: Propagate the new aspect ratio to the camera.
@@ -94,8 +112,10 @@ void Window::makeWindowed() {
                        /* refreshRate */ GLFW_DONT_CARE);
 }
 
-void Window::processInput(float deltaTime) {
-  if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+void Window::processInput(float deltaTime) {}
+
+void Window::keyCallback(int key, int scancode, int action, int mods) {
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     if (escBehavior_ == EscBehavior::TOGGLE_MOUSE_CAPTURE) {
       auto inputMode = glfwGetInputMode(window_, GLFW_CURSOR);
       if (inputMode == GLFW_CURSOR_NORMAL) {

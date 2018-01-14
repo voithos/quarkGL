@@ -32,7 +32,6 @@ enum class EscBehavior {
 class Window : public UniformSource {
  private:
   GLFWwindow* window_;
-  bool resizeUpdatesEnabled_ = false;
   bool depthTestEnabled_ = false;
   bool stencilTestEnabled_ = false;
   bool blendingEnabled_ = false;
@@ -42,7 +41,10 @@ class Window : public UniformSource {
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
   EscBehavior escBehavior_ = EscBehavior::NONE;
+  bool resizeUpdatesEnabled_ = false;
+  bool keyInputEnabled_ = false;
   void processInput(float deltaTime);
+  void keyCallback(int key, int scancode, int action, int mods);
   void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
  public:
@@ -111,6 +113,8 @@ class Window : public UniformSource {
 
   EscBehavior getEscBehavior() { return escBehavior_; }
   void setEscBehavior(EscBehavior behavior) { escBehavior_ = behavior; }
+  void enableKeyInput();
+  void disableKeyInput();
   void enableMouseCapture();
   void disableMouseCapture();
 
