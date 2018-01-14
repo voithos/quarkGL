@@ -37,7 +37,7 @@ glm::mat4 Camera::getPerspectiveTransform() {
   return glm::perspective(glm::radians(getFov()), aspectRatio_, near_, far_);
 }
 
-void Camera::processKeyboard(CameraDirection direction, float deltaTime) {
+void Camera::move(CameraDirection direction, float deltaTime) {
   float velocity = speed_ * deltaTime;
   if (direction == CameraDirection::FORWARD) {
     position_ += front_ * velocity;
@@ -53,8 +53,7 @@ void Camera::processKeyboard(CameraDirection direction, float deltaTime) {
   }
 }
 
-void Camera::processMouseMove(float xoffset, float yoffset,
-                              bool constrainPitch) {
+void Camera::rotate(float xoffset, float yoffset, bool constrainPitch) {
   xoffset *= sensitivity_;
   yoffset *= sensitivity_;
 
@@ -69,7 +68,7 @@ void Camera::processMouseMove(float xoffset, float yoffset,
   updateCameraVectors();
 }
 
-void Camera::processMouseScroll(float yoffset) {
-  fov_ = glm::clamp(fov_ - yoffset, MIN_FOV, MAX_FOV);
+void Camera::zoom(float offset) {
+  fov_ = glm::clamp(fov_ - offset, MIN_FOV, MAX_FOV);
 }
 }  // namespace qrk

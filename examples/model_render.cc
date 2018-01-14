@@ -27,7 +27,7 @@ bool initialMouse = true;
 qrk::Camera camera(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-  camera.processMouseScroll(yoffset);
+  camera.zoom(yoffset);
 }
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
@@ -42,21 +42,21 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
   lastX = xpos;
   lastY = ypos;
 
-  camera.processMouseMove(xoffset, yoffset);
+  camera.rotate(xoffset, yoffset);
 }
 
 void processInput(GLFWwindow* window, float deltaTime) {
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    camera.processKeyboard(qrk::CameraDirection::FORWARD, deltaTime);
+    camera.move(qrk::CameraDirection::FORWARD, deltaTime);
   }
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    camera.processKeyboard(qrk::CameraDirection::LEFT, deltaTime);
+    camera.move(qrk::CameraDirection::LEFT, deltaTime);
   }
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    camera.processKeyboard(qrk::CameraDirection::BACKWARD, deltaTime);
+    camera.move(qrk::CameraDirection::BACKWARD, deltaTime);
   }
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    camera.processKeyboard(qrk::CameraDirection::RIGHT, deltaTime);
+    camera.move(qrk::CameraDirection::RIGHT, deltaTime);
   }
 }
 

@@ -72,10 +72,9 @@ class Camera {
 
   glm::mat4 getViewTransform();
   glm::mat4 getPerspectiveTransform();
-  void processKeyboard(CameraDirection direction, float deltaTime);
-  void processMouseMove(float xoffset, float yoffset,
-                        bool constrainPitch = true);
-  void processMouseScroll(float yoffset);
+  void move(CameraDirection direction, float deltaTime);
+  void rotate(float xoffset, float yoffset, bool constrainPitch = true);
+  void zoom(float offset);
 };
 }  // namespace qrk
 
