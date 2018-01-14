@@ -135,8 +135,6 @@ int main() {
   camera.setAspectRatio(win->getSize());
   auto window = win->getGlfwRef();
 
-  glfwSetInputMode(win->getGlfwRef(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
   // TODO: Clean these calls up by moving them into qrk::Window.
   glfwSetScrollCallback(window, scrollCallback);
   glfwSetCursorPosCallback(window, mouseCallback);
