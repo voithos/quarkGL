@@ -49,10 +49,6 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void processInput(GLFWwindow* window, float deltaTime) {
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, true);
-  }
-
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
     camera.processKeyboard(qrk::CameraDirection::FORWARD, deltaTime);
   }
@@ -138,6 +134,7 @@ int main() {
   auto win = std::make_shared<qrk::Window>(SCREEN_WIDTH, SCREEN_HEIGHT,
                                            "Post processing");
   win->setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+  win->enableEscToClose();
   camera.setAspectRatio(win->getSize());
   auto window = win->getGlfwRef();
 

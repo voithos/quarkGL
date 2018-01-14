@@ -67,6 +67,12 @@ void Window::makeWindowed() {
                        /* refreshRate */ GLFW_DONT_CARE);
 }
 
+void Window::processInput(float deltaTime) {
+  if (escToClose_ && glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window_, true);
+  }
+}
+
 void Window::loop(std::function<void(float)> callback) {
   // TODO: Add exception handling here.
   while (!glfwWindowShouldClose(window_)) {
@@ -84,6 +90,9 @@ void Window::loop(std::function<void(float)> callback) {
       clearBits |= GL_STENCIL_BUFFER_BIT;
     }
     glClear(clearBits);
+
+    // Process necessary input.
+    processInput(deltaTime_);
 
     // Call the loop function.
     callback(deltaTime_);

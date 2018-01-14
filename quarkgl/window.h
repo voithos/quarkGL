@@ -34,6 +34,9 @@ class Window : public UniformSource {
   float deltaTime_ = 0.0f;
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
+  bool escToClose_ = false;
+  void processInput(float deltaTime);
+
  public:
   Window(int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT,
          const char* title = DEFAULT_TITLE, bool fullscreen = false);
@@ -94,6 +97,9 @@ class Window : public UniformSource {
 
   void makeFullscreen();
   void makeWindowed();
+
+  void enableEscToClose() { escToClose_ = true; }
+  void disableEscToClose() { escToClose_ = false; }
 
   void loop(std::function<void(float)> callback);
 
