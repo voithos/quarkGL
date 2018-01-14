@@ -24,7 +24,12 @@ Window::Window(int width, int height, const char* title, bool fullscreen) {
     throw WindowException("ERROR::WINDOW::GLAD_INITIALIZATION_FAILED");
   }
 
+  // Allow us to refer to the object while accessing C APIs.
+  glfwSetWindowUserPointer(window_, this);
+
+  // A few options are enabled by default.
   enableDepthTest();
+  enableResizeUpdates();
 }
 
 Window::~Window() {
@@ -50,6 +55,28 @@ ScreenSize Window::getSize() {
 
 void Window::setSize(int width, int height) {
   glfwSetWindowSize(window_, width, height);
+}
+
+void Window::enableResizeUpdates() {
+  if (resizeUpdatesEnabled_) return;
+  auto callback = [](GLFWwindow* window, int width, int height) {
+    auto self = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    self->framebufferSizeCallback(window, width, height);
+  };
+  glfwSetFramebufferSizeCallback(getGlfwRef(), callback);
+  resizeUpdatesEnabled_ = true;
+}
+
+void Window::disableResizeUpdates() {
+  if (!resizeUpdatesEnabled_) return;
+  glfwSetFramebufferSizeCallback(getGlfwRef(), nullptr);
+  resizeUpdatesEnabled_ = false;
+}
+
+void Window::framebufferSizeCallback(GLFWwindow* window, int width,
+                                     int height) {
+  // TODO: Propagate the new aspect ratio to the camera.
+  glViewport(0, 0, width, height);
 }
 
 void Window::makeFullscreen() {

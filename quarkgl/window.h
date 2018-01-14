@@ -32,6 +32,7 @@ enum class EscBehavior {
 class Window : public UniformSource {
  private:
   GLFWwindow* window_;
+  bool resizeUpdatesEnabled_ = false;
   bool depthTestEnabled_ = false;
   bool stencilTestEnabled_ = false;
   bool blendingEnabled_ = false;
@@ -42,6 +43,7 @@ class Window : public UniformSource {
 
   EscBehavior escBehavior_ = EscBehavior::NONE;
   void processInput(float deltaTime);
+  void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
  public:
   Window(int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT,
@@ -98,6 +100,9 @@ class Window : public UniformSource {
 
   ScreenSize getSize();
   void setSize(int width, int height);
+  void enableResizeUpdates();
+  void disableResizeUpdates();
+
   glm::vec4 getClearColor() { return clearColor_; }
   void setClearColor(glm::vec4 color) { clearColor_ = color; }
 

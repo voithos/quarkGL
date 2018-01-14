@@ -1,5 +1,6 @@
 # TODOs
 
+- [ ] Consider supporting uniform buffer objects.
 - [ ] Add a way to load shader code from a string (with import support).
 - [ ] Allow rendering a VAO with a given shader.
 - [ ] Add a wireframe mode.
@@ -17,6 +18,7 @@
 - [ ] Add more documentation.
 - [ ] Add logging support.
 - [ ] Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
+- [ ] Add stacktraces to exceptions.
 
 ## Examples to make
 

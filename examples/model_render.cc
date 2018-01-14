@@ -26,10 +26,6 @@ bool initialMouse = true;
 
 qrk::Camera camera(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
-  glViewport(0, 0, width, height);
-}
-
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
   camera.processMouseScroll(yoffset);
 }
@@ -120,7 +116,6 @@ int main() {
   auto window = win.getGlfwRef();
 
   // TODO: Clean these calls up by moving them into qrk::Window.
-  glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
   glfwSetScrollCallback(window, scrollCallback);
   glfwSetCursorPosCallback(window, mouseCallback);
 
