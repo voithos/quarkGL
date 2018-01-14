@@ -134,7 +134,8 @@ int main() {
   auto win = std::make_shared<qrk::Window>(SCREEN_WIDTH, SCREEN_HEIGHT,
                                            "Post processing");
   win->setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-  win->enableEscToClose();
+  win->toggleMouseCapture();
+  win->setEscBehavior(qrk::EscBehavior::TOGGLE_MOUSE_CAPTURE);
   camera.setAspectRatio(win->getSize());
   auto window = win->getGlfwRef();
 

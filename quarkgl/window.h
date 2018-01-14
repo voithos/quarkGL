@@ -23,6 +23,12 @@ constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 constexpr char const* DEFAULT_TITLE = "quarkGL";
 
+enum class EscBehavior {
+  NONE,
+  TOGGLE_MOUSE_CAPTURE,
+  CLOSE,
+};
+
 class Window : public UniformSource {
  private:
   GLFWwindow* window_;
@@ -34,7 +40,7 @@ class Window : public UniformSource {
   float deltaTime_ = 0.0f;
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
-  bool escToClose_ = false;
+  EscBehavior escBehavior_ = EscBehavior::NONE;
   void processInput(float deltaTime);
 
  public:
@@ -98,8 +104,8 @@ class Window : public UniformSource {
   void makeFullscreen();
   void makeWindowed();
 
-  void enableEscToClose() { escToClose_ = true; }
-  void disableEscToClose() { escToClose_ = false; }
+  void setEscBehavior(EscBehavior behavior) { escBehavior_ = behavior; }
+  void toggleMouseCapture();
 
   void loop(std::function<void(float)> callback);
 

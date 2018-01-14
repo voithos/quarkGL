@@ -68,8 +68,21 @@ void Window::makeWindowed() {
 }
 
 void Window::processInput(float deltaTime) {
-  if (escToClose_ && glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window_, true);
+  if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    if (escBehavior_ == EscBehavior::TOGGLE_MOUSE_CAPTURE) {
+      toggleMouseCapture();
+    } else if (escBehavior_ == EscBehavior::CLOSE) {
+      glfwSetWindowShouldClose(window_, true);
+    }
+  }
+}
+
+void Window::toggleMouseCapture() {
+  auto inputMode = glfwGetInputMode(window_, GLFW_CURSOR);
+  if (inputMode == GLFW_CURSOR_DISABLED) {
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+  } else {
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   }
 }
 
