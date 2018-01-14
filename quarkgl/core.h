@@ -10,6 +10,8 @@
 namespace qrk {
 void init();
 void terminate();
+void enableGlfwErrorLogging();
+void disableGlfwErrorLogging();
 float time();
 }  // namespace qrk
 
