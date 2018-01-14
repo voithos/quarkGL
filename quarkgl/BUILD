@@ -19,9 +19,11 @@ cc_library(
     include_prefix = "qrk",
     visibility = ["//visibility:public"],
     deps = [
+        ":core",
         ":shared",
         "//third_party/glad",
         "//third_party/glm",
+        "@glfw//:glfw",
     ],
 )
 
@@ -163,6 +165,7 @@ cc_library(
     include_prefix = "qrk",
     visibility = ["//visibility:public"],
     deps = [
+        ":camera",
         ":core",
         ":shader",
         ":shared",

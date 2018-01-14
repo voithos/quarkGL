@@ -16,50 +16,6 @@
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>
 
-const unsigned int SCREEN_WIDTH = 800;
-const unsigned int SCREEN_HEIGHT = 600;
-
-// TODO: Abstract first-person camera controls.
-float lastX = SCREEN_WIDTH / 2.0f;
-float lastY = SCREEN_HEIGHT / 2.0f;
-bool initialMouse = true;
-
-qrk::Camera camera(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
-
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-  camera.zoom(yoffset);
-}
-
-void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-  if (initialMouse) {
-    lastX = xpos;
-    lastY = ypos;
-    initialMouse = false;
-  }
-  float xoffset = xpos - lastX;
-  // Reversed since y-coordinates range from bottom to top.
-  float yoffset = lastY - ypos;
-  lastX = xpos;
-  lastY = ypos;
-
-  camera.rotate(xoffset, yoffset);
-}
-
-void processInput(GLFWwindow* window, float deltaTime) {
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::FORWARD, deltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::LEFT, deltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::BACKWARD, deltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::RIGHT, deltaTime);
-  }
-}
-
 // clang-format off
 float vertices[] = {
     // positions          // normals           // texture coords
@@ -108,16 +64,16 @@ float vertices[] = {
 // clang-format on
 
 int main() {
-  qrk::Window win(SCREEN_WIDTH, SCREEN_HEIGHT, "Model render");
+  qrk::Window win(800, 600, "Model render");
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::TOGGLE_MOUSE_CAPTURE);
-  camera.setAspectRatio(win.getSize());
-  auto window = win.getGlfwRef();
 
-  // TODO: Clean these calls up by moving them into qrk::Window.
-  glfwSetScrollCallback(window, scrollCallback);
-  glfwSetCursorPosCallback(window, mouseCallback);
+  auto camera =
+      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
+  auto cameraControls = std::make_shared<qrk::FPSCameraControls>();
+  win.bindCamera(camera);
+  win.bindCameraControls(cameraControls);
 
   qrk::Shader mainShader("examples/phong.vert", "examples/phong.frag");
 
@@ -156,10 +112,8 @@ int main() {
 
   win.enableCulling();
   win.loop([&](float deltaTime) {
-    processInput(window, deltaTime);
-
-    glm::mat4 view = camera.getViewTransform();
-    glm::mat4 projection = camera.getPerspectiveTransform();
+    glm::mat4 view = camera->getViewTransform();
+    glm::mat4 projection = camera->getPerspectiveTransform();
 
     // Setup shader and lights.
     mainShader.activate();

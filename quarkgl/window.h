@@ -2,6 +2,7 @@
 #define QUARKGL_WINDOW_H_
 
 #include <functional>
+#include <memory>
 
 // Must precede glfw/glad, to include OpenGL functions.
 #include <qrk/core.h>
@@ -10,6 +11,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+#include <qrk/camera.h>
 #include <qrk/shader.h>
 #include <qrk/shared.h>
 
@@ -43,9 +45,17 @@ class Window : public UniformSource {
   EscBehavior escBehavior_ = EscBehavior::NONE;
   bool resizeUpdatesEnabled_ = false;
   bool keyInputEnabled_ = false;
+  bool scrollInputEnabled_ = false;
+  bool mouseMoveInputEnabled_ = false;
+
   void processInput(float deltaTime);
   void keyCallback(int key, int scancode, int action, int mods);
+  void scrollCallback(double xoffset, double yoffset);
+  void mouseMoveCallback(double xpos, double ypos);
   void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+
+  std::shared_ptr<Camera> boundCamera_ = nullptr;
+  std::shared_ptr<CameraControls> boundCameraControls_ = nullptr;
 
  public:
   Window(int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT,
@@ -113,10 +123,19 @@ class Window : public UniformSource {
 
   EscBehavior getEscBehavior() { return escBehavior_; }
   void setEscBehavior(EscBehavior behavior) { escBehavior_ = behavior; }
+
   void enableKeyInput();
   void disableKeyInput();
+  void enableScrollInput();
+  void disableScrollInput();
+  void enableMouseMoveInput();
+  void disableMouseMoveInput();
+
   void enableMouseCapture();
   void disableMouseCapture();
+
+  void bindCamera(std::shared_ptr<Camera> camera);
+  void bindCameraControls(std::shared_ptr<CameraControls> cameraControls);
 
   void loop(std::function<void(float)> callback);
 

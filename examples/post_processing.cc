@@ -16,49 +16,6 @@
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>
 
-const unsigned int SCREEN_WIDTH = 800;
-const unsigned int SCREEN_HEIGHT = 600;
-
-float lastX = SCREEN_WIDTH / 2.0f;
-float lastY = SCREEN_HEIGHT / 2.0f;
-bool initialMouse = true;
-
-qrk::Camera camera(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
-
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-  camera.zoom(yoffset);
-}
-
-void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-  if (initialMouse) {
-    lastX = xpos;
-    lastY = ypos;
-    initialMouse = false;
-  }
-  float xoffset = xpos - lastX;
-  // Reversed since y-coordinates range from bottom to top.
-  float yoffset = lastY - ypos;
-  lastX = xpos;
-  lastY = ypos;
-
-  camera.rotate(xoffset, yoffset);
-}
-
-void processInput(GLFWwindow* window, float deltaTime) {
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::FORWARD, deltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::LEFT, deltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::BACKWARD, deltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::RIGHT, deltaTime);
-  }
-}
-
 // clang-format off
 float cubeVertices[] = {
     // positions          // texture coords
@@ -127,17 +84,16 @@ float quadVertices[] = {
 // clang-format on
 
 int main() {
-  auto win = std::make_shared<qrk::Window>(SCREEN_WIDTH, SCREEN_HEIGHT,
-                                           "Post processing");
+  auto win = std::make_shared<qrk::Window>(800, 600, "Post processing");
   win->setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   win->enableMouseCapture();
   win->setEscBehavior(qrk::EscBehavior::TOGGLE_MOUSE_CAPTURE);
-  camera.setAspectRatio(win->getSize());
-  auto window = win->getGlfwRef();
 
-  // TODO: Clean these calls up by moving them into qrk::Window.
-  glfwSetScrollCallback(window, scrollCallback);
-  glfwSetCursorPosCallback(window, mouseCallback);
+  auto camera =
+      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
+  auto cameraControls = std::make_shared<qrk::FPSCameraControls>();
+  win->bindCamera(camera);
+  win->bindCameraControls(cameraControls);
 
   qrk::Shader mainShader("examples/texture_simple.vert",
                          "examples/texture_simple.frag");
@@ -176,15 +132,13 @@ int main() {
   screenShader.addUniformSource(win);
 
   win->loop([&](float deltaTime) {
-    processInput(window, deltaTime);
-
     fb.activate();
     fb.clear();
 
-    glm::mat4 view = camera.getViewTransform();
-    glm::mat4 projection = camera.getPerspectiveTransform();
+    glm::mat4 view = camera->getViewTransform();
+    glm::mat4 projection = camera->getPerspectiveTransform();
 
-    // Setup shader and textures.
+    // Setup shader and textures for the framebuffer.
     mainShader.activate();
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
@@ -192,7 +146,7 @@ int main() {
 
     glm::mat4 model;
 
-    // Cubes.
+    // Draw cubes.
     cubeVarray.activate();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, cubeTexture);
@@ -204,7 +158,7 @@ int main() {
     mainShader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    // Floor.
+    // Draw floor.
     planeVarray.activate();
     glBindTexture(GL_TEXTURE_2D, floorTexture);
     mainShader.setMat4("model", glm::mat4());
@@ -213,6 +167,7 @@ int main() {
 
     fb.deactivate();
 
+    // Finally, draw to the screen based on the framebuffer contents.
     screenShader.updateUniforms();
     screenShader.activate();
     screenShader.setInt("screenTexture", 0);

@@ -3,6 +3,10 @@
 
 #include <vector>
 
+// Must precede glfw/glad, to include OpenGL functions.
+#include <qrk/core.h>
+
+#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -76,6 +80,33 @@ class Camera {
   void rotate(float xoffset, float yoffset, bool constrainPitch = true);
   void zoom(float offset);
 };
+
+class CameraControls {
+ public:
+  virtual void resizeWindow(int width, int height) = 0;
+  virtual void scroll(Camera& camera, double xoffset, double yoffset) = 0;
+  virtual void mouseMove(Camera& camera, double xpos, double ypos) = 0;
+  virtual void processInput(GLFWwindow* window, Camera& camera,
+                            float deltaTime) = 0;
+};
+
+class FPSCameraControls : public CameraControls {
+ private:
+  bool initialized_ = false;
+  int width_;
+  int height_;
+
+  float lastX_;
+  float lastY_;
+  bool initialMouse_ = true;
+
+ public:
+  void resizeWindow(int width, int height);
+  void scroll(Camera& camera, double xoffset, double yoffset);
+  void mouseMove(Camera& camera, double xpos, double ypos);
+  void processInput(GLFWwindow* window, Camera& camera, float deltaTime);
+};
+
 }  // namespace qrk
 
 #endif

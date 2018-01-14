@@ -31,6 +31,8 @@ Window::Window(int width, int height, const char* title, bool fullscreen) {
   enableDepthTest();
   enableResizeUpdates();
   enableKeyInput();
+  enableScrollInput();
+  enableMouseMoveInput();
 }
 
 Window::~Window() {
@@ -91,10 +93,48 @@ void Window::disableKeyInput() {
   keyInputEnabled_ = false;
 }
 
+void Window::enableScrollInput() {
+  if (scrollInputEnabled_) return;
+  auto callback = [](GLFWwindow* window, double xoffset, double yoffset) {
+    auto self = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    self->scrollCallback(xoffset, yoffset);
+  };
+  glfwSetScrollCallback(window_, callback);
+  scrollInputEnabled_ = true;
+}
+
+void Window::disableScrollInput() {
+  if (!scrollInputEnabled_) return;
+  glfwSetScrollCallback(window_, nullptr);
+  scrollInputEnabled_ = false;
+}
+
+void Window::enableMouseMoveInput() {
+  if (mouseMoveInputEnabled_) return;
+  auto callback = [](GLFWwindow* window, double xpos, double ypos) {
+    auto self = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    self->mouseMoveCallback(xpos, ypos);
+  };
+  glfwSetCursorPosCallback(window_, callback);
+  mouseMoveInputEnabled_ = true;
+}
+
+void Window::disableMouseMoveInput() {
+  if (!mouseMoveInputEnabled_) return;
+  glfwSetCursorPosCallback(window_, nullptr);
+  mouseMoveInputEnabled_ = false;
+}
+
 void Window::framebufferSizeCallback(GLFWwindow* window, int width,
                                      int height) {
-  // TODO: Propagate the new aspect ratio to the camera.
   glViewport(0, 0, width, height);
+
+  if (boundCamera_) {
+    boundCamera_->setAspectRatio(width / static_cast<float>(height));
+  }
+  if (boundCameraControls_) {
+    boundCameraControls_->resizeWindow(width, height);
+  }
 }
 
 void Window::makeFullscreen() {
@@ -112,7 +152,11 @@ void Window::makeWindowed() {
                        /* refreshRate */ GLFW_DONT_CARE);
 }
 
-void Window::processInput(float deltaTime) {}
+void Window::processInput(float deltaTime) {
+  if (boundCameraControls_) {
+    boundCameraControls_->processInput(getGlfwRef(), *boundCamera_, deltaTime);
+  }
+}
 
 void Window::keyCallback(int key, int scancode, int action, int mods) {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -129,12 +173,41 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
   }
 }
 
+void Window::scrollCallback(double xoffset, double yoffset) {
+  if (boundCameraControls_) {
+    boundCameraControls_->scroll(*boundCamera_, xoffset, yoffset);
+  }
+}
+
+void Window::mouseMoveCallback(double xpos, double ypos) {
+  if (boundCameraControls_) {
+    boundCameraControls_->mouseMove(*boundCamera_, xpos, ypos);
+  }
+}
+
 void Window::enableMouseCapture() {
   glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Window::disableMouseCapture() {
   glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Window::bindCamera(std::shared_ptr<Camera> camera) {
+  boundCamera_ = camera;
+  boundCamera_->setAspectRatio(getSize());
+}
+
+void Window::bindCameraControls(
+    std::shared_ptr<CameraControls> cameraControls) {
+  if (!boundCamera_) {
+    throw WindowException(
+        "ERROR::WINDOW::BIND_CAMERA_CONTROLS_FAILED\n"
+        "Camera must be bound before camera controls.");
+  }
+  boundCameraControls_ = cameraControls;
+  ScreenSize size = getSize();
+  boundCameraControls_->resizeWindow(size.width, size.height);
 }
 
 void Window::loop(std::function<void(float)> callback) {

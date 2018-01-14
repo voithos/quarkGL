@@ -71,4 +71,54 @@ void Camera::rotate(float xoffset, float yoffset, bool constrainPitch) {
 void Camera::zoom(float offset) {
   fov_ = glm::clamp(fov_ - offset, MIN_FOV, MAX_FOV);
 }
+
+/**
+ * FPSCameraControls *
+ */
+
+void FPSCameraControls::resizeWindow(int width, int height) {
+  width_ = width;
+  height_ = height;
+  if (!initialized_) {
+    lastX_ = width_ / 2.0f;
+    lastY_ = height_ / 2.0f;
+    initialized_ = true;
+  }
+}
+
+void FPSCameraControls::scroll(Camera& camera, double xoffset, double yoffset) {
+  camera.zoom(yoffset);
+}
+
+void FPSCameraControls::mouseMove(Camera& camera, double xpos, double ypos) {
+  if (initialMouse_) {
+    lastX_ = xpos;
+    lastY_ = ypos;
+    initialMouse_ = false;
+  }
+  float xoffset = xpos - lastX_;
+  // Reversed since y-coordinates range from bottom to top.
+  float yoffset = lastY_ - ypos;
+  lastX_ = xpos;
+  lastY_ = ypos;
+
+  camera.rotate(xoffset, yoffset);
+}
+
+void FPSCameraControls::processInput(GLFWwindow* window, Camera& camera,
+                                     float deltaTime) {
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    camera.move(qrk::CameraDirection::FORWARD, deltaTime);
+  }
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    camera.move(qrk::CameraDirection::LEFT, deltaTime);
+  }
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    camera.move(qrk::CameraDirection::BACKWARD, deltaTime);
+  }
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    camera.move(qrk::CameraDirection::RIGHT, deltaTime);
+  }
+}
+
 }  // namespace qrk
