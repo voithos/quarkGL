@@ -67,7 +67,7 @@ int main() {
   qrk::Window win(800, 600, "Model render");
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   win.enableMouseCapture();
-  win.setEscBehavior(qrk::EscBehavior::TOGGLE_MOUSE_CAPTURE);
+  win.setEscBehavior(qrk::EscBehavior::CLOSE);
 
   auto camera =
       std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
