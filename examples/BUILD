@@ -36,12 +36,35 @@ cc_binary(
 )
 
 cc_binary(
+    name = "geom_shader",
+    srcs = ["geom_shader.cc"],
+    data = [
+        "lamp.frag",
+        "phong.frag",
+        "phong.vert",
+        "phong.geom",
+    ] + glob(["nanosuit/*"]),
+    linkopts = QRK_LINKOPTS,
+    deps = [
+        "//quarkgl:camera",
+        "//quarkgl:core",
+        "//quarkgl:light",
+        "//quarkgl:model",
+        "//quarkgl:shader",
+        "//quarkgl:vertex_array",
+        "//quarkgl:window",
+        "//third_party/glad",
+        "//third_party/glm",
+        "@glfw//:glfw",
+    ],
+)
+
+cc_binary(
     name = "post_processing",
     srcs = ["post_processing.cc"],
     data = [
         "texture_simple.frag",
         "texture_simple.vert",
-        "texture_simple.geom",
         "quad.frag",
         "quad.vert",
         "metal.png",

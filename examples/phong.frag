@@ -1,23 +1,28 @@
 #version 330 core
-#pragma qrk_include < core.frag >
+#pragma qrk_include < core.glsl >
 #pragma qrk_include < standard_lights.frag >
 #pragma qrk_include < depth.frag >
-in vec2 texCoords;
-in vec3 fragPos;
-in vec3 fragNormal;
+
+in VS_OUT {
+  vec2 texCoords;
+  vec3 fragPos;
+  vec3 fragNormal;
+}
+fs_in;
 
 out vec4 fragColor;
 
 uniform QrkMaterial material;
 
 void main() {
-  vec3 normal = normalize(fragNormal);
+  vec3 normal = normalize(fs_in.fragNormal);
 
   // Shade with normal lights.
-  vec3 result = qrk_shadeAllLights(material, fragPos, normal, texCoords);
+  vec3 result =
+      qrk_shadeAllLights(material, fs_in.fragPos, normal, fs_in.texCoords);
 
   // Add emissions.
-  result += qrk_shadeEmission(material, fragPos, texCoords);
+  result += qrk_shadeEmission(material, fs_in.fragPos, fs_in.texCoords);
 
-  fragColor = vec4(result, qrk_materialAlpha(material, texCoords));
+  fragColor = vec4(result, qrk_materialAlpha(material, fs_in.texCoords));
 }

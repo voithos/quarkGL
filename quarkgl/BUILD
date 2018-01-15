@@ -120,8 +120,10 @@ cc_library(
     srcs = ["shader_loader.cc"],
     hdrs = ["shader_loader.h"],
     data = glob([
+        "shaders/*.glsl",
         "shaders/*.vert",
         "shaders/*.frag",
+        "shaders/*.geom",
     ]),
     include_prefix = "qrk",
     deps = [

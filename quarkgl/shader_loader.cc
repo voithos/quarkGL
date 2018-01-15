@@ -19,12 +19,16 @@ std::string readFile(std::string const& path) {
 }
 
 void ShaderLoader::checkShaderType(std::string const& shaderPath) {
+  // Allow ".glsl" as a generic shader suffix (e.g. for type-agnostic shader
+  // code).
+  if (string_has_suffix(shaderPath, ".glsl")) return;
+
   switch (shaderType_) {
     case ShaderType::VERTEX:
       if (!string_has_suffix(shaderPath, ".vert")) {
         throw ShaderLoaderException(
             "ERROR::SHADER_LOADER::INVALID_EXTENSION\n"
-            "Vertex shader '" +
+            "Loaded vertex shader '" +
             shaderPath + "' must end in '.vert'.");
       }
       break;
@@ -32,7 +36,7 @@ void ShaderLoader::checkShaderType(std::string const& shaderPath) {
       if (!string_has_suffix(shaderPath, ".frag")) {
         throw ShaderLoaderException(
             "ERROR::SHADER_LOADER::INVALID_EXTENSION\n"
-            "Fragment shader '" +
+            "Loaded fragment shader '" +
             shaderPath + "' must end in '.frag'.");
       }
       break;
@@ -40,7 +44,7 @@ void ShaderLoader::checkShaderType(std::string const& shaderPath) {
       if (!string_has_suffix(shaderPath, ".geom")) {
         throw ShaderLoaderException(
             "ERROR::SHADER_LOADER::INVALID_EXTENSION\n"
-            "Geometry shader '" +
+            "Loaded geometry shader '" +
             shaderPath + "' must end in '.geom'.");
       }
       break;
