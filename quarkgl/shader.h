@@ -32,20 +32,16 @@ class Shader {
   void compileShaderProgram(unsigned int vertexShader,
                             unsigned int fragmentShader,
                             unsigned int geometryShader);
-  unsigned int loadAndCompileShader(const char* shaderPath,
-                                    const ShaderType type);
-  unsigned int loadAndCompileShader(const InlineShader& shaderSource,
+  unsigned int loadAndCompileShader(const ShaderSource& shaderSource,
                                     const ShaderType type);
   unsigned int compileShader(const char* shaderSource, const ShaderType type);
 
   int safeGetUniformLocation(const char* name);
 
  public:
-  Shader(const char* vertexPath, const char* fragmentPath,
-         const char* geometryPath = nullptr);
-  Shader(const InlineShader& vertexSource, const InlineShader& fragmentSource);
-  Shader(const InlineShader& vertexSource, const InlineShader& fragmentSource,
-         const InlineShader& geometrySource);
+  Shader(const ShaderSource& vertexSource, const ShaderSource& fragmentSource);
+  Shader(const ShaderSource& vertexSource, const ShaderSource& fragmentSource,
+         const ShaderSource& geometrySource);
   unsigned int getProgramId() { return shaderProgram_; }
 
   void activate();

@@ -19,9 +19,20 @@ struct ScreenSize {
   int height;
 };
 
-struct InlineShader {
-  inline InlineShader(const char* shaderSource) : shaderSource(shaderSource) {}
-  const char* shaderSource;
+struct ShaderSource {
+  inline explicit ShaderSource(const char* value) : value(value) {}
+  const char* value;
+  virtual bool isPath() const = 0;
+};
+
+struct ShaderInline : ShaderSource {
+  using ShaderSource::ShaderSource;
+  bool isPath() const { return false; }
+};
+
+struct ShaderPath : ShaderSource {
+  using ShaderSource::ShaderSource;
+  bool isPath() const { return true; }
 };
 
 enum class ShaderType {

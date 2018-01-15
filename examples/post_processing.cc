@@ -95,10 +95,10 @@ int main() {
   win->bindCamera(camera);
   win->bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader("examples/texture_simple.vert",
-                         "examples/texture_simple.frag");
-  qrk::Shader screenShader("examples/screen_quad.vert",
-                           "examples/screen_quad.frag");
+  qrk::Shader mainShader(qrk::ShaderPath("examples/texture_simple.vert"),
+                         qrk::ShaderPath("examples/texture_simple.frag"));
+  qrk::Shader screenShader(qrk::ShaderPath("examples/screen_quad.vert"),
+                           qrk::ShaderPath("examples/screen_quad.frag"));
 
   // Create a VAO for the boxes.
   qrk::VertexArray cubeVarray;

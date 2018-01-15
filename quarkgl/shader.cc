@@ -4,21 +4,8 @@
 
 namespace qrk {
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath,
-               const char* geometryPath) {
-  unsigned int vertexShader =
-      loadAndCompileShader(vertexPath, ShaderType::VERTEX);
-  unsigned int fragmentShader =
-      loadAndCompileShader(fragmentPath, ShaderType::FRAGMENT);
-  unsigned int geometryShader =
-      geometryPath ? loadAndCompileShader(geometryPath, ShaderType::GEOMETRY)
-                   : 0;
-
-  compileShaderProgram(vertexShader, fragmentShader, geometryShader);
-}
-
-Shader::Shader(const InlineShader& vertexSource,
-               const InlineShader& fragmentSource) {
+Shader::Shader(const ShaderSource& vertexSource,
+               const ShaderSource& fragmentSource) {
   unsigned int vertexShader =
       loadAndCompileShader(vertexSource, ShaderType::VERTEX);
   unsigned int fragmentShader =
@@ -27,9 +14,9 @@ Shader::Shader(const InlineShader& vertexSource,
   compileShaderProgram(vertexShader, fragmentShader, /* geometryShader */ 0);
 }
 
-Shader::Shader(const InlineShader& vertexSource,
-               const InlineShader& fragmentSource,
-               const InlineShader& geometrySource) {
+Shader::Shader(const ShaderSource& vertexSource,
+               const ShaderSource& fragmentSource,
+               const ShaderSource& geometrySource) {
   unsigned int vertexShader =
       loadAndCompileShader(vertexSource, ShaderType::VERTEX);
   unsigned int fragmentShader =
@@ -72,17 +59,9 @@ void Shader::compileShaderProgram(unsigned int vertexShader,
   }
 }
 
-unsigned int Shader::loadAndCompileShader(const char* shaderPath,
+unsigned int Shader::loadAndCompileShader(const ShaderSource& shaderSource,
                                           const ShaderType type) {
-  ShaderLoader shaderLoader(shaderPath, type);
-  std::string shaderString = shaderLoader.load();
-  const char* shaderSource = shaderString.c_str();
-  return compileShader(shaderSource, type);
-}
-
-unsigned int Shader::loadAndCompileShader(const InlineShader& shaderSource,
-                                          const ShaderType type) {
-  ShaderLoader shaderLoader(shaderSource, type);
+  ShaderLoader shaderLoader(&shaderSource, type);
   std::string shaderString = shaderLoader.load();
   const char* resolvedSource = shaderString.c_str();
   return compileShader(resolvedSource, type);

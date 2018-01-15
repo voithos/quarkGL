@@ -15,8 +15,7 @@ class ShaderLoaderException : public QuarkException {
 
 class ShaderLoader {
  private:
-  const char* shaderPath_;
-  const char* shaderSource_;
+  const ShaderSource* shaderSource_;
   const ShaderType shaderType_;
   std::deque<std::string> includeChain_;
   std::unordered_map<std::string, std::string> codeCache_;
@@ -32,8 +31,7 @@ class ShaderLoader {
   bool checkCircularInclude(std::string const& resolvedPath);
 
  public:
-  ShaderLoader(const char* shaderPath, const ShaderType type);
-  ShaderLoader(const InlineShader& shaderSource, const ShaderType type);
+  ShaderLoader(const ShaderSource* shaderSource, const ShaderType type);
   std::string load();
 };
 }  // namespace qrk
