@@ -97,7 +97,8 @@ int main() {
 
   qrk::Shader mainShader("examples/texture_simple.vert",
                          "examples/texture_simple.frag");
-  qrk::Shader screenShader("examples/quad.vert", "examples/quad.frag");
+  qrk::Shader screenShader("examples/screen_quad.vert",
+                           "examples/screen_quad.frag");
 
   // Create a VAO for the boxes.
   qrk::VertexArray cubeVarray;

@@ -18,7 +18,7 @@ cc_binary(
     data = [
         "lamp.frag",
         "phong.frag",
-        "phong.vert",
+        "model.vert",
     ] + glob(["nanosuit/*"]),
     linkopts = QRK_LINKOPTS,
     deps = [
@@ -41,8 +41,8 @@ cc_binary(
     data = [
         "lamp.frag",
         "phong.frag",
-        "phong.vert",
-        "phong.geom",
+        "model.vert",
+        "explode.geom",
     ] + glob(["nanosuit/*"]),
     linkopts = QRK_LINKOPTS,
     deps = [
@@ -65,8 +65,8 @@ cc_binary(
     data = [
         "texture_simple.frag",
         "texture_simple.vert",
-        "quad.frag",
-        "quad.vert",
+        "screen_quad.frag",
+        "screen_quad.vert",
         "metal.png",
         "container.jpg",
     ] + glob(["nanosuit/*"]),

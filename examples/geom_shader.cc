@@ -75,8 +75,8 @@ int main() {
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader("examples/phong.vert", "examples/phong.frag",
-                         "examples/phong.geom");
+  qrk::Shader mainShader("examples/model.vert", "examples/phong.frag",
+                         "examples/explode.geom");
 
   mainShader.setFloat("material.shininess", 8.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
@@ -97,7 +97,7 @@ int main() {
   pointLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
   registry->addLight(pointLight);
 
-  qrk::Shader lampShader("examples/phong.vert", "examples/lamp.frag");
+  qrk::Shader lampShader("examples/model.vert", "examples/lamp.frag");
 
   // Create a VAO for the light.
   // TODO: Make this into a sphere.
