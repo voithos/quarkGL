@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 namespace qrk {
@@ -21,6 +22,7 @@ struct ScreenSize {
 enum class ShaderType {
   VERTEX,
   FRAGMENT,
+  GEOMETRY,
 };
 
 inline const char* shaderTypeToString(ShaderType type) {
@@ -29,6 +31,21 @@ inline const char* shaderTypeToString(ShaderType type) {
       return "VERTEX";
     case ShaderType::FRAGMENT:
       return "FRAGMENT";
+    case ShaderType::GEOMETRY:
+      return "GEOMETRY";
+  }
+  throw QuarkException("ERROR::SHADER::INVALID_SHADER_TYPE\n" +
+                       std::to_string(static_cast<int>(type)));
+}
+
+inline const GLenum shaderTypeToGlShaderType(ShaderType type) {
+  switch (type) {
+    case ShaderType::VERTEX:
+      return GL_VERTEX_SHADER;
+    case ShaderType::FRAGMENT:
+      return GL_FRAGMENT_SHADER;
+    case ShaderType::GEOMETRY:
+      return GL_GEOMETRY_SHADER;
   }
   throw QuarkException("ERROR::SHADER::INVALID_SHADER_TYPE\n" +
                        std::to_string(static_cast<int>(type)));

@@ -136,6 +136,7 @@ cc_library(
     include_prefix = "qrk",
     visibility = ["//visibility:public"],
     deps = [
+        "//third_party/glad",
         "//third_party/glm",
     ],
 )

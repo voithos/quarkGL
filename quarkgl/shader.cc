@@ -4,17 +4,22 @@
 
 namespace qrk {
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
-  loadAndCompileShaderProgram(vertexPath, fragmentPath);
+Shader::Shader(const char* vertexPath, const char* fragmentPath,
+               const char* geometryPath) {
+  loadAndCompileShaderProgram(vertexPath, fragmentPath, geometryPath);
 }
 
 void Shader::loadAndCompileShaderProgram(const char* vertexPath,
-                                         const char* fragmentPath) {
+                                         const char* fragmentPath,
+                                         const char* geometryPath) {
   // Load and compile individual shaders.
   unsigned int vertexShader =
       loadAndCompileShader(vertexPath, ShaderType::VERTEX);
   unsigned int fragmentShader =
       loadAndCompileShader(fragmentPath, ShaderType::FRAGMENT);
+  unsigned int geometryShader =
+      geometryPath ? loadAndCompileShader(geometryPath, ShaderType::GEOMETRY)
+                   : 0;
 
   int success;
   char infoLog[512];
@@ -24,6 +29,9 @@ void Shader::loadAndCompileShaderProgram(const char* vertexPath,
 
   glAttachShader(shaderProgram_, vertexShader);
   glAttachShader(shaderProgram_, fragmentShader);
+  if (geometryPath) {
+    glAttachShader(shaderProgram_, geometryShader);
+  }
   glLinkProgram(shaderProgram_);
 
   glGetProgramiv(shaderProgram_, GL_LINK_STATUS, &success);
@@ -51,8 +59,7 @@ unsigned int Shader::loadAndCompileShader(const char* shaderPath,
   char infoLog[512];
 
   // Compile vertex shader.
-  GLenum glShaderType =
-      type == ShaderType::VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
+  GLenum glShaderType = shaderTypeToGlShaderType(type);
   shader = glCreateShader(glShaderType);
 
   glShaderSource(shader, 1, &shaderSource, nullptr);

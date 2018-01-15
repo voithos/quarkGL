@@ -36,6 +36,14 @@ void ShaderLoader::checkShaderType(std::string const& shaderPath) {
             shaderPath + "' must end in '.frag'.");
       }
       break;
+    case ShaderType::GEOMETRY:
+      if (!string_has_suffix(shaderPath, ".geom")) {
+        throw ShaderLoaderException(
+            "ERROR::SHADER_LOADER::INVALID_EXTENSION\n"
+            "Geometry shader '" +
+            shaderPath + "' must end in '.geom'.");
+      }
+      break;
   }
 }
 

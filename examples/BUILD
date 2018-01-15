@@ -41,6 +41,7 @@ cc_binary(
     data = [
         "texture_simple.frag",
         "texture_simple.vert",
+        "texture_simple.geom",
         "quad.frag",
         "quad.vert",
         "metal.png",
