@@ -19,6 +19,11 @@ struct ScreenSize {
   int height;
 };
 
+struct InlineShader {
+  inline InlineShader(const char* shaderSource) : shaderSource(shaderSource) {}
+  const char* shaderSource;
+};
+
 enum class ShaderType {
   VERTEX,
   FRAGMENT,

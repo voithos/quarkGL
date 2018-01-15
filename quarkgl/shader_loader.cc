@@ -68,10 +68,16 @@ bool ShaderLoader::checkCircularInclude(std::string const& resolvedPath) {
   return false;
 }
 
-ShaderLoader::ShaderLoader(const char* shaderPath, const ShaderType shaderType)
-    : shaderPath_(shaderPath), shaderType_(shaderType) {
+ShaderLoader::ShaderLoader(const char* shaderPath, const ShaderType type)
+    : shaderPath_(shaderPath), shaderSource_(nullptr), shaderType_(type) {
   checkShaderType(shaderPath);
 }
+
+ShaderLoader::ShaderLoader(const InlineShader& inlineSource,
+                           const ShaderType type)
+    : shaderPath_(nullptr),
+      shaderSource_(inlineSource.shaderSource),
+      shaderType_(type) {}
 
 std::string ShaderLoader::lookupOrLoad(std::string const& shaderPath) {
   std::string resolvedPath = resolvePath(shaderPath);
@@ -146,5 +152,12 @@ std::string ShaderLoader::preprocessShader(std::string const& shaderPath,
   return processedCode;
 }
 
-std::string ShaderLoader::load() { return load(shaderPath_); }
+std::string ShaderLoader::load() {
+  // Handle either loading from file, or loading from inline source.
+  if (shaderPath_) {
+    return load(shaderPath_);
+  } else {
+    return preprocessShader(".", shaderSource_);
+  }
+}
 }  // namespace qrk

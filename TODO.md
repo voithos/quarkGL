@@ -1,6 +1,5 @@
 # TODOs
 
-- [ ] Add a way to load shader code from a string (with import support).
 - [ ] Allow rendering a VAO with a given shader.
 - [ ] Add a wireframe mode.
 - [ ] Add a mechanism for working with textures.
@@ -27,6 +26,7 @@
 - Blending (alpha transparency) demo
 
 ## Done
+- [x] Add a way to load shader code from a string (with import support).
 - [x] Add deltaTime uniforms, etc
 - [x] Add support for the stencil buffer
 - [x] Add a mechanism to enable/disable depth testing

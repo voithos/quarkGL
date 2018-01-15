@@ -6,13 +6,6 @@ namespace qrk {
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath,
                const char* geometryPath) {
-  loadAndCompileShaderProgram(vertexPath, fragmentPath, geometryPath);
-}
-
-void Shader::loadAndCompileShaderProgram(const char* vertexPath,
-                                         const char* fragmentPath,
-                                         const char* geometryPath) {
-  // Load and compile individual shaders.
   unsigned int vertexShader =
       loadAndCompileShader(vertexPath, ShaderType::VERTEX);
   unsigned int fragmentShader =
@@ -21,15 +14,45 @@ void Shader::loadAndCompileShaderProgram(const char* vertexPath,
       geometryPath ? loadAndCompileShader(geometryPath, ShaderType::GEOMETRY)
                    : 0;
 
+  compileShaderProgram(vertexShader, fragmentShader, geometryShader);
+}
+
+Shader::Shader(const InlineShader& vertexSource,
+               const InlineShader& fragmentSource) {
+  unsigned int vertexShader =
+      loadAndCompileShader(vertexSource, ShaderType::VERTEX);
+  unsigned int fragmentShader =
+      loadAndCompileShader(fragmentSource, ShaderType::FRAGMENT);
+
+  compileShaderProgram(vertexShader, fragmentShader, /* geometryShader */ 0);
+}
+
+Shader::Shader(const InlineShader& vertexSource,
+               const InlineShader& fragmentSource,
+               const InlineShader& geometrySource) {
+  unsigned int vertexShader =
+      loadAndCompileShader(vertexSource, ShaderType::VERTEX);
+  unsigned int fragmentShader =
+      loadAndCompileShader(fragmentSource, ShaderType::FRAGMENT);
+  unsigned int geometryShader =
+      loadAndCompileShader(geometrySource, ShaderType::GEOMETRY);
+
+  compileShaderProgram(vertexShader, fragmentShader, geometryShader);
+}
+
+void Shader::compileShaderProgram(unsigned int vertexShader,
+                                  unsigned int fragmentShader,
+                                  unsigned int geometryShader) {
   int success;
   char infoLog[512];
 
   // Create and link shader program.
   shaderProgram_ = glCreateProgram();
 
+  // Vertex and fragment shaders are required; the rest are optional.
   glAttachShader(shaderProgram_, vertexShader);
   glAttachShader(shaderProgram_, fragmentShader);
-  if (geometryPath) {
+  if (geometryShader) {
     glAttachShader(shaderProgram_, geometryShader);
   }
   glLinkProgram(shaderProgram_);
@@ -44,21 +67,34 @@ void Shader::loadAndCompileShaderProgram(const char* vertexPath,
   // Delete shaders now that they're linked.
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
+  if (geometryShader) {
+    glDeleteShader(geometryShader);
+  }
 }
 
 unsigned int Shader::loadAndCompileShader(const char* shaderPath,
                                           const ShaderType type) {
-  // Read file contents.
   ShaderLoader shaderLoader(shaderPath, type);
-  std::string sourceString = shaderLoader.load();
+  std::string shaderString = shaderLoader.load();
+  const char* shaderSource = shaderString.c_str();
+  return compileShader(shaderSource, type);
+}
 
-  const char* shaderSource = sourceString.c_str();
+unsigned int Shader::loadAndCompileShader(const InlineShader& shaderSource,
+                                          const ShaderType type) {
+  ShaderLoader shaderLoader(shaderSource, type);
+  std::string shaderString = shaderLoader.load();
+  const char* resolvedSource = shaderString.c_str();
+  return compileShader(resolvedSource, type);
+}
 
+unsigned int Shader::compileShader(const char* shaderSource,
+                                   const ShaderType type) {
   unsigned int shader;
   int success;
   char infoLog[512];
 
-  // Compile vertex shader.
+  // Compile shader.
   GLenum glShaderType = shaderTypeToGlShaderType(type);
   shader = glCreateShader(glShaderType);
 
