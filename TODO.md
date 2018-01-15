@@ -1,6 +1,5 @@
 # TODOs
 
-- [ ] Consider supporting uniform buffer objects.
 - [ ] Add a way to load shader code from a string (with import support).
 - [ ] Allow rendering a VAO with a given shader.
 - [ ] Add a wireframe mode.
@@ -11,7 +10,6 @@
 - [ ] Add a logging system, and log e.g. invalid glGetUniformLocation() calls
 - [ ] Remove some duplication from light class impl
 - [ ] Add a material class that can maintain diffuse/specular maps, similar to the light class.
-- [ ] Add deltaTime uniforms, etc
 - [ ] Add a core function (on window?) that calls a callback with a try/catch around for exception output
 - [ ] Getting duplicate items in compile_commands.json.
 - [ ] Add unit tests.
@@ -19,6 +17,8 @@
 - [ ] Add logging support.
 - [ ] Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 - [ ] Add stacktraces to exceptions.
+- [ ] Consider supporting uniform buffer objects.
+- [ ] Add UI for adjusting params (akin to dat gui?).
 
 ## Examples to make
 
@@ -27,6 +27,7 @@
 - Blending (alpha transparency) demo
 
 ## Done
+- [x] Add deltaTime uniforms, etc
 - [x] Add support for the stencil buffer
 - [x] Add a mechanism to enable/disable depth testing
 - [x] Add a 'window' class to qrk that can encapsulate the calls in the render loop.

@@ -1,6 +1,7 @@
 #ifndef QUARKGL_WINDOW_FRAG_
 #define QUARKGL_WINDOW_FRAG_
 
+uniform float qrk_deltaTime;
 uniform int qrk_windowWidth;
 uniform int qrk_windowHeight;
 
