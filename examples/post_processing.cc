@@ -17,7 +17,7 @@
 #include <qrk/window.h>
 
 // clang-format off
-float cubeVertices[] = {
+const float cubeVertices[] = {
     // positions          // texture coords
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -61,7 +61,7 @@ float cubeVertices[] = {
     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
-float planeVertices[] = {
+const float planeVertices[] = {
     // positions          // texture coords
      5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
     -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
@@ -71,7 +71,7 @@ float planeVertices[] = {
     -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
      5.0f, -0.5f, -5.0f,  2.0f, 2.0f
 };
-float quadVertices[] = {
+const float quadVertices[] = {
     // positions   // texture coords
     -1.0f,  1.0f,  0.0f, 1.0f,
     -1.0f, -1.0f,  0.0f, 0.0f,
