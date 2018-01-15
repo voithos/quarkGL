@@ -1,5 +1,6 @@
 #version 330 core
 #pragma qrk_include < core.glsl >
+#pragma qrk_include < constants.glsl >
 #pragma qrk_include < transforms.glsl >
 
 layout(triangles) in;
@@ -27,7 +28,7 @@ void passThroughAttribs(int idx) {
 
 vec4 explode(vec4 position, vec3 normal) {
   float magnitude = 0.5;
-  vec3 direction = normal * (sin(qrk_time) / 2.0 + 0.5) * magnitude;
+  vec3 direction = normal * (sin(qrk_time - PI / 2.0) / 2.0 + 0.5) * magnitude;
   return position + vec4(direction, 0.0);
 }
 

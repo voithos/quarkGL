@@ -111,7 +111,7 @@ int main() {
   // Load model.
   qrk::Model nanosuit("examples/nanosuit/nanosuit.obj");
 
-  win.enableCulling();
+  win.disableCulling();
   win.loop([&](float deltaTime) {
     glm::mat4 view = camera->getViewTransform();
     glm::mat4 projection = camera->getPerspectiveTransform();

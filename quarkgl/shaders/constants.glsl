@@ -1,0 +1,8 @@
+#ifndef QUARKGL_CONSTANTS_GLSL_
+#define QUARKGL_CONSTANTS_GLSL_
+
+const float PI = 3.14159265358;
+const float E = 2.71828182846;
+const float GOLDEN_RATIO = 1.61803398875;
+
+#endif
