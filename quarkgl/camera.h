@@ -90,7 +90,7 @@ class CameraControls {
                             float deltaTime) = 0;
 };
 
-class FPSCameraControls : public CameraControls {
+class FpsCameraControls : public CameraControls {
  private:
   bool initialized_ = false;
   int width_;

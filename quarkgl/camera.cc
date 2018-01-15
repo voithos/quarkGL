@@ -73,10 +73,10 @@ void Camera::zoom(float offset) {
 }
 
 /**
- * FPSCameraControls *
+ * FpsCameraControls *
  */
 
-void FPSCameraControls::resizeWindow(int width, int height) {
+void FpsCameraControls::resizeWindow(int width, int height) {
   width_ = width;
   height_ = height;
   if (!initialized_) {
@@ -86,11 +86,11 @@ void FPSCameraControls::resizeWindow(int width, int height) {
   }
 }
 
-void FPSCameraControls::scroll(Camera& camera, double xoffset, double yoffset) {
+void FpsCameraControls::scroll(Camera& camera, double xoffset, double yoffset) {
   camera.zoom(yoffset);
 }
 
-void FPSCameraControls::mouseMove(Camera& camera, double xpos, double ypos) {
+void FpsCameraControls::mouseMove(Camera& camera, double xpos, double ypos) {
   if (initialMouse_) {
     lastX_ = xpos;
     lastY_ = ypos;
@@ -105,7 +105,7 @@ void FPSCameraControls::mouseMove(Camera& camera, double xpos, double ypos) {
   camera.rotate(xoffset, yoffset);
 }
 
-void FPSCameraControls::processInput(GLFWwindow* window, Camera& camera,
+void FpsCameraControls::processInput(GLFWwindow* window, Camera& camera,
                                      float deltaTime) {
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
     camera.move(qrk::CameraDirection::FORWARD, deltaTime);

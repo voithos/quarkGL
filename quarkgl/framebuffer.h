@@ -32,7 +32,7 @@ enum class BufferType {
   DEPTH_AND_STENCIL,
 };
 
-inline const GLenum bufferTypeToAttachmentType(BufferType type) {
+inline const GLenum bufferTypeToGlAttachmentType(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
       // TODO: Support color attachments >0.
@@ -48,7 +48,7 @@ inline const GLenum bufferTypeToAttachmentType(BufferType type) {
                              std::to_string(static_cast<int>(type)));
 }
 
-inline const GLenum bufferTypeToInternalFormat(BufferType type) {
+inline const GLenum bufferTypeToGlInternalFormat(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
       return GL_RGB;
@@ -63,7 +63,7 @@ inline const GLenum bufferTypeToInternalFormat(BufferType type) {
                              std::to_string(static_cast<int>(type)));
 }
 
-inline const GLenum bufferTypeToFormat(BufferType type) {
+inline const GLenum bufferTypeToGlFormat(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
       return GL_RGB;
@@ -78,7 +78,7 @@ inline const GLenum bufferTypeToFormat(BufferType type) {
                              std::to_string(static_cast<int>(type)));
 }
 
-inline const GLenum bufferTypeToInternalDataType(BufferType type) {
+inline const GLenum bufferTypeToGlInternalDataType(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
       return GL_UNSIGNED_BYTE;

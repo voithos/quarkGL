@@ -71,7 +71,7 @@ int main() {
 
   auto camera =
       std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
-  auto cameraControls = std::make_shared<qrk::FPSCameraControls>();
+  auto cameraControls = std::make_shared<qrk::FpsCameraControls>();
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 

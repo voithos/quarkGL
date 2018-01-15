@@ -29,9 +29,9 @@ Attachment Framebuffer::attachTexture(BufferType type) {
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
 
-  GLenum internalFormat = bufferTypeToInternalFormat(type);
-  GLenum format = bufferTypeToFormat(type);
-  GLenum dataType = bufferTypeToInternalDataType(type);
+  GLenum internalFormat = bufferTypeToGlInternalFormat(type);
+  GLenum format = bufferTypeToGlFormat(type);
+  GLenum dataType = bufferTypeToGlInternalDataType(type);
 
   glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, internalFormat, width_,
                height_, 0, format, dataType, nullptr);
@@ -39,7 +39,7 @@ Attachment Framebuffer::attachTexture(BufferType type) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   // Attach the texture to the framebuffer.
-  GLenum attachmentType = bufferTypeToAttachmentType(type);
+  GLenum attachmentType = bufferTypeToGlAttachmentType(type);
   glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, GL_TEXTURE_2D, texture,
                          /* mipmap level */ 0);
 
@@ -61,12 +61,12 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   glGenRenderbuffers(1, &rbo);
   glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 
-  GLenum internalFormat = bufferTypeToInternalFormat(type);
+  GLenum internalFormat = bufferTypeToGlInternalFormat(type);
 
   glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, width_, height_);
 
   // Attach the renderbuffer to the framebuffer.
-  GLenum attachmentType = bufferTypeToAttachmentType(type);
+  GLenum attachmentType = bufferTypeToGlAttachmentType(type);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachmentType, GL_RENDERBUFFER,
                             rbo);
 
