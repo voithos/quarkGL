@@ -16,7 +16,6 @@ cc_binary(
     name = "model_render",
     srcs = ["model_render.cc"],
     data = [
-        "lamp.frag",
         "phong.frag",
         "model.vert",
     ] + glob(["nanosuit/*"]),
@@ -39,7 +38,6 @@ cc_binary(
     name = "geom_shader",
     srcs = ["geom_shader.cc"],
     data = [
-        "lamp.frag",
         "phong.frag",
         "model.vert",
         "explode.geom",

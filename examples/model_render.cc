@@ -16,6 +16,13 @@
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>
 
+const char* lampShaderSource = R"SHADER(
+#version 330 core
+out vec4 fragColor;
+
+void main() { fragColor = vec4(1.0); }
+)SHADER";
+
 // clang-format off
 const float vertices[] = {
     // positions          // normals           // texture coords
@@ -98,7 +105,7 @@ int main() {
   registry->addLight(pointLight);
 
   qrk::Shader lampShader(qrk::ShaderPath("examples/model.vert"),
-                         qrk::ShaderPath("examples/lamp.frag"));
+                         qrk::ShaderInline(lampShaderSource));
 
   // Create a VAO for the light.
   // TODO: Make this into a sphere.
