@@ -18,6 +18,7 @@ cc_binary(
     data = [
         "phong.frag",
         "model.vert",
+        "model_normals.geom",
     ] + glob(["nanosuit/*"]),
     linkopts = QRK_LINKOPTS,
     deps = [

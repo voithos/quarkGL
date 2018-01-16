@@ -23,6 +23,13 @@ out vec4 fragColor;
 void main() { fragColor = vec4(1.0); }
 )SHADER";
 
+const char* normalShaderSource = R"SHADER(
+#version 330 core
+out vec4 fragColor;
+
+void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
+)SHADER";
+
 // clang-format off
 const float vertices[] = {
     // positions          // normals           // texture coords
@@ -90,6 +97,10 @@ int main() {
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
+  qrk::Shader normalShader(qrk::ShaderPath("examples/model.vert"),
+                           qrk::ShaderInline(normalShaderSource),
+                           qrk::ShaderPath("examples/model_normals.geom"));
+
   // Create light registry and add lights.
   auto registry = std::make_shared<qrk::LightRegistry>();
   mainShader.addUniformSource(registry);
@@ -141,6 +152,13 @@ int main() {
     mainShader.setMat4("model", model);
 
     nanosuit.draw(mainShader);
+
+    // Draw the normals.
+    normalShader.activate();
+    normalShader.setMat4("model", model);
+    normalShader.setMat4("view", view);
+    normalShader.setMat4("projection", projection);
+    nanosuit.draw(normalShader);
 
     // Draw light source.
     glm::mat4 lightModel =

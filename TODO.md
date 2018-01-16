@@ -18,6 +18,7 @@
 - [ ] Add stacktraces to exceptions.
 - [ ] Consider supporting uniform buffer objects.
 - [ ] Add UI for adjusting params (akin to dat gui?).
+- [ ] Bug: debug normals are modified based on camera rotation.
 
 ## Examples to make
 
@@ -26,6 +27,7 @@
 - Blending (alpha transparency) demo
 
 ## Done
+- [x] Bug: debug normal disappear in weird ways.
 - [x] Add a way to load shader code from a string (with import support).
 - [x] Add deltaTime uniforms, etc
 - [x] Add support for the stencil buffer
