@@ -61,10 +61,6 @@ cc_binary(
     name = "post_processing",
     srcs = ["post_processing.cc"],
     data = [
-        "texture_simple.frag",
-        "texture_simple.vert",
-        "screen_quad.frag",
-        "screen_quad.vert",
         "metal.png",
         "container.jpg",
     ] + glob(["nanosuit/*"]),

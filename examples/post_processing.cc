@@ -16,6 +16,79 @@
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>
 
+const char* textureVertexSource = R"SHADER(
+#version 330 core
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in vec2 vertexTexCoords;
+
+out vec2 texCoords;
+out vec3 fragPos;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main() {
+  gl_Position = projection * view * model * vec4(vertexPos, 1.0);
+
+  texCoords = vertexTexCoords;
+  fragPos = vec3(view * model * vec4(vertexPos, 1.0));
+}
+)SHADER";
+
+const char* textureFragmentSource = R"SHADER(
+#version 330 core
+in vec2 texCoords;
+
+out vec4 fragColor;
+
+uniform sampler2D texture0;
+
+void main() { fragColor = texture(texture0, texCoords); }
+)SHADER";
+
+const char* screenVertexSource = R"SHADER(
+#version 330 core
+layout(location = 0) in vec2 vertexPos;
+layout(location = 1) in vec2 vertexTexCoords;
+
+out vec2 texCoords;
+
+void main() {
+  gl_Position = vec4(vertexPos, 0.0, 1.0);
+
+  texCoords = vertexTexCoords;
+}
+)SHADER";
+
+const char* screenFragmentSource = R"SHADER(
+#version 330 core
+#pragma qrk_include < post_processing.frag >
+#pragma qrk_include < window.frag >
+in vec2 texCoords;
+
+out vec4 fragColor;
+
+uniform sampler2D screenTexture;
+
+// TODO: Allow other post_processing methods from command line.
+void main() {
+  if (qrk_isWindowLeftHalf()) {
+    if (qrk_isWindowTopHalf()) {
+      fragColor = texture(screenTexture, texCoords);
+    } else {
+      fragColor = qrk_blurKernel(screenTexture, texCoords);
+    }
+  } else {
+    if (qrk_isWindowTopHalf()) {
+      fragColor = qrk_grayscale(texture(screenTexture, texCoords));
+    } else {
+      fragColor = qrk_edgeKernel(screenTexture, texCoords);
+    }
+  }
+}
+)SHADER";
+
 // clang-format off
 const float cubeVertices[] = {
     // positions          // texture coords
@@ -95,10 +168,10 @@ int main() {
   win->bindCamera(camera);
   win->bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader(qrk::ShaderPath("examples/texture_simple.vert"),
-                         qrk::ShaderPath("examples/texture_simple.frag"));
-  qrk::Shader screenShader(qrk::ShaderPath("examples/screen_quad.vert"),
-                           qrk::ShaderPath("examples/screen_quad.frag"));
+  qrk::Shader mainShader((qrk::ShaderInline(textureVertexSource)),
+                         qrk::ShaderInline(textureFragmentSource));
+  qrk::Shader screenShader((qrk::ShaderInline(screenVertexSource)),
+                           qrk::ShaderInline(screenFragmentSource));
 
   // Create a VAO for the boxes.
   qrk::VertexArray cubeVarray;
