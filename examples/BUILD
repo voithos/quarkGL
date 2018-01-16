@@ -36,6 +36,32 @@ cc_binary(
 )
 
 cc_binary(
+    name = "instancing",
+    srcs = ["instancing.cc"],
+    data = [
+        "phong.frag",
+        "model.vert",
+        "model_normals.geom",
+    ] + glob([
+        "rock/*",
+        "planet/*",
+    ]),
+    linkopts = QRK_LINKOPTS,
+    deps = [
+        "//quarkgl:camera",
+        "//quarkgl:core",
+        "//quarkgl:light",
+        "//quarkgl:model",
+        "//quarkgl:shader",
+        "//quarkgl:vertex_array",
+        "//quarkgl:window",
+        "//third_party/glad",
+        "//third_party/glm",
+        "@glfw//:glfw",
+    ],
+)
+
+cc_binary(
     name = "geom_shader",
     srcs = ["geom_shader.cc"],
     data = [
@@ -62,9 +88,9 @@ cc_binary(
     name = "post_processing",
     srcs = ["post_processing.cc"],
     data = [
-        "metal.png",
         "container.jpg",
-    ] + glob(["nanosuit/*"]),
+        "metal.png",
+    ],
     linkopts = QRK_LINKOPTS,
     deps = [
         "//quarkgl:camera",

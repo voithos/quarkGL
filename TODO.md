@@ -19,6 +19,7 @@
 - [ ] Consider supporting uniform buffer objects.
 - [ ] Add UI for adjusting params (akin to dat gui?).
 - [ ] Bug: debug normals are modified based on camera rotation.
+- [ ] Add instancing to model.
 
 ## Examples to make
 
