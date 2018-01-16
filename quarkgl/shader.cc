@@ -85,7 +85,8 @@ unsigned int Shader::compileShader(const char* shaderSource,
     glGetShaderInfoLog(shader, 512, nullptr, infoLog);
     std::string typeString(shaderTypeToString(type));
     throw ShaderException("ERROR::SHADER::" + typeString +
-                          "::COMPILATION_FAILED\n" + std::string(infoLog));
+                          "::COMPILATION_FAILED\n" + std::string(infoLog) +
+                          "\n\nShader source:\n" + std::string(shaderSource));
   }
   return shader;
 }
