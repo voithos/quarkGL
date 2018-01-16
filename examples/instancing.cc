@@ -51,9 +51,18 @@ int main() {
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
+  qrk::Shader instancedShader(qrk::ShaderPath("examples/instanced_model.vert"),
+                              qrk::ShaderPath("examples/phong.frag"));
+
+  instancedShader.setFloat("material.shininess", 8.0f);
+  instancedShader.setFloat("material.emissionAttenuation.constant", 1.0f);
+  instancedShader.setFloat("material.emissionAttenuation.linear", 0.09f);
+  instancedShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
+
   // Create light registry and add lights.
   auto registry = std::make_shared<qrk::LightRegistry>();
   mainShader.addUniformSource(registry);
+  instancedShader.addUniformSource(registry);
 
   auto directionalLight =
       std::make_shared<qrk::DirectionalLight>(glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -65,12 +74,8 @@ int main() {
   pointLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
   registry->addLight(pointLight);
 
-  // Load models.
-  qrk::Model planet("examples/planet/planet.obj");
-  qrk::Model rock("examples/rock/rock.obj");
-
   // Generate asteroid distribution.
-  int rockCount = 1000;
+  int rockCount = 8000;
   glm::mat4 modelTransforms[rockCount];
   std::mt19937 gen(42);
   float radius = 15.0f;
@@ -104,30 +109,39 @@ int main() {
     modelTransforms[i] = model;
   }
 
+  // Load models.
+  qrk::Model planet("examples/planet/planet.obj");
+  qrk::Model plainRock("examples/rock/rock.obj");
+  qrk::Model rock("examples/rock/rock.obj", /* instanceCount */ rockCount);
+  rock.loadInstanceModels(modelTransforms, rockCount);
+
   win.enableCulling();
   win.loop([&](float deltaTime) {
     glm::mat4 view = camera->getViewTransform();
     glm::mat4 projection = camera->getPerspectiveTransform();
+    registry->applyViewTransform(view);
 
     // Setup shader and lights.
     mainShader.activate();
     mainShader.setMat4("view", view);
     mainShader.setMat4("projection", projection);
-
-    registry->applyViewTransform(view);
     mainShader.updateUniforms();
 
-    // Draw main model.
+    // Draw planet.
     glm::mat4 model = glm::translate(glm::mat4(), glm::vec3(0.0f, -1.0f, 0.0f));
     model = glm::rotate(model, glm::radians(50.f), glm::vec3(1.0f, 0.0f, 0.0f));
     mainShader.setMat4("model", model);
 
     planet.draw(mainShader);
 
-    for (auto model : modelTransforms) {
-      mainShader.setMat4("model", model);
-      rock.draw(mainShader);
-    }
+    // Draw rocks.
+    instancedShader.activate();
+    instancedShader.setMat4("view", view);
+    instancedShader.setMat4("projection", projection);
+    registry->applyViewTransform(view);
+    instancedShader.updateUniforms();
+
+    rock.draw(instancedShader);
   });
 
   return 0;

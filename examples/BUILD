@@ -41,7 +41,7 @@ cc_binary(
     data = [
         "phong.frag",
         "model.vert",
-        "model_normals.geom",
+        "instanced_model.vert",
     ] + glob([
         "rock/*",
         "planet/*",

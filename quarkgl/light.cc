@@ -57,7 +57,8 @@ void DirectionalLight::updateUniforms(Shader& shader) {
     shader.setVec3(uniformName_ + ".specular", specular_);
   }
 
-  resetChangeDetection();
+  // TODO: Fix change detection to work with >1 shaders.
+  // resetChangeDetection();
 }
 
 void DirectionalLight::applyViewTransform(const glm::mat4& view) {
@@ -90,7 +91,7 @@ void PointLight::updateUniforms(Shader& shader) {
                     attenuation_.quadratic);
   }
 
-  resetChangeDetection();
+  // resetChangeDetection();
 }
 
 void PointLight::applyViewTransform(const glm::mat4& view) {
@@ -130,7 +131,7 @@ void SpotLight::updateUniforms(Shader& shader) {
                     attenuation_.quadratic);
   }
 
-  resetChangeDetection();
+  // resetChangeDetection();
 }
 
 void SpotLight::applyViewTransform(const glm::mat4& view) {

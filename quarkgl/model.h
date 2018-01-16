@@ -7,6 +7,7 @@
 
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <glm/glm.hpp>
 
 #include <qrk/mesh.h>
 #include <qrk/shader.h>
@@ -23,6 +24,7 @@ constexpr auto DEFAULT_LOAD_FLAGS =
 
 class Model {
  private:
+  unsigned int instanceCount_;
   std::vector<Mesh> meshes_;
   std::string directory_;
   std::unordered_map<std::string, Texture> loadedTextures_;
@@ -34,7 +36,9 @@ class Model {
                                             TextureType type);
 
  public:
-  explicit Model(const char* path);
+  explicit Model(const char* path, unsigned int instanceCount = 0);
+  void loadInstanceModels(const std::vector<glm::mat4>& models);
+  void loadInstanceModels(const glm::mat4* models, unsigned int size);
   void draw(Shader shader);
 };
 

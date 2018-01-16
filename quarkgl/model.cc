@@ -5,7 +5,8 @@
 
 namespace qrk {
 
-Model::Model(const char* path) {
+Model::Model(const char* path, unsigned int instanceCount)
+    : instanceCount_(instanceCount) {
   std::string pathString(path);
   size_t i = pathString.find_last_of("/");
   // This will either be the model's directory, or empty string if the model is
@@ -13,6 +14,18 @@ Model::Model(const char* path) {
   directory_ = i != std::string::npos ? pathString.substr(0, i) : "";
 
   loadModel(pathString);
+}
+
+void Model::loadInstanceModels(const std::vector<glm::mat4>& models) {
+  for (auto mesh : meshes_) {
+    mesh.loadInstanceModels(models);
+  }
+}
+
+void Model::loadInstanceModels(const glm::mat4* models, unsigned int size) {
+  for (auto mesh : meshes_) {
+    mesh.loadInstanceModels(models, size);
+  }
 }
 
 void Model::draw(Shader shader) {
@@ -98,7 +111,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     }
   }
 
-  return Mesh(vertices, indices, textures);
+  return Mesh(vertices, indices, textures, instanceCount_);
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material,

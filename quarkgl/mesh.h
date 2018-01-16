@@ -25,11 +25,14 @@ class Mesh {
   std::vector<Vertex> vertices_;
   std::vector<unsigned int> indices_;
   std::vector<Texture> textures_;
+  unsigned int instanceCount_;
 
  public:
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
-       std::vector<Texture> textures);
+       std::vector<Texture> textures, unsigned int instanceCount = 0);
 
+  void loadInstanceModels(const std::vector<glm::mat4>& models);
+  void loadInstanceModels(const glm::mat4* models, unsigned int size);
   void draw(Shader shader);
 
   std::vector<Vertex> getVertices() { return vertices_; }
