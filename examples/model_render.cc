@@ -130,6 +130,10 @@ int main() {
   // Load model.
   qrk::Model nanosuit("examples/nanosuit/nanosuit.obj");
 
+  bool drawNormals = false;
+  win.addKeyPressHandler(GLFW_KEY_1,
+                         [&](int mods) { drawNormals = !drawNormals; });
+
   win.enableCulling();
   win.loop([&](float deltaTime) {
     glm::mat4 view = camera->getViewTransform();
@@ -153,12 +157,14 @@ int main() {
 
     nanosuit.draw(mainShader);
 
-    // Draw the normals.
-    normalShader.activate();
-    normalShader.setMat4("model", model);
-    normalShader.setMat4("view", view);
-    normalShader.setMat4("projection", projection);
-    nanosuit.draw(normalShader);
+    if (drawNormals) {
+      // Draw the normals.
+      normalShader.activate();
+      normalShader.setMat4("model", model);
+      normalShader.setMat4("view", view);
+      normalShader.setMat4("projection", projection);
+      nanosuit.draw(normalShader);
+    }
 
     // Draw light source.
     glm::mat4 lightModel =

@@ -173,6 +173,19 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
       glfwSetWindowShouldClose(window_, true);
     }
   }
+
+  // Run handlers.
+  if (action == GLFW_PRESS) {
+    for (auto pair : keyPressHandlers_) {
+      int glfwKey;
+      std::function<void(int)> handler;
+      std::tie(glfwKey, handler) = pair;
+
+      if (key == glfwKey) {
+        handler(mods);
+      }
+    }
+  }
 }
 
 void Window::scrollCallback(double xoffset, double yoffset) {
@@ -185,6 +198,10 @@ void Window::mouseMoveCallback(double xpos, double ypos) {
   if (boundCameraControls_) {
     boundCameraControls_->mouseMove(*boundCamera_, xpos, ypos);
   }
+}
+
+void Window::addKeyPressHandler(int glfwKey, std::function<void(int)> handler) {
+  keyPressHandlers_.push_back(std::make_tuple(glfwKey, handler));
 }
 
 void Window::enableMouseCapture() {

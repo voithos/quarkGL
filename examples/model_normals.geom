@@ -20,9 +20,9 @@ vec3 projectNormal(vec3 viewSpaceNormal) {
 
 void main() {
   qrk_generateNormalLine(gl_in[0].gl_Position,
-                         projectNormal(gs_in[0].fragNormal));
+                         projectNormal(gs_in[0].fragNormal), 0.05);
   qrk_generateNormalLine(gl_in[1].gl_Position,
-                         projectNormal(gs_in[1].fragNormal));
+                         projectNormal(gs_in[1].fragNormal), 0.05);
   qrk_generateNormalLine(gl_in[2].gl_Position,
-                         projectNormal(gs_in[2].fragNormal));
+                         projectNormal(gs_in[2].fragNormal), 0.05);
 }

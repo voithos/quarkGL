@@ -3,6 +3,8 @@
 
 #include <functional>
 #include <memory>
+#include <tuple>
+#include <vector>
 
 // Must precede glfw/glad, to include OpenGL functions.
 #include <qrk/core.h>
@@ -47,6 +49,7 @@ class Window : public UniformSource {
   bool keyInputEnabled_ = false;
   bool scrollInputEnabled_ = false;
   bool mouseMoveInputEnabled_ = false;
+  std::vector<std::tuple<int, std::function<void(int)>>> keyPressHandlers_;
 
   void processInput(float deltaTime);
   void keyCallback(int key, int scancode, int action, int mods);
@@ -136,6 +139,9 @@ class Window : public UniformSource {
 
   void bindCamera(std::shared_ptr<Camera> camera);
   void bindCameraControls(std::shared_ptr<CameraControls> cameraControls);
+
+  // TODO: Add a way to remove handlers.
+  void addKeyPressHandler(int glfwKey, std::function<void(int)> handler);
 
   void loop(std::function<void(float)> callback);
 
