@@ -1,6 +1,8 @@
 #ifndef QUARKGL_LIGHTING_FRAG_
 #define QUARKGL_LIGHTING_FRAG_
 
+#pragma qrk_include < gamma.frag >
+
 struct QrkAttenuation {
   float constant;
   float linear;

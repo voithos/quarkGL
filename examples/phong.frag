@@ -25,4 +25,5 @@ void main() {
   result += qrk_shadeEmission(material, fs_in.fragPos, fs_in.texCoords);
 
   fragColor = vec4(result, qrk_materialAlpha(material, fs_in.texCoords));
+  fragColor.rgb = qrk_gammaCorrect(fragColor.rgb);
 }

@@ -63,6 +63,7 @@ void main() {
 
 const char* screenFragmentSource = R"SHADER(
 #version 330 core
+#pragma qrk_include < gamma.frag >
 #pragma qrk_include < post_processing.frag >
 #pragma qrk_include < window.frag >
 in vec2 texCoords;
@@ -86,6 +87,7 @@ void main() {
       fragColor = qrk_edgeKernel(screenTexture, texCoords);
     }
   }
+  fragColor.rgb = qrk_gammaCorrect(fragColor.rgb);
 }
 )SHADER";
 

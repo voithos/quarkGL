@@ -133,8 +133,12 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material,
       continue;
     }
 
+    // Assume that diffuse textures are in sRGB.
+    // TODO: Allow for a way to override this if necessary.
+    bool isSRGB = type == TextureType::DIFFUSE;
+
     Texture texture;
-    texture.id = loadTexture(fullPath.c_str());
+    texture.id = loadTexture(fullPath.c_str(), isSRGB);
     texture.type = type;
     texture.path = fullPath;
     textures.push_back(texture);

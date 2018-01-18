@@ -17,20 +17,6 @@
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>
 
-const char* lampShaderSource = R"SHADER(
-#version 330 core
-out vec4 fragColor;
-
-void main() { fragColor = vec4(1.0); }
-)SHADER";
-
-const char* normalShaderSource = R"SHADER(
-#version 330 core
-out vec4 fragColor;
-
-void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
-)SHADER";
-
 int main() {
   qrk::Window win(800, 600, "Instancing");
   win.setClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));

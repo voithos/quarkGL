@@ -4,7 +4,7 @@
 const float DEFAULT_MAGNITUDE = 0.1;
 
 /**
- * Generates a normal line for visualization purposes. Requires
+ * Generate a normal line for visualization purposes. Requires
  * line_strip output.
  */
 void qrk_generateNormalLine(vec4 position, vec3 normal, float magnitude) {
@@ -16,7 +16,7 @@ void qrk_generateNormalLine(vec4 position, vec3 normal, float magnitude) {
 }
 
 /**
- * Generates a normal line for visualization purposes. Requires
+ * Generate a normal line for visualization purposes. Requires
  * line_strip output.
  */
 void qrk_generateNormalLine(vec4 position, vec3 normal) {

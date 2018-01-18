@@ -44,7 +44,7 @@ inline const aiTextureType textureTypeToAiTextureType(TextureType type) {
 }
 
 // TODO: Consider putting this in a TextureLoader class.
-unsigned int loadTexture(const char* path);
+unsigned int loadTexture(const char* path, bool isSRGB = true);
 
 struct Texture {
   unsigned int id;

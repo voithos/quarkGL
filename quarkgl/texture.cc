@@ -5,7 +5,7 @@
 
 namespace qrk {
 
-unsigned int loadTexture(const char* path) {
+unsigned int loadTexture(const char* path, bool isSRGB) {
   int width, height, numChannels;
   unsigned char* data = stbi_load(path, &width, &height, &numChannels, 0);
 
@@ -14,12 +14,16 @@ unsigned int loadTexture(const char* path) {
     throw TextureException("ERROR::TEXTURE::LOAD_FAILED\n" + std::string(path));
   }
 
+  GLenum internalFormat;
   GLenum dataFormat;
   if (numChannels == 1) {
+    internalFormat = GL_RED;
     dataFormat = GL_RED;
   } else if (numChannels == 3) {
+    internalFormat = isSRGB ? GL_SRGB : GL_RGB;
     dataFormat = GL_RGB;
   } else if (numChannels == 4) {
+    internalFormat = isSRGB ? GL_SRGB_ALPHA : GL_RGBA;
     dataFormat = GL_RGBA;
   } else {
     stbi_image_free(data);
@@ -35,7 +39,7 @@ unsigned int loadTexture(const char* path) {
   glBindTexture(GL_TEXTURE_2D, texture);
 
   glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0,
-               /* texture format */ dataFormat, width, height, 0,
+               /* texture format */ internalFormat, width, height, 0,
                /* tex data format */ dataFormat, GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
 
