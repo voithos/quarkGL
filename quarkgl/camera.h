@@ -20,6 +20,8 @@ enum class CameraDirection {
   BACKWARD,
   LEFT,
   RIGHT,
+  UP,
+  DOWN,
 };
 
 constexpr float DEFAULT_YAW = 270.0f;

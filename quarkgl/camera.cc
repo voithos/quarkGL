@@ -39,17 +39,25 @@ glm::mat4 Camera::getPerspectiveTransform() {
 
 void Camera::move(CameraDirection direction, float deltaTime) {
   float velocity = speed_ * deltaTime;
-  if (direction == CameraDirection::FORWARD) {
-    position_ += front_ * velocity;
-  }
-  if (direction == CameraDirection::BACKWARD) {
-    position_ -= front_ * velocity;
-  }
-  if (direction == CameraDirection::LEFT) {
-    position_ -= right_ * velocity;
-  }
-  if (direction == CameraDirection::RIGHT) {
-    position_ += right_ * velocity;
+  switch (direction) {
+    case CameraDirection::FORWARD:
+      position_ += front_ * velocity;
+      break;
+    case CameraDirection::BACKWARD:
+      position_ -= front_ * velocity;
+      break;
+    case CameraDirection::LEFT:
+      position_ -= right_ * velocity;
+      break;
+    case CameraDirection::RIGHT:
+      position_ += right_ * velocity;
+      break;
+    case CameraDirection::UP:
+      position_ += up_ * velocity;
+      break;
+    case CameraDirection::DOWN:
+      position_ -= up_ * velocity;
+      break;
   }
 }
 
@@ -118,6 +126,12 @@ void FpsCameraControls::processInput(GLFWwindow* window, Camera& camera,
   }
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
     camera.move(qrk::CameraDirection::RIGHT, deltaTime);
+  }
+  if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+    camera.move(qrk::CameraDirection::UP, deltaTime);
+  }
+  if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+    camera.move(qrk::CameraDirection::DOWN, deltaTime);
   }
 }
 
