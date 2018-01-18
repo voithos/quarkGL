@@ -4,9 +4,8 @@
 
 namespace qrk {
 
-Framebuffer::Framebuffer(int width, int height) {
-  width_ = width;
-  height_ = height;
+Framebuffer::Framebuffer(int width, int height, int samples)
+    : width_(width), height_(height), samples_(samples) {
   glGenFramebuffers(1, &fbo_);
 }
 
@@ -24,29 +23,38 @@ ScreenSize Framebuffer::getSize() {
 Attachment Framebuffer::attachTexture(BufferType type) {
   activate();
 
+  GLenum textureTarget = samples_ ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+
   // Generate texture based on given buffer type.
   unsigned int texture;
   glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
+  glBindTexture(textureTarget, texture);
 
   GLenum internalFormat = bufferTypeToGlInternalFormat(type);
   GLenum format = bufferTypeToGlFormat(type);
   GLenum dataType = bufferTypeToGlInternalDataType(type);
 
-  glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, internalFormat, width_,
-               height_, 0, format, dataType, nullptr);
+  if (samples_) {
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples_, internalFormat,
+                            width_, height_,
+                            /* fixedsamplelocations */ GL_TRUE);
+  } else {
+    glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, internalFormat, width_,
+                 height_, 0, format, dataType, nullptr);
+  }
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   // Attach the texture to the framebuffer.
   GLenum attachmentType = bufferTypeToGlAttachmentType(type);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, GL_TEXTURE_2D, texture,
+  glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, textureTarget, texture,
                          /* mipmap level */ 0);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     throw FramebufferException("ERROR::FRAMEBUFFER::INCOMPLETE");
   }
 
+  glBindTexture(textureTarget, 0);
   deactivate();
 
   updateFlags(type);
@@ -63,7 +71,12 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
 
   GLenum internalFormat = bufferTypeToGlInternalFormat(type);
 
-  glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, width_, height_);
+  if (samples_) {
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples_, internalFormat,
+                                     width_, height_);
+  } else {
+    glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, width_, height_);
+  }
 
   // Attach the renderbuffer to the framebuffer.
   GLenum attachmentType = bufferTypeToGlAttachmentType(type);
@@ -74,6 +87,7 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
     throw FramebufferException("ERROR::FRAMEBUFFER::INCOMPLETE");
   }
 
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
   deactivate();
 
   updateFlags(type);

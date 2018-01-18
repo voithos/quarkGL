@@ -1,8 +1,13 @@
 #include <qrk/window.h>
 
 namespace qrk {
-Window::Window(int width, int height, const char* title, bool fullscreen) {
+Window::Window(int width, int height, const char* title, bool fullscreen,
+               int samples) {
   qrk::init();
+
+  if (samples > 0) {
+    glfwWindowHint(GLFW_SAMPLES, samples);
+  }
 
   // nullptr indicates windowed.
   GLFWmonitor* monitor = nullptr;
@@ -26,6 +31,11 @@ Window::Window(int width, int height, const char* title, bool fullscreen) {
 
   // Allow us to refer to the object while accessing C APIs.
   glfwSetWindowUserPointer(window_, this);
+
+  // Enable multisampling if needed.
+  if (samples > 0) {
+    glEnable(GL_MULTISAMPLE);
+  }
 
   // A few options are enabled by default.
   enableDepthTest();

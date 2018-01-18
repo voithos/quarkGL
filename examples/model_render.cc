@@ -78,7 +78,8 @@ const float vertices[] = {
 // clang-format on
 
 int main() {
-  qrk::Window win(800, 600, "Model render");
+  qrk::Window win(800, 600, "Model render", /* fullscreen */ false,
+                  /* samples */ 4);
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::CLOSE);

@@ -98,6 +98,7 @@ class Framebuffer {
   unsigned int fbo_ = 0;
   int width_;
   int height_;
+  int samples_;
   std::vector<Attachment> attachments_;
 
   bool hasColorAttachment_ = false;
@@ -109,9 +110,9 @@ class Framebuffer {
   void updateFlags(BufferType type);
 
  public:
-  Framebuffer(int width, int height);
-  explicit Framebuffer(ScreenSize size)
-      : Framebuffer(size.width, size.height) {}
+  Framebuffer(int width, int height, int samples = 0);
+  explicit Framebuffer(ScreenSize size, int samples = 0)
+      : Framebuffer(size.width, size.height, samples) {}
   ~Framebuffer();
 
   void activate();
@@ -125,6 +126,8 @@ class Framebuffer {
 
   Attachment attachTexture(BufferType type);
   Attachment attachRenderbuffer(BufferType type);
+
+  // TODO: Add support for glBlitFramebuffer, when multisampled.
 };
 
 }  // namespace qrk
