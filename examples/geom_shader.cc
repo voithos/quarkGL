@@ -86,7 +86,7 @@ int main() {
                          qrk::ShaderPath("examples/phong.frag"),
                          qrk::ShaderPath("examples/explode.geom"));
 
-  mainShader.setFloat("material.shininess", 8.0f);
+  mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);

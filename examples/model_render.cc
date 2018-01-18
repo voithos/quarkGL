@@ -93,7 +93,7 @@ int main() {
   qrk::Shader mainShader(qrk::ShaderPath("examples/model.vert"),
                          qrk::ShaderPath("examples/phong.frag"));
 
-  mainShader.setFloat("material.shininess", 8.0f);
+  mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);

@@ -128,9 +128,9 @@ vec3 qrk_shadePhong(QrkMaterial material, vec3 lightAmbient, vec3 lightDiffuse,
 
   // Specular component.
   float specularAlphaSum = qrk_sumSpecularAlpha(material, texCoords);
-  vec3 reflectDir = reflect(-lightDir, normal);
+  vec3 halfwayDir = normalize(lightDir + viewDir);
   float specularIntensity =
-      pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+      pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
   for (int i = 0; i < material.specularCount; i++) {
     vec4 specularMap = texture(material.specular[i], texCoords);
     float alphaRatio = qrk_optAlpha(specularMap.a) / specularAlphaSum;
