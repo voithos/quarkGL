@@ -34,32 +34,6 @@ enum class EscBehavior {
 };
 
 class Window : public UniformSource {
- private:
-  GLFWwindow* window_;
-  bool depthTestEnabled_ = false;
-  bool stencilTestEnabled_ = false;
-  bool blendingEnabled_ = false;
-
-  float lastTime_ = 0.0f;
-  float deltaTime_ = 0.0f;
-  glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
-
-  EscBehavior escBehavior_ = EscBehavior::NONE;
-  bool resizeUpdatesEnabled_ = false;
-  bool keyInputEnabled_ = false;
-  bool scrollInputEnabled_ = false;
-  bool mouseMoveInputEnabled_ = false;
-  std::vector<std::tuple<int, std::function<void(int)>>> keyPressHandlers_;
-
-  void processInput(float deltaTime);
-  void keyCallback(int key, int scancode, int action, int mods);
-  void scrollCallback(double xoffset, double yoffset);
-  void mouseMoveCallback(double xpos, double ypos);
-  void framebufferSizeCallback(GLFWwindow* window, int width, int height);
-
-  std::shared_ptr<Camera> boundCamera_ = nullptr;
-  std::shared_ptr<CameraControls> boundCameraControls_ = nullptr;
-
  public:
   Window(int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT,
          const char* title = DEFAULT_TITLE, bool fullscreen = false,
@@ -147,6 +121,32 @@ class Window : public UniformSource {
   void loop(std::function<void(float)> callback);
 
   // TODO: Allow setting window icon.
+
+ private:
+  void processInput(float deltaTime);
+  void keyCallback(int key, int scancode, int action, int mods);
+  void scrollCallback(double xoffset, double yoffset);
+  void mouseMoveCallback(double xpos, double ypos);
+  void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+
+  GLFWwindow* window_;
+  bool depthTestEnabled_ = false;
+  bool stencilTestEnabled_ = false;
+  bool blendingEnabled_ = false;
+
+  float lastTime_ = 0.0f;
+  float deltaTime_ = 0.0f;
+  glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
+
+  EscBehavior escBehavior_ = EscBehavior::NONE;
+  bool resizeUpdatesEnabled_ = false;
+  bool keyInputEnabled_ = false;
+  bool scrollInputEnabled_ = false;
+  bool mouseMoveInputEnabled_ = false;
+  std::vector<std::tuple<int, std::function<void(int)>>> keyPressHandlers_;
+
+  std::shared_ptr<Camera> boundCamera_ = nullptr;
+  std::shared_ptr<CameraControls> boundCameraControls_ = nullptr;
 };
 }  // namespace qrk
 

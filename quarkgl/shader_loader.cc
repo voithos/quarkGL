@@ -85,7 +85,7 @@ std::string ShaderLoader::lookupOrLoad(std::string const& shaderPath) {
   std::string shaderCode;
   try {
     shaderCode = readFile(shaderPath);
-  } catch (std::ifstream::failure e) {
+  } catch (std::ifstream::failure& e) {
     std::string traceback = getIncludesTraceback();
     throw ShaderLoaderException(
         "ERROR::SHADER_LOADER::FILE_NOT_SUCCESSFULLY_READ\n"

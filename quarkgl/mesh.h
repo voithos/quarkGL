@@ -20,13 +20,6 @@ struct Vertex {
 };
 
 class Mesh {
- private:
-  VertexArray vertexArray_;
-  std::vector<Vertex> vertices_;
-  std::vector<unsigned int> indices_;
-  std::vector<Texture> textures_;
-  unsigned int instanceCount_;
-
  public:
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
        std::vector<Texture> textures, unsigned int instanceCount = 0);
@@ -38,6 +31,13 @@ class Mesh {
   std::vector<Vertex> getVertices() { return vertices_; }
   std::vector<unsigned int> getIndices() { return indices_; }
   std::vector<Texture> getTextures() { return textures_; }
+
+ private:
+  VertexArray vertexArray_;
+  std::vector<Vertex> vertices_;
+  std::vector<unsigned int> indices_;
+  std::vector<Texture> textures_;
+  unsigned int instanceCount_;
 };
 }  // namespace qrk
 

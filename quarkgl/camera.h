@@ -37,25 +37,6 @@ constexpr float MIN_FOV = 1.0f;
 constexpr float MAX_FOV = 45.0f;
 
 class Camera {
- private:
-  glm::vec3 position_;
-  glm::vec3 front_;
-  glm::vec3 up_;
-  glm::vec3 right_;
-  glm::vec3 worldUp_;
-
-  float yaw_;
-  float pitch_;
-  float speed_;
-  float sensitivity_;
-  float fov_;
-
-  float aspectRatio_;
-  float near_;
-  float far_;
-
-  void updateCameraVectors();
-
  public:
   Camera(glm::vec3 position = glm::vec3(0.0f),
          glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f),
@@ -81,6 +62,25 @@ class Camera {
   void move(CameraDirection direction, float deltaTime);
   void rotate(float xoffset, float yoffset, bool constrainPitch = true);
   void zoom(float offset);
+
+ private:
+  void updateCameraVectors();
+
+  glm::vec3 position_;
+  glm::vec3 front_;
+  glm::vec3 up_;
+  glm::vec3 right_;
+  glm::vec3 worldUp_;
+
+  float yaw_;
+  float pitch_;
+  float speed_;
+  float sensitivity_;
+  float fov_;
+
+  float aspectRatio_;
+  float near_;
+  float far_;
 };
 
 class CameraControls {
@@ -93,6 +93,12 @@ class CameraControls {
 };
 
 class FpsCameraControls : public CameraControls {
+ public:
+  void resizeWindow(int width, int height);
+  void scroll(Camera& camera, double xoffset, double yoffset);
+  void mouseMove(Camera& camera, double xpos, double ypos);
+  void processInput(GLFWwindow* window, Camera& camera, float deltaTime);
+
  private:
   bool initialized_ = false;
   int width_;
@@ -101,12 +107,6 @@ class FpsCameraControls : public CameraControls {
   float lastX_;
   float lastY_;
   bool initialMouse_ = true;
-
- public:
-  void resizeWindow(int width, int height);
-  void scroll(Camera& camera, double xoffset, double yoffset);
-  void mouseMove(Camera& camera, double xpos, double ypos);
-  void processInput(GLFWwindow* window, Camera& camera, float deltaTime);
 };
 
 }  // namespace qrk

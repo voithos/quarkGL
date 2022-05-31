@@ -38,20 +38,16 @@ enum class LightType {
 class LightRegistry;
 
 class Light {
- protected:
-  unsigned int lightIdx_;
-  std::string uniformName_;
+ public:
+  virtual LightType getLightType() = 0;
 
+  friend LightRegistry;
+
+ protected:
   void setLightIdx(unsigned int lightIdx) {
     lightIdx_ = lightIdx;
     uniformName_ = getUniformName(lightIdx);
   }
-
-  // Start as `true` so that initial uniform values get set.
-  bool hasViewDependentChanged_ = true;
-  bool hasLightChanged_ = true;
-
-  bool hasViewBeenApplied_ = false;
 
   void checkState() {
     if (hasViewDependentChanged_ && !hasViewBeenApplied_) {
@@ -71,42 +67,31 @@ class Light {
   virtual void updateUniforms(Shader& shader) = 0;
   virtual void applyViewTransform(const glm::mat4& view) = 0;
 
- public:
-  virtual LightType getLightType() = 0;
+  unsigned int lightIdx_;
+  std::string uniformName_;
 
-  friend LightRegistry;
+  // Start as `true` so that initial uniform values get set.
+  bool hasViewDependentChanged_ = true;
+  bool hasLightChanged_ = true;
+
+  bool hasViewBeenApplied_ = false;
 };
 
 class LightRegistry : public UniformSource {
+ public:
+  void addLight(std::shared_ptr<Light> light);
+  void updateUniforms(Shader& shader);
+  void applyViewTransform(const glm::mat4& view);
+
  private:
   unsigned int directionalCount_ = 0;
   unsigned int pointCount_ = 0;
   unsigned int spotCount_ = 0;
 
   std::vector<std::shared_ptr<Light>> lights_;
-
- public:
-  void addLight(std::shared_ptr<Light> light);
-  void updateUniforms(Shader& shader);
-  void applyViewTransform(const glm::mat4& view);
 };
 
 class DirectionalLight : public Light {
- private:
-  glm::vec3 direction_;
-  glm::vec3 viewDirection_;
-
-  glm::vec3 ambient_;
-  glm::vec3 diffuse_;
-  glm::vec3 specular_;
-
- protected:
-  std::string getUniformName(unsigned int lightIdx) {
-    return "qrk_directionalLights[" + std::to_string(lightIdx) + "]";
-  }
-  void updateUniforms(Shader& shader);
-  void applyViewTransform(const glm::mat4& view);
-
  public:
   DirectionalLight(glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f),
                    glm::vec3 ambient = DEFAULT_AMBIENT,
@@ -135,26 +120,24 @@ class DirectionalLight : public Light {
     specular_ = specular;
     hasLightChanged_ = true;
   }
-};
-
-class PointLight : public Light {
- private:
-  glm::vec3 position_;
-  glm::vec3 viewPosition_;
-
-  glm::vec3 ambient_;
-  glm::vec3 diffuse_;
-  glm::vec3 specular_;
-
-  Attenuation attenuation_;
 
  protected:
   std::string getUniformName(unsigned int lightIdx) {
-    return "qrk_pointLights[" + std::to_string(lightIdx) + "]";
+    return "qrk_directionalLights[" + std::to_string(lightIdx) + "]";
   }
   void updateUniforms(Shader& shader);
   void applyViewTransform(const glm::mat4& view);
 
+ private:
+  glm::vec3 direction_;
+  glm::vec3 viewDirection_;
+
+  glm::vec3 ambient_;
+  glm::vec3 diffuse_;
+  glm::vec3 specular_;
+};
+
+class PointLight : public Light {
  public:
   PointLight(glm::vec3 position = glm::vec3(0.0f),
              glm::vec3 ambient = DEFAULT_AMBIENT,
@@ -189,31 +172,26 @@ class PointLight : public Light {
     attenuation_ = attenuation;
     hasLightChanged_ = true;
   }
-};
 
-class SpotLight : public Light {
+ protected:
+  std::string getUniformName(unsigned int lightIdx) {
+    return "qrk_pointLights[" + std::to_string(lightIdx) + "]";
+  }
+  void updateUniforms(Shader& shader);
+  void applyViewTransform(const glm::mat4& view);
+
  private:
   glm::vec3 position_;
   glm::vec3 viewPosition_;
-  glm::vec3 direction_;
-  glm::vec3 viewDirection_;
-
-  float innerAngle_;
-  float outerAngle_;
 
   glm::vec3 ambient_;
   glm::vec3 diffuse_;
   glm::vec3 specular_;
 
   Attenuation attenuation_;
+};
 
- protected:
-  std::string getUniformName(unsigned int lightIdx) {
-    return "qrk_spotLights[" + std::to_string(lightIdx) + "]";
-  }
-  void updateUniforms(Shader& shader);
-  void applyViewTransform(const glm::mat4& view);
-
+class SpotLight : public Light {
  public:
   SpotLight(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f),
             glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f),
@@ -256,6 +234,28 @@ class SpotLight : public Light {
     attenuation_ = attenuation;
     hasLightChanged_ = true;
   }
+
+ protected:
+  std::string getUniformName(unsigned int lightIdx) {
+    return "qrk_spotLights[" + std::to_string(lightIdx) + "]";
+  }
+  void updateUniforms(Shader& shader);
+  void applyViewTransform(const glm::mat4& view);
+
+ private:
+  glm::vec3 position_;
+  glm::vec3 viewPosition_;
+  glm::vec3 direction_;
+  glm::vec3 viewDirection_;
+
+  float innerAngle_;
+  float outerAngle_;
+
+  glm::vec3 ambient_;
+  glm::vec3 diffuse_;
+  glm::vec3 specular_;
+
+  Attenuation attenuation_;
 };
 
 }  // namespace qrk

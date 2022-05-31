@@ -25,19 +25,6 @@ class UniformSource {
 };
 
 class Shader {
- private:
-  unsigned int shaderProgram_;
-  std::vector<std::shared_ptr<UniformSource>> uniformSources_;
-
-  void compileShaderProgram(unsigned int vertexShader,
-                            unsigned int fragmentShader,
-                            unsigned int geometryShader);
-  unsigned int loadAndCompileShader(const ShaderSource& shaderSource,
-                                    const ShaderType type);
-  unsigned int compileShader(const char* shaderSource, const ShaderType type);
-
-  int safeGetUniformLocation(const char* name);
-
  public:
   Shader(const ShaderSource& vertexSource, const ShaderSource& fragmentSource);
   Shader(const ShaderSource& vertexSource, const ShaderSource& fragmentSource,
@@ -70,6 +57,19 @@ class Shader {
   void setMat4(std::string name, const glm::mat4& matrix) {
     setMat4(name.c_str(), matrix);
   }
+
+ private:
+  void compileShaderProgram(unsigned int vertexShader,
+                            unsigned int fragmentShader,
+                            unsigned int geometryShader);
+  unsigned int loadAndCompileShader(const ShaderSource& shaderSource,
+                                    const ShaderType type);
+  unsigned int compileShader(const char* shaderSource, const ShaderType type);
+
+  int safeGetUniformLocation(const char* name);
+
+  unsigned int shaderProgram_;
+  std::vector<std::shared_ptr<UniformSource>> uniformSources_;
 };
 }  // namespace qrk
 

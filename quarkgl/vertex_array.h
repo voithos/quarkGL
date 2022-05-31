@@ -8,26 +8,6 @@
 namespace qrk {
 
 class VertexArray {
- private:
-  struct VertexAttrib {
-    unsigned int layoutPosition;
-    unsigned int size;
-    unsigned int type;
-    unsigned int instanceDivisor;
-  };
-
-  unsigned int vao_ = 0;
-  unsigned int vbo_ = 0;
-  unsigned int instanceVbo_ = 0;
-  unsigned int ebo_ = 0;
-
-  unsigned int vertexSize_ = 0;
-  unsigned int elementSize_ = 0;
-
-  std::vector<VertexAttrib> attribs_;
-  unsigned int nextLayoutPosition_ = 0;
-  unsigned int stride_ = 0;
-
  public:
   VertexArray();
   // TODO: Can we have a destructor here?
@@ -48,6 +28,26 @@ class VertexArray {
   void addVertexAttrib(unsigned int size, unsigned int type,
                        unsigned int instanceDivisor = 0);
   void finalizeVertexAttribs();
+
+ private:
+  struct VertexAttrib {
+    unsigned int layoutPosition;
+    unsigned int size;
+    unsigned int type;
+    unsigned int instanceDivisor;
+  };
+
+  unsigned int vao_ = 0;
+  unsigned int vbo_ = 0;
+  unsigned int instanceVbo_ = 0;
+  unsigned int ebo_ = 0;
+
+  unsigned int vertexSize_ = 0;
+  unsigned int elementSize_ = 0;
+
+  std::vector<VertexAttrib> attribs_;
+  unsigned int nextLayoutPosition_ = 0;
+  unsigned int stride_ = 0;
 };
 }  // namespace qrk
 

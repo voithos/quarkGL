@@ -94,21 +94,6 @@ inline const GLenum bufferTypeToGlInternalDataType(BufferType type) {
 }
 
 class Framebuffer {
- private:
-  unsigned int fbo_ = 0;
-  int width_;
-  int height_;
-  int samples_;
-  std::vector<Attachment> attachments_;
-
-  bool hasColorAttachment_ = false;
-  bool hasDepthAttachment_ = false;
-  bool hasStencilAttachment_ = false;
-  glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
-
-  Attachment saveAttachment(unsigned int id, AttachmentTarget target);
-  void updateFlags(BufferType type);
-
  public:
   Framebuffer(int width, int height, int samples = 0);
   explicit Framebuffer(ScreenSize size, int samples = 0)
@@ -128,6 +113,21 @@ class Framebuffer {
   Attachment attachRenderbuffer(BufferType type);
 
   // TODO: Add support for glBlitFramebuffer, when multisampled.
+
+ private:
+  unsigned int fbo_ = 0;
+  int width_;
+  int height_;
+  int samples_;
+  std::vector<Attachment> attachments_;
+
+  bool hasColorAttachment_ = false;
+  bool hasDepthAttachment_ = false;
+  bool hasStencilAttachment_ = false;
+  glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
+
+  Attachment saveAttachment(unsigned int id, AttachmentTarget target);
+  void updateFlags(BufferType type);
 };
 
 }  // namespace qrk
