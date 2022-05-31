@@ -1,5 +1,8 @@
 # TODOs
 
+- [ ] Update README
+- [ ] Reprioritize TODOs :o)
+- [ ] Go through some of the shader effects from https://lettier.github.io/3d-game-shaders-for-beginners/index.html
 - [ ] Allow rendering a VAO with a given shader.
 - [ ] Add a wireframe mode.
 - [ ] Add a mechanism for working with textures.
@@ -21,6 +24,7 @@
 - [ ] Bug: debug normals are modified based on camera rotation.
 - [ ] Add instancing to model.
 - [ ] Bug: light registry doesn't work with >1 shaders.
+- [ ] Add dynamic UI support, a la https://github.com/ocornut/imgui
 
 ## Examples to make
 

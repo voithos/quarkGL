@@ -14,20 +14,34 @@ load("@bazel_skylib//lib:versions.bzl", "versions")
 
 versions.check(minimum_bazel_version = "5.0.0")
 
+# Foreign rules tool.
+http_archive(
+    name = "rules_foreign_cc",
+    sha256 = "6041f1374ff32ba711564374ad8e007aef77f71561a7ce784123b9b4b88614fc",
+    strip_prefix = "rules_foreign_cc-0.8.0",
+    url = "https://github.com/bazelbuild/rules_foreign_cc/archive/0.8.0.tar.gz",
+)
+
+load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_dependencies")
+
+# This sets up some common toolchains for building targets. For more details, please see
+# https://github.com/bazelbuild/rules_foreign_cc/tree/main/docs#rules_foreign_cc_dependencies
+rules_foreign_cc_dependencies()
+
+http_archive(
+    name = "assimp",
+    build_file = "@//:BUILD.assimp",
+    sha256 = "6a4ff75dc727821f75ef529cea1c4fc0a7b5fc2e0a0b2ff2f6b7993fe6cb54ba",
+    strip_prefix = "assimp-5.2.4",
+    urls = ["https://github.com/assimp/assimp/archive/refs/tags/v5.2.4.tar.gz"],
+)
+
 http_archive(
     name = "glfw",
     build_file = "@//:BUILD.glfw",
     sha256 = "e10f0de1384d75e6fc210c53e91843f6110d6c4f3afbfb588130713c2f9d8fe8",
     strip_prefix = "glfw-3.2.1",
     urls = ["https://github.com/glfw/glfw/archive/3.2.1.tar.gz"],
-)
-
-http_archive(
-    name = "assimp",
-    build_file = "@//:BUILD.assimp",
-    sha256 = "60080d8ab4daaab309f65b3cffd99f19eb1af8d05623fff469b9b652818e286e",
-    strip_prefix = "assimp-4.0.1",
-    urls = ["https://github.com/assimp/assimp/archive/v4.0.1.tar.gz"],
 )
 
 # proto_library rules implicitly depend on @com_google_protobuf//:protoc,
