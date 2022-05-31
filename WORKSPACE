@@ -39,9 +39,9 @@ http_archive(
 http_archive(
     name = "glfw",
     build_file = "@//:BUILD.glfw",
-    sha256 = "e10f0de1384d75e6fc210c53e91843f6110d6c4f3afbfb588130713c2f9d8fe8",
-    strip_prefix = "glfw-3.2.1",
-    urls = ["https://github.com/glfw/glfw/archive/3.2.1.tar.gz"],
+    sha256 = "fd21a5f65bcc0fc3c76e0f8865776e852de09ef6fbc3620e09ce96d2b2807e04",
+    strip_prefix = "glfw-3.3.7",
+    urls = ["https://github.com/glfw/glfw/archive/3.3.7.tar.gz"],
 )
 
 # proto_library rules implicitly depend on @com_google_protobuf//:protoc,
