@@ -1,36 +1,35 @@
 # TODOs
 
-- [ ] Update README
-- [ ] Reprioritize TODOs :o)
-- [ ] Go through some of the shader effects from https://lettier.github.io/3d-game-shaders-for-beginners/index.html
-- [ ] Allow rendering a VAO with a given shader.
-- [ ] Add a wireframe mode.
-- [ ] Add a mechanism for working with textures.
-- [ ] Add support for framebuffers.
-- [ ] Add a mechanism to set #define's in the shader
-- [ ] Use GLuint, GLenum, GLint, etc
-- [ ] Add a logging system, and log e.g. invalid glGetUniformLocation() calls
-- [ ] Remove some duplication from light class impl
-- [ ] Add a material class that can maintain diffuse/specular maps, similar to the light class.
-- [ ] Add a core function (on window?) that calls a callback with a try/catch around for exception output
-- [ ] Getting duplicate items in compile_commands.json.
-- [ ] Add unit tests.
-- [ ] Add more documentation.
-- [ ] Add logging support.
-- [ ] Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
-- [ ] Add stacktraces to exceptions.
-- [ ] Consider supporting uniform buffer objects.
-- [ ] Add UI for adjusting params (akin to dat gui?).
-- [ ] Bug: debug normals are modified based on camera rotation.
-- [ ] Add instancing to model.
-- [ ] Bug: light registry doesn't work with >1 shaders.
-- [ ] Add dynamic UI support, a la https://github.com/ocornut/imgui
+## Features
+- [ ] P0: Add a mechanism for working with textures.
+- [ ] P1: Consider supporting uniform buffer objects.
+- [ ] P1: Allow rendering a VAO with a given shader.
+- [ ] P1: Add a wireframe mode.
+- [ ] P1: Add support for framebuffers.
+- [ ] P1: Add a material class that can maintain diffuse/specular maps, similar to the light class.
+- [ ] P2: Go through some of the shader effects from https://lettier.github.io/3d-game-shaders-for-beginners/index.html
+- [ ] P2: Add dynamic UI support, a la https://github.com/ocornut/imgui
+- [ ] P3: Update README / documentation
+- [ ] P3: Add instancing to model.
+- [ ] P4: Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
-## Examples to make
+## Cleanup
+- [ ] P2: Add a logging system, and log e.g. invalid glGetUniformLocation() calls
+- [ ] P2: Remove some duplication from light class impl
+- [ ] P2: Use GLuint, GLenum, GLint, etc
+- [ ] P3: Add a mechanism to set #define's in the shader
+- [ ] P3: Add stacktraces to exceptions.
+- [ ] P4: Add a core function (on window?) that calls a callback with a try/catch around for exception output
 
-- Lighting demo (light types, spotlight)
-- Stencil buffer demo
-- Blending (alpha transparency) demo
+## Examples
+- [ ] Lighting demo (light types, spotlight)
+- [ ] Stencil buffer demo
+- [ ] Blending (alpha transparency) demo
+
+
+## Bugs
+- [ ] P2: light registry doesn't work with >1 shaders.
+- [ ] P2: debug normals are modified based on camera rotation.
 
 ## Done
 - [x] Bug: debug normal disappear in weird ways.
@@ -57,3 +56,4 @@
 - [x] Switch to using .vert and .frag for shader extensions.
 - [x] use/unuse -> activate/deactive.
 - [x] Add clang-tidy.
+- [x] Reprioritize TODOs :o)
