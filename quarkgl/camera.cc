@@ -30,7 +30,8 @@ void Camera::updateCameraVectors() {
 }
 
 glm::mat4 Camera::getViewTransform() {
-  return glm::lookAt(position_, position_ + front_, up_);
+  glm::vec3 center = position_ + front_;
+  return glm::lookAt(/*eye=*/position_, center, up_);
 }
 
 glm::mat4 Camera::getPerspectiveTransform() {
@@ -80,11 +81,7 @@ void Camera::zoom(float offset) {
   fov_ = glm::clamp(fov_ - offset, MIN_FOV, MAX_FOV);
 }
 
-/**
- * FpsCameraControls *
- */
-
-void FpsCameraControls::resizeWindow(int width, int height) {
+void FlyCameraControls::resizeWindow(int width, int height) {
   width_ = width;
   height_ = height;
   if (!initialized_) {
@@ -94,11 +91,11 @@ void FpsCameraControls::resizeWindow(int width, int height) {
   }
 }
 
-void FpsCameraControls::scroll(Camera& camera, double xoffset, double yoffset) {
+void FlyCameraControls::scroll(Camera& camera, double xoffset, double yoffset) {
   camera.zoom(yoffset);
 }
 
-void FpsCameraControls::mouseMove(Camera& camera, double xpos, double ypos) {
+void FlyCameraControls::mouseMove(Camera& camera, double xpos, double ypos) {
   if (initialMouse_) {
     lastX_ = xpos;
     lastY_ = ypos;
@@ -113,7 +110,7 @@ void FpsCameraControls::mouseMove(Camera& camera, double xpos, double ypos) {
   camera.rotate(xoffset, yoffset);
 }
 
-void FpsCameraControls::processInput(GLFWwindow* window, Camera& camera,
+void FlyCameraControls::processInput(GLFWwindow* window, Camera& camera,
                                      float deltaTime) {
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
     camera.move(qrk::CameraDirection::FORWARD, deltaTime);

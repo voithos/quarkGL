@@ -8,7 +8,6 @@
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-
 #include <qrk/screen.h>
 
 #include <glm/glm.hpp>
@@ -40,6 +39,7 @@ constexpr float MAX_FOV = 45.0f;
 
 class Camera {
  public:
+  // Constructs a new Camera. Angular values should be provided in degrees.
   Camera(glm::vec3 position = glm::vec3(0.0f),
          glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f),
          float yaw = DEFAULT_YAW, float pitch = DEFAULT_PITCH,
@@ -61,8 +61,15 @@ class Camera {
 
   glm::mat4 getViewTransform();
   glm::mat4 getPerspectiveTransform();
+
+  // TODO: Move the following methods to FlyCameraControl?
+
+  // Moves the camera in the given direction based on the current speed.
   void move(CameraDirection direction, float deltaTime);
+  // Rotates the camera based on the current sensitivity. If constrainPitch is
+  // true, pitch is clamped when near the up and down directions.
   void rotate(float xoffset, float yoffset, bool constrainPitch = true);
+  // Changes the zoom level of the FoV by the given offset.
   void zoom(float offset);
 
  private:
@@ -85,6 +92,7 @@ class Camera {
   float far_;
 };
 
+// Interface for camera controllers.
 class CameraControls {
  public:
   virtual void resizeWindow(int width, int height) = 0;
@@ -94,7 +102,8 @@ class CameraControls {
                             float deltaTime) = 0;
 };
 
-class FpsCameraControls : public CameraControls {
+// Camera controls that implement a fly mode, similar to DCC tools.
+class FlyCameraControls : public CameraControls {
  public:
   void resizeWindow(int width, int height);
   void scroll(Camera& camera, double xoffset, double yoffset);
