@@ -1,11 +1,11 @@
-#include <iostream>
-#include <random>
-
+// clang-format off
 // Must precede glfw/glad, to include OpenGL functions.
+#include <qrk/core.h>
+// clang-format on
+
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <qrk/camera.h>
-#include <qrk/core.h>
 #include <qrk/light.h>
 #include <qrk/model.h>
 #include <qrk/shader.h>
@@ -15,6 +15,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
+#include <random>
 
 int main() {
   qrk::Window win(800, 600, "Instancing");
