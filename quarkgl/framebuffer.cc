@@ -1,5 +1,4 @@
 #include <glad/glad.h>
-
 #include <qrk/framebuffer.h>
 
 namespace qrk {
@@ -26,6 +25,8 @@ Attachment Framebuffer::attachTexture(BufferType type) {
   GLenum textureTarget = samples_ ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 
   // Generate texture based on given buffer type.
+  // TODO: This does the same thing as the Texture class - should it use that
+  // instead?
   unsigned int texture;
   glGenTextures(1, &texture);
   glBindTexture(textureTarget, texture);
@@ -37,7 +38,7 @@ Attachment Framebuffer::attachTexture(BufferType type) {
   if (samples_) {
     glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples_, internalFormat,
                             width_, height_,
-                            /* fixedsamplelocations */ GL_TRUE);
+                            /*fixedsamplelocations=*/GL_TRUE);
   } else {
     glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, internalFormat, width_,
                  height_, 0, format, dataType, nullptr);
@@ -65,6 +66,11 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   activate();
 
   // Create and configure renderbuffer.
+  // Renderbuffers are similar to textures, but they generally cannot be read
+  // from easily. In exchange, their render data is stored in a native format,
+  // so they are perfect for use cases that require writing (such as the final
+  // frame, or depth/stencil attachments).
+  // TODO: Pull out into a renderbuffer class?
   unsigned int rbo;
   glGenRenderbuffers(1, &rbo);
   glBindRenderbuffer(GL_RENDERBUFFER, rbo);

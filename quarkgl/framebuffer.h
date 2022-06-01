@@ -92,6 +92,7 @@ inline const GLenum bufferTypeToGlInternalDataType(BufferType type) {
                              std::to_string(static_cast<int>(type)));
 }
 
+// Represents a generated framebuffer
 class Framebuffer {
  public:
   Framebuffer(int width, int height, int samples = 0);
@@ -99,7 +100,10 @@ class Framebuffer {
       : Framebuffer(size.width, size.height, samples) {}
   ~Framebuffer();
 
+  // Activates the current framebuffer.
   void activate();
+  // Deactivates the current framebuffer (and activates the default screen
+  // framebuffer).
   void deactivate();
 
   glm::vec4 getClearColor() { return clearColor_; }
