@@ -57,7 +57,9 @@ class Window : public UniformSource {
   // TODO: Consider extracting stencil logic out to a separate class.
   void enableStencilTest() {
     glEnable(GL_STENCIL_TEST);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    // Only replace the value in the stencil buffer if both the stencil and
+    // depth test pass.
+    glStencilOp(/*sfail=*/GL_KEEP, /*dpfail=*/GL_KEEP, /*dppass=*/GL_REPLACE);
     stencilTestEnabled_ = true;
   }
   void disableStencilTest() {
@@ -74,7 +76,7 @@ class Window : public UniformSource {
   void setStencilFunc(GLenum func) {
     // Set the stencil test to use the given `func` when comparing for fragment
     // liveness.
-    glStencilFunc(func, 1, 0xFF);
+    glStencilFunc(func, /*ref=*/1, /*mask=*/0xFF);
   }
 
   // TODO: Consider extracting blending logic.

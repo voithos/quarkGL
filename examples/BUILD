@@ -19,7 +19,7 @@ cc_binary(
         "phong.frag",
         "model.vert",
         "model_normals.geom",
-    ] + glob(["nanosuit/*"]),
+    ] + glob(["assets/nanosuit/*"]),
     linkopts = QRK_LINKOPTS,
     deps = [
         "//quarkgl:camera",
@@ -43,8 +43,8 @@ cc_binary(
         "model.vert",
         "instanced_model.vert",
     ] + glob([
-        "rock/*",
-        "planet/*",
+        "assets/rock/*",
+        "assets/planet/*",
     ]),
     linkopts = QRK_LINKOPTS,
     deps = [
@@ -68,7 +68,7 @@ cc_binary(
         "phong.frag",
         "model.vert",
         "explode.geom",
-    ] + glob(["nanosuit/*"]),
+    ] + glob(["assets/nanosuit/*"]),
     linkopts = QRK_LINKOPTS,
     deps = [
         "//quarkgl:camera",
@@ -88,8 +88,8 @@ cc_binary(
     name = "post_processing",
     srcs = ["post_processing.cc"],
     data = [
-        "container.jpg",
-        "metal.png",
+        "assets/container.jpg",
+        "assets/metal.png",
     ],
     linkopts = QRK_LINKOPTS,
     deps = [

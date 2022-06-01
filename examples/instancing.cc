@@ -2,20 +2,19 @@
 #include <random>
 
 // Must precede glfw/glad, to include OpenGL functions.
-#include <qrk/core.h>
-
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include <qrk/camera.h>
+#include <qrk/core.h>
 #include <qrk/light.h>
 #include <qrk/model.h>
 #include <qrk/shader.h>
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 int main() {
   qrk::Window win(800, 600, "Instancing");
@@ -96,9 +95,10 @@ int main() {
   }
 
   // Load models.
-  qrk::Model planet("examples/planet/planet.obj");
-  qrk::Model plainRock("examples/rock/rock.obj");
-  qrk::Model rock("examples/rock/rock.obj", /* instanceCount */ rockCount);
+  qrk::Model planet("examples/assets/planet/planet.obj");
+  qrk::Model plainRock("examples/assets/rock/rock.obj");
+  qrk::Model rock("examples/assets/rock/rock.obj",
+                  /*instanceCount=*/rockCount);
   rock.loadInstanceModels(modelTransforms, rockCount);
 
   win.enableCulling();

@@ -1,20 +1,19 @@
 #include <iostream>
 
 // Must precede glfw/glad, to include OpenGL functions.
-#include <qrk/core.h>
-
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include <qrk/camera.h>
+#include <qrk/core.h>
 #include <qrk/light.h>
 #include <qrk/model.h>
 #include <qrk/shader.h>
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 const char* lampShaderSource = R"SHADER(
 #version 330 core
@@ -129,7 +128,7 @@ int main() {
   lightVarray.finalizeVertexAttribs();
 
   // Load model.
-  qrk::Model nanosuit("examples/nanosuit/nanosuit.obj");
+  qrk::Model nanosuit("examples/assets/nanosuit/nanosuit.obj");
 
   bool drawNormals = false;
   win.addKeyPressHandler(GLFW_KEY_1,

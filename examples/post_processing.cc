@@ -1,20 +1,19 @@
 #include <iostream>
 
 // Must precede glfw/glad, to include OpenGL functions.
-#include <qrk/core.h>
-
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include <qrk/camera.h>
+#include <qrk/core.h>
 #include <qrk/framebuffer.h>
 #include <qrk/shader.h>
 #include <qrk/texture.h>
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 const char* textureVertexSource = R"SHADER(
 #version 330 core
@@ -197,8 +196,8 @@ int main() {
   quadVarray.finalizeVertexAttribs();
 
   // Load textures.
-  unsigned int cubeTexture = qrk::loadTexture("examples/container.jpg");
-  unsigned int floorTexture = qrk::loadTexture("examples/metal.png");
+  unsigned int cubeTexture = qrk::loadTexture("examples/assets/container.jpg");
+  unsigned int floorTexture = qrk::loadTexture("examples/assets/metal.png");
 
   // Framebuffer.
   qrk::Framebuffer fb(win->getSize());
