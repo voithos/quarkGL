@@ -91,6 +91,9 @@ class Window : public UniformSource {
   void enableCulling() { glEnable(GL_CULL_FACE); }
   void disableCulling() { glDisable(GL_CULL_FACE); }
 
+  void cullFrontFaces() { glCullFace(GL_FRONT); }
+  void cullBackFaces() { glCullFace(GL_BACK); }
+
   void updateUniforms(Shader& shader);
 
   ScreenSize getSize();
