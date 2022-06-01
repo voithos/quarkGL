@@ -1,14 +1,13 @@
-# TODO: Expose a single :quarkgl library and make the rest private.
+package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "core",
     srcs = ["core.cc"],
     hdrs = ["core.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
         "//third_party/glad",
-        "@glfw//:glfw",
+        "@glfw",
     ],
 )
 
@@ -17,14 +16,20 @@ cc_library(
     srcs = ["camera.cc"],
     hdrs = ["camera.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
         ":core",
-        ":shared",
+        ":exceptions",
+        ":screen",
         "//third_party/glad",
         "//third_party/glm",
-        "@glfw//:glfw",
+        "@glfw",
     ],
+)
+
+cc_library(
+    name = "exceptions",
+    hdrs = ["exceptions.h"],
+    include_prefix = "qrk",
 )
 
 cc_library(
@@ -32,10 +37,9 @@ cc_library(
     srcs = ["light.cc"],
     hdrs = ["light.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
+        ":exceptions",
         ":shader",
-        ":shared",
         "//third_party/glm",
     ],
 )
@@ -45,7 +49,6 @@ cc_library(
     srcs = ["mesh.cc"],
     hdrs = ["mesh.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
         ":shader",
         ":texture",
@@ -60,12 +63,11 @@ cc_library(
     srcs = ["texture.cc"],
     hdrs = ["texture.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
-        ":shared",
+        ":exceptions",
         "//third_party/glad",
         "//third_party/stb_image",
-        "@assimp//:assimp",
+        "@assimp",
     ],
 )
 
@@ -74,8 +76,8 @@ cc_library(
     srcs = ["framebuffer.cc"],
     hdrs = ["framebuffer.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
+        ":screen",
         ":window",
         "//third_party/glad",
         "//third_party/glm",
@@ -87,17 +89,22 @@ cc_library(
     srcs = ["model.cc"],
     hdrs = ["model.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
+        ":exceptions",
         ":mesh",
         ":shader",
-        ":shared",
         ":texture",
         "//third_party/glad",
         "//third_party/glm",
         "//third_party/stb_image",
-        "@assimp//:assimp",
+        "@assimp",
     ],
+)
+
+cc_library(
+    name = "screen",
+    hdrs = ["screen.h"],
+    include_prefix = "qrk",
 )
 
 cc_library(
@@ -105,14 +112,20 @@ cc_library(
     srcs = ["shader.cc"],
     hdrs = ["shader.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
         ":core",
+        ":exceptions",
+        ":shader_defs",
         ":shader_loader",
-        ":shared",
         "//third_party/glad",
         "//third_party/glm",
     ],
+)
+
+cc_library(
+    name = "shader_defs",
+    hdrs = ["shader_defs.h"],
+    include_prefix = "qrk",
 )
 
 cc_library(
@@ -127,19 +140,9 @@ cc_library(
     ]),
     include_prefix = "qrk",
     deps = [
-        ":shared",
+        ":exceptions",
+        ":shader_defs",
         ":utils",
-    ],
-)
-
-cc_library(
-    name = "shared",
-    hdrs = ["shared.h"],
-    include_prefix = "qrk",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//third_party/glad",
-        "//third_party/glm",
     ],
 )
 
@@ -155,7 +158,6 @@ cc_library(
     srcs = ["vertex_array.cc"],
     hdrs = ["vertex_array.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
         "//third_party/glad",
     ],
@@ -166,14 +168,14 @@ cc_library(
     srcs = ["window.cc"],
     hdrs = ["window.h"],
     include_prefix = "qrk",
-    visibility = ["//visibility:public"],
     deps = [
         ":camera",
         ":core",
+        ":exceptions",
+        ":screen",
         ":shader",
-        ":shared",
         "//third_party/glad",
         "//third_party/glm",
-        "@glfw//:glfw",
+        "@glfw",
     ],
 )

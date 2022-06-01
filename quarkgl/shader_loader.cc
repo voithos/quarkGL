@@ -1,3 +1,5 @@
+#include <qrk/exceptions.h>
+#include <qrk/shader_defs.h>
 #include <qrk/shader_loader.h>
 #include <qrk/utils.h>
 

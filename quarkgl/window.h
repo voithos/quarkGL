@@ -9,8 +9,9 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <qrk/camera.h>
+#include <qrk/exceptions.h>
+#include <qrk/screen.h>
 #include <qrk/shader.h>
-#include <qrk/shared.h>
 
 #include <functional>
 #include <glm/glm.hpp>
@@ -27,6 +28,7 @@ class WindowException : public QuarkException {
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 constexpr char const* DEFAULT_TITLE = "quarkGL";
+const glm::vec4 DEFAULT_CLEAR_COLOR = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 enum class EscBehavior {
   NONE,

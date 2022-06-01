@@ -1,7 +1,7 @@
 #ifndef QUARKGL_FRAMEBUFFER_H_
 #define QUARKGL_FRAMEBUFFER_H_
 
-#include <qrk/shared.h>
+#include <qrk/shader.h>
 #include <qrk/window.h>
 
 #include <glm/glm.hpp>

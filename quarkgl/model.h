@@ -3,9 +3,9 @@
 
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <qrk/exceptions.h>
 #include <qrk/mesh.h>
 #include <qrk/shader.h>
-#include <qrk/shared.h>
 #include <qrk/texture.h>
 
 #include <glm/glm.hpp>

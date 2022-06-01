@@ -2,7 +2,8 @@
 #define QUARKGL_SHADER_H_
 
 #include <glad/glad.h>
-#include <qrk/shared.h>
+#include <qrk/exceptions.h>
+#include <qrk/shader_defs.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

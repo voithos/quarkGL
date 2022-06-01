@@ -1,8 +1,8 @@
 #ifndef QUARKGL_LIGHT_H_
 #define QUARKGL_LIGHT_H_
 
+#include <qrk/exceptions.h>
 #include <qrk/shader.h>
-#include <qrk/shared.h>
 
 #include <glm/glm.hpp>
 #include <string>

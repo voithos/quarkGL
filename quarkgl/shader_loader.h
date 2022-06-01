@@ -1,8 +1,6 @@
 #ifndef QUARKGL_SHADER_LOADER_H_
 #define QUARKGL_SHADER_LOADER_H_
 
-#include <qrk/shared.h>
-
 #include <deque>
 #include <string>
 #include <unordered_map>

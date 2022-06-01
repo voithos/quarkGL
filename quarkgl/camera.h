@@ -1,17 +1,19 @@
 #ifndef QUARKGL_CAMERA_H_
 #define QUARKGL_CAMERA_H_
 
-#include <vector>
-
+// clang-format off
 // Must precede glfw/glad, to include OpenGL functions.
 #include <qrk/core.h>
+// clang-format on
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+
+#include <qrk/screen.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include <qrk/shared.h>
+#include <vector>
 
 namespace qrk {
 

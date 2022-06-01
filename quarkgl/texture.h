@@ -2,7 +2,7 @@
 #define QUARKGL_TEXTURE_H_
 
 #include <assimp/scene.h>
-#include <qrk/shared.h>
+#include <qrk/exceptions.h>
 
 #include <string>
 #include <vector>
