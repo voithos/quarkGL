@@ -1,18 +1,17 @@
 #ifndef QUARKGL_MODEL_H_
 #define QUARKGL_MODEL_H_
 
-#include <string>
-#include <unordered_map>
-#include <vector>
-
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <glm/glm.hpp>
-
 #include <qrk/mesh.h>
 #include <qrk/shader.h>
 #include <qrk/shared.h>
 #include <qrk/texture.h>
+
+#include <glm/glm.hpp>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace qrk {
 class ModelLoaderException : public QuarkException {

@@ -1,9 +1,9 @@
 #ifndef QUARKGL_VERTEX_ARRAY_H_
 #define QUARKGL_VERTEX_ARRAY_H_
 
-#include <vector>
-
 #include <glad/glad.h>
+
+#include <vector>
 
 namespace qrk {
 

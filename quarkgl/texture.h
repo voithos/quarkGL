@@ -1,12 +1,11 @@
 #ifndef QUARKGL_TEXTURE_H_
 #define QUARKGL_TEXTURE_H_
 
+#include <assimp/scene.h>
+#include <qrk/shared.h>
+
 #include <string>
 #include <vector>
-
-#include <assimp/scene.h>
-
-#include <qrk/shared.h>
 
 namespace qrk {
 

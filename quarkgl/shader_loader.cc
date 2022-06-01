@@ -1,10 +1,10 @@
+#include <qrk/shader_loader.h>
+#include <qrk/utils.h>
+
 #include <fstream>
 #include <iostream>
 #include <regex>
 #include <sstream>
-
-#include <qrk/shader_loader.h>
-#include <qrk/utils.h>
 
 namespace qrk {
 

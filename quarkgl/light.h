@@ -1,13 +1,12 @@
 #ifndef QUARKGL_LIGHT_H_
 #define QUARKGL_LIGHT_H_
 
-#include <string>
-#include <vector>
-
-#include <glm/glm.hpp>
-
 #include <qrk/shader.h>
 #include <qrk/shared.h>
+
+#include <glm/glm.hpp>
+#include <string>
+#include <vector>
 
 namespace qrk {
 

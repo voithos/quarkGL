@@ -1,10 +1,10 @@
 #ifndef QUARKGL_SHARED_H_
 #define QUARKGL_SHARED_H_
 
-#include <stdexcept>
-
 #include <glad/glad.h>
+
 #include <glm/glm.hpp>
+#include <stdexcept>
 
 namespace qrk {
 class QuarkException : public std::runtime_error {

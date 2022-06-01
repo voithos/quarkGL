@@ -1,21 +1,22 @@
 #ifndef QUARKGL_WINDOW_H_
 #define QUARKGL_WINDOW_H_
 
-#include <functional>
-#include <memory>
-#include <tuple>
-#include <vector>
-
+// clang-format off
 // Must precede glfw/glad, to include OpenGL functions.
 #include <qrk/core.h>
+// clang-format on
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-
 #include <qrk/camera.h>
 #include <qrk/shader.h>
 #include <qrk/shared.h>
+
+#include <functional>
+#include <glm/glm.hpp>
+#include <memory>
+#include <tuple>
+#include <vector>
 
 namespace qrk {
 

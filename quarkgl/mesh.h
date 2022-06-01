@@ -1,16 +1,15 @@
 #ifndef QUARKGL_MESH_H_
 #define QUARKGL_MESH_H_
 
-#include <sstream>
-#include <string>
-#include <vector>
-
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-
 #include <qrk/shader.h>
 #include <qrk/texture.h>
 #include <qrk/vertex_array.h>
+
+#include <glm/glm.hpp>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace qrk {
 struct Vertex {

@@ -1,13 +1,12 @@
 #ifndef QUARKGL_FRAMEBUFFER_H_
 #define QUARKGL_FRAMEBUFFER_H_
 
-#include <string>
-#include <vector>
-
-#include <glm/glm.hpp>
-
 #include <qrk/shared.h>
 #include <qrk/window.h>
+
+#include <glm/glm.hpp>
+#include <string>
+#include <vector>
 
 namespace qrk {
 

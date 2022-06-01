@@ -1,15 +1,14 @@
 #ifndef QUARKGL_SHADER_H_
 #define QUARKGL_SHADER_H_
 
+#include <glad/glad.h>
+#include <qrk/shared.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include <qrk/shared.h>
 
 namespace qrk {
 

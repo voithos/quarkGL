@@ -1,7 +1,6 @@
 #include <glad/glad.h>
-#include <stb/stb_image.h>
-
 #include <qrk/texture.h>
+#include <stb/stb_image.h>
 
 namespace qrk {
 

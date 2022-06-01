@@ -1,7 +1,7 @@
 #include <glad/glad.h>
-#include <assimp/Importer.hpp>
-
 #include <qrk/model.h>
+
+#include <assimp/Importer.hpp>
 
 namespace qrk {
 
