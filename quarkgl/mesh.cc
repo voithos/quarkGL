@@ -1,39 +1,28 @@
 #include <qrk/mesh.h>
 
 namespace qrk {
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
-           std::vector<Texture> textures, unsigned int instanceCount)
-    : vertices_(vertices),
-      indices_(indices),
-      textures_(textures),
-      instanceCount_(instanceCount) {
+void Mesh::loadMeshData(const void* vertexData, unsigned int numVertices,
+                        unsigned int vertexSize,
+                        std::vector<unsigned int> indices,
+                        std::vector<Texture> textures,
+                        unsigned int instanceCount) {
+  indices_ = indices;
+  textures_ = textures;
+  numVertices_ = numVertices;
+  vertexSize_ = vertexSize;
+  instanceCount_ = instanceCount;
+
   // Load VBO.
-  vertexArray_.loadVertexData(&vertices_[0], vertices.size() * sizeof(Vertex));
+  vertexArray_.loadVertexData(vertexData, numVertices_ * vertexSize_);
 
-  // Positions.
-  vertexArray_.addVertexAttrib(3, GL_FLOAT);
-  // Normals.
-  // TODO: Allow drawing meshes that don't have normals.
-  vertexArray_.addVertexAttrib(3, GL_FLOAT);
-  // Texture coordinates.
-  vertexArray_.addVertexAttrib(2, GL_FLOAT);
+  initializeVertexAttributes();
+  initializeVertexArrayInstanceData();
 
-  vertexArray_.finalizeVertexAttribs();
-
-  if (instanceCount_) {
-    // Allocate space for mat4 model transforms for the instancing.
-    vertexArray_.allocateInstanceVertexData(instanceCount_ * sizeof(glm::mat4));
-    // Add vertex attributes (max attribute size is vec4, so we need 4 of them).
-    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
-    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
-    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
-    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
-    vertexArray_.finalizeVertexAttribs();
+  // Load EBO if this is an indexed mesh.
+  if (!indices_.empty()) {
+    vertexArray_.loadElementData(&indices_[0],
+                                 indices.size() * sizeof(unsigned int));
   }
-
-  // Load EBO.
-  vertexArray_.loadElementData(&indices_[0],
-                               indices.size() * sizeof(unsigned int));
 }
 
 void Mesh::loadInstanceModels(const std::vector<glm::mat4>& models) {
@@ -45,7 +34,35 @@ void Mesh::loadInstanceModels(const glm::mat4* models, unsigned int size) {
   vertexArray_.loadInstanceVertexData(&models[0], size * sizeof(glm::mat4));
 }
 
-void Mesh::draw(Shader shader) {
+void Mesh::draw(Shader& shader) {
+  bindTextures(shader);
+
+  // Draw using the VAO.
+  shader.activate();
+  vertexArray_.activate();
+
+  glDraw();
+
+  vertexArray_.deactivate();
+
+  // Reset.
+  glActiveTexture(GL_TEXTURE0);
+}
+
+void Mesh::initializeVertexArrayInstanceData() {
+  if (instanceCount_) {
+    // Allocate space for mat4 model transforms for the instancing.
+    vertexArray_.allocateInstanceVertexData(instanceCount_ * sizeof(glm::mat4));
+    // Add vertex attributes (max attribute size is vec4, so we need 4 of them).
+    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
+    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
+    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
+    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
+    vertexArray_.finalizeVertexAttribs();
+  }
+}
+
+void Mesh::bindTextures(Shader& shader) {
   // Bind textures. Assumes uniform naming is "material.textureType[idx]".
   unsigned int diffuseIdx = 0;
   unsigned int specularIdx = 0;
@@ -82,22 +99,26 @@ void Mesh::draw(Shader shader) {
   shader.setInt("material.diffuseCount", diffuseIdx);
   shader.setInt("material.specularCount", specularIdx);
   shader.setInt("material.emissionCount", emissionIdx);
+}
 
-  // Draw using the VAO.
-  shader.activate();
-  vertexArray_.activate();
-
+void Mesh::glDraw() {
   // Handle instancing.
   if (instanceCount_) {
-    glDrawElementsInstanced(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT,
-                            nullptr, instanceCount_);
+    // Handle indexed arrays.
+    if (!indices_.empty()) {
+      glDrawElementsInstanced(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT,
+                              nullptr, instanceCount_);
+    } else {
+      glDrawArraysInstanced(GL_TRIANGLES, 0, numVertices_, instanceCount_);
+    }
+
   } else {
-    glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, nullptr);
+    // Handle indexed arrays.
+    if (!indices_.empty()) {
+      glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, nullptr);
+    } else {
+      glDrawArrays(GL_TRIANGLES, 0, numVertices_);
+    }
   }
-
-  vertexArray_.deactivate();
-
-  // Reset.
-  glActiveTexture(GL_TEXTURE0);
 }
 }  // namespace qrk

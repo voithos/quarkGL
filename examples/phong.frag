@@ -1,7 +1,7 @@
 #version 330 core
-#pragma qrk_include < core.glsl >
-#pragma qrk_include < standard_lights.frag >
-#pragma qrk_include < depth.frag >
+#pragma qrk_include < core.glsl>
+#pragma qrk_include < standard_lights.frag>
+#pragma qrk_include < depth.frag>
 
 in VS_OUT {
   vec2 texCoords;

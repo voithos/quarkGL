@@ -59,6 +59,16 @@ cc_library(
 )
 
 cc_library(
+    name = "mesh_primitives",
+    srcs = ["mesh_primitives.cc"],
+    hdrs = ["mesh_primitives.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":mesh",
+    ],
+)
+
+cc_library(
     name = "texture",
     srcs = ["texture.cc"],
     hdrs = ["texture.h"],

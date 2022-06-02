@@ -5,6 +5,26 @@
 
 namespace qrk {
 
+ModelMesh::ModelMesh(std::vector<ModelVertex> vertices,
+                     std::vector<unsigned int> indices,
+                     std::vector<Texture> textures, unsigned int instanceCount)
+    : vertices_(vertices) {
+  loadMeshData(&vertices[0], vertices.size(), sizeof(ModelVertex), indices,
+               textures, instanceCount);
+}
+
+void ModelMesh::initializeVertexAttributes() {
+  // Positions.
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
+  // Normals.
+  // TODO: Allow drawing models that don't have normals.
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
+  // Texture coordinates.
+  vertexArray_.addVertexAttrib(2, GL_FLOAT);
+
+  vertexArray_.finalizeVertexAttribs();
+}
+
 Model::Model(const char* path, unsigned int instanceCount)
     : instanceCount_(instanceCount) {
   std::string pathString(path);
@@ -61,13 +81,13 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
   }
 }
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
-  std::vector<Vertex> vertices;
+ModelMesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
+  std::vector<ModelVertex> vertices;
   std::vector<unsigned int> indices;
   std::vector<Texture> textures;
 
   for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-    Vertex vertex;
+    ModelVertex vertex;
 
     // Process vertex positions, normals, and texture coordinates.
     auto inputPos = mesh->mVertices[i];
@@ -111,7 +131,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     }
   }
 
-  return Mesh(vertices, indices, textures, instanceCount_);
+  return ModelMesh(vertices, indices, textures, instanceCount_);
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material,

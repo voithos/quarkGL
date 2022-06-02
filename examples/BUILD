@@ -25,13 +25,14 @@ cc_binary(
         "//quarkgl:camera",
         "//quarkgl:core",
         "//quarkgl:light",
+        "//quarkgl:mesh_primitives",
         "//quarkgl:model",
         "//quarkgl:shader",
         "//quarkgl:vertex_array",
         "//quarkgl:window",
         "//third_party/glad",
         "//third_party/glm",
-        "@glfw//:glfw",
+        "@glfw",
     ],
 )
 
@@ -57,7 +58,7 @@ cc_binary(
         "//quarkgl:window",
         "//third_party/glad",
         "//third_party/glm",
-        "@glfw//:glfw",
+        "@glfw",
     ],
 )
 
@@ -74,13 +75,14 @@ cc_binary(
         "//quarkgl:camera",
         "//quarkgl:core",
         "//quarkgl:light",
+        "//quarkgl:mesh_primitives",
         "//quarkgl:model",
         "//quarkgl:shader",
         "//quarkgl:vertex_array",
         "//quarkgl:window",
         "//third_party/glad",
         "//third_party/glm",
-        "@glfw//:glfw",
+        "@glfw",
     ],
 )
 
@@ -102,6 +104,6 @@ cc_binary(
         "//quarkgl:window",
         "//third_party/glad",
         "//third_party/glm",
-        "@glfw//:glfw",
+        "@glfw",
     ],
 )
