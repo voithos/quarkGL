@@ -19,7 +19,9 @@ cc_library(
     deps = [
         ":core",
         ":exceptions",
+        ":light",
         ":screen",
+        ":shader",
         "//third_party/glad",
         "//third_party/glm",
         "@glfw",

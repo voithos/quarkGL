@@ -35,6 +35,8 @@ void Mesh::loadInstanceModels(const glm::mat4* models, unsigned int size) {
 }
 
 void Mesh::draw(Shader& shader) {
+  // Note: Model transform handling is done by child classes.
+
   bindTextures(shader);
 
   // Draw using the VAO.

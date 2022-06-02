@@ -8,7 +8,9 @@
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <qrk/light.h>
 #include <qrk/screen.h>
+#include <qrk/shader.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -37,7 +39,7 @@ constexpr float DEFAULT_ASPECT_RATIO = 4.0f / 3.0f;
 constexpr float MIN_FOV = 1.0f;
 constexpr float MAX_FOV = 45.0f;
 
-class Camera {
+class Camera : public UniformSource, public ViewSource {
  public:
   // Constructs a new Camera. Angular values should be provided in degrees.
   Camera(glm::vec3 position = glm::vec3(0.0f),
@@ -59,8 +61,10 @@ class Camera {
     aspectRatio_ = size.width / static_cast<float>(size.height);
   }
 
-  glm::mat4 getViewTransform();
+  glm::mat4 getViewTransform() override;
   glm::mat4 getPerspectiveTransform();
+
+  void updateUniforms(Shader& shader) override;
 
   // TODO: Move the following methods to FlyCameraControl?
 

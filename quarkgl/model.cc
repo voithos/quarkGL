@@ -48,7 +48,10 @@ void Model::loadInstanceModels(const glm::mat4* models, unsigned int size) {
   }
 }
 
-void Model::draw(Shader shader) {
+void Model::draw(Shader& shader) {
+  // First we set the model transform.
+  shader.setMat4("model", getModelTransform());
+
   for (auto mesh : meshes_) {
     mesh.draw(shader);
   }

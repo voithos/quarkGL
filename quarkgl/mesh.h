@@ -13,15 +13,27 @@
 
 namespace qrk {
 
+class Renderable {
+ public:
+  glm::mat4 getModelTransform() const { return model_; }
+  void setModelTransform(const glm::mat4& model) { model_ = model; }
+
+  virtual void draw(Shader& shader) = 0;
+
+ protected:
+  // The model transform matrix.
+  glm::mat4 model_ = glm::mat4(1.0f);
+};
+
 // An abstract class that represents a triangle mesh and handles loading and
 // rendering. Child classes can specialize when configuring vertex attributes.
-class Mesh {
+class Mesh : public Renderable {
  public:
   virtual ~Mesh() = default;
 
   void loadInstanceModels(const std::vector<glm::mat4>& models);
   void loadInstanceModels(const glm::mat4* models, unsigned int size);
-  void draw(Shader& shader);
+  void draw(Shader& shader) override;
 
   std::vector<unsigned int> getIndices() { return indices_; }
   std::vector<Texture> getTextures() { return textures_; }

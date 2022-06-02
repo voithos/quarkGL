@@ -5,7 +5,12 @@
 
 namespace qrk {
 
-class CubeMesh : public Mesh {
+class PrimitiveMesh : public Mesh {
+ public:
+  virtual void draw(Shader& shader) override;
+};
+
+class CubeMesh : public PrimitiveMesh {
  public:
   CubeMesh();
 

@@ -38,6 +38,11 @@ glm::mat4 Camera::getPerspectiveTransform() {
   return glm::perspective(glm::radians(getFov()), aspectRatio_, near_, far_);
 }
 
+void Camera::updateUniforms(Shader& shader) {
+  shader.setMat4("view", getViewTransform());
+  shader.setMat4("projection", getPerspectiveTransform());
+}
+
 void Camera::move(CameraDirection direction, float deltaTime) {
   float velocity = speed_ * deltaTime;
   switch (direction) {

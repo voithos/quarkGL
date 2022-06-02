@@ -76,10 +76,24 @@ class Light {
   bool hasViewBeenApplied_ = false;
 };
 
+// A source for the camera view transform.
+class ViewSource {
+ public:
+  virtual glm::mat4 getViewTransform() = 0;
+};
+
 class LightRegistry : public UniformSource {
  public:
   void addLight(std::shared_ptr<Light> light);
+  // Sets the view source used to update the light uniforms. The source is
+  // called when updating uniforms.
+  void setViewSource(std::shared_ptr<ViewSource> viewSource) {
+    viewSource_ = viewSource;
+  }
   void updateUniforms(Shader& shader);
+
+  // Applies the view transform to the registered lights. This is automatically
+  // called if a view source has been set.
   void applyViewTransform(const glm::mat4& view);
 
  private:
@@ -87,6 +101,7 @@ class LightRegistry : public UniformSource {
   unsigned int pointCount_ = 0;
   unsigned int spotCount_ = 0;
 
+  std::shared_ptr<ViewSource> viewSource_;
   std::vector<std::shared_ptr<Light>> lights_;
 };
 

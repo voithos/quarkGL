@@ -19,6 +19,7 @@ class ShaderException : public QuarkException {
   using QuarkException::QuarkException;
 };
 
+// An interface for a unified way of configuring shader uniforms.
 class UniformSource {
  public:
   virtual void updateUniforms(Shader& shader) = 0;

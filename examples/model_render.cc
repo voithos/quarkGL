@@ -47,6 +47,7 @@ int main() {
 
   qrk::Shader mainShader(qrk::ShaderPath("examples/model.vert"),
                          qrk::ShaderPath("examples/phong.frag"));
+  mainShader.addUniformSource(camera);
 
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
@@ -56,9 +57,11 @@ int main() {
   qrk::Shader normalShader(qrk::ShaderPath("examples/model.vert"),
                            qrk::ShaderInline(normalShaderSource),
                            qrk::ShaderPath("examples/model_normals.geom"));
+  normalShader.addUniformSource(camera);
 
   // Create light registry and add lights.
   auto registry = std::make_shared<qrk::LightRegistry>();
+  registry->setViewSource(camera);
   mainShader.addUniformSource(registry);
 
   auto directionalLight =
@@ -73,13 +76,21 @@ int main() {
 
   qrk::Shader lampShader(qrk::ShaderPath("examples/model.vert"),
                          qrk::ShaderInline(lampShaderSource));
+  lampShader.addUniformSource(camera);
 
   // Create a mesh for the light.
   // TODO: Make this into a sphere.
   qrk::CubeMesh lightCube;
+  lightCube.setModelTransform(glm::scale(
+      glm::translate(glm::mat4(), pointLight->getPosition()), glm::vec3(0.2f)));
 
   // Load model.
   qrk::Model nanosuit("examples/assets/nanosuit/nanosuit.obj");
+  // Translate the model down so it's in the center and scale it down, since
+  // it's too big.
+  nanosuit.setModelTransform(
+      glm::scale(glm::translate(glm::mat4(), glm::vec3(0.0f, -1.75f, 0.0f)),
+                 glm::vec3(0.2f)));
 
   bool drawNormals = false;
   win.addKeyPressHandler(GLFW_KEY_1,
@@ -87,44 +98,18 @@ int main() {
 
   win.enableCulling();
   win.loop([&](float deltaTime) {
-    glm::mat4 view = camera->getViewTransform();
-    glm::mat4 projection = camera->getPerspectiveTransform();
-
-    // Setup shader and lights.
-    mainShader.activate();
-    mainShader.setMat4("view", view);
-    mainShader.setMat4("projection", projection);
-
-    registry->applyViewTransform(view);
-    mainShader.updateUniforms();
-
     // Draw main model.
-    // Translate the model down so it's in the center.
-    glm::mat4 model =
-        glm::translate(glm::mat4(), glm::vec3(0.0f, -1.75f, 0.0f));
-    // Scale it down, since it's too big.
-    model = glm::scale(model, glm::vec3(0.2f));
-    mainShader.setMat4("model", model);
-
+    mainShader.updateUniforms();
     nanosuit.draw(mainShader);
 
     if (drawNormals) {
       // Draw the normals.
-      normalShader.activate();
-      normalShader.setMat4("model", model);
-      normalShader.setMat4("view", view);
-      normalShader.setMat4("projection", projection);
+      normalShader.updateUniforms();
       nanosuit.draw(normalShader);
     }
 
     // Draw light source.
-    glm::mat4 lightModel =
-        glm::translate(glm::mat4(), pointLight->getPosition());
-    lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-    lampShader.activate();
-    lampShader.setMat4("model", lightModel);
-    lampShader.setMat4("view", view);
-    lampShader.setMat4("projection", projection);
+    lampShader.updateUniforms();
     lightCube.draw(lampShader);
   });
 

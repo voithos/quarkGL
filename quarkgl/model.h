@@ -38,12 +38,12 @@ class ModelMesh : public Mesh {
 constexpr auto DEFAULT_LOAD_FLAGS =
     aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs;
 
-class Model {
+class Model : public Renderable {
  public:
   explicit Model(const char* path, unsigned int instanceCount = 0);
   void loadInstanceModels(const std::vector<glm::mat4>& models);
   void loadInstanceModels(const glm::mat4* models, unsigned int size);
-  void draw(Shader shader);
+  void draw(Shader& shader) override;
 
  private:
   void loadModel(std::string path);

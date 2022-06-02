@@ -23,6 +23,9 @@ void LightRegistry::addLight(std::shared_ptr<Light> light) {
 }
 
 void LightRegistry::updateUniforms(Shader& shader) {
+  if (viewSource_ != nullptr) {
+    applyViewTransform(viewSource_->getViewTransform());
+  }
   shader.setInt("qrk_directionalLightCount", directionalCount_);
   shader.setInt("qrk_pointLightCount", pointCount_);
   shader.setInt("qrk_spotLightCount", spotCount_);

@@ -2,6 +2,14 @@
 
 namespace qrk {
 
+void PrimitiveMesh::draw(Shader& shader) {
+  // First we set the model transform.
+  shader.setMat4("model", getModelTransform());
+
+  // Then render as normal.
+  Mesh::draw(shader);
+}
+
 // clang-format off
 constexpr float cubeVertices[] = {
     // positions          // normals           // texture coords
