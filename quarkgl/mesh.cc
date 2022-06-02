@@ -24,10 +24,10 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
     // Allocate space for mat4 model transforms for the instancing.
     vertexArray_.allocateInstanceVertexData(instanceCount_ * sizeof(glm::mat4));
     // Add vertex attributes (max attribute size is vec4, so we need 4 of them).
-    vertexArray_.addVertexAttrib(4, GL_FLOAT, /* instanceDivisor */ 1);
-    vertexArray_.addVertexAttrib(4, GL_FLOAT, /* instanceDivisor */ 1);
-    vertexArray_.addVertexAttrib(4, GL_FLOAT, /* instanceDivisor */ 1);
-    vertexArray_.addVertexAttrib(4, GL_FLOAT, /* instanceDivisor */ 1);
+    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
+    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
+    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
+    vertexArray_.addVertexAttrib(4, GL_FLOAT, /*instanceDivisor=*/1);
     vertexArray_.finalizeVertexAttribs();
   }
 

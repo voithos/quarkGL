@@ -45,6 +45,11 @@ inline const aiTextureType textureTypeToAiTextureType(TextureType type) {
 // TODO: Consider putting this in a TextureLoader class.
 unsigned int loadTexture(const char* path, bool isSRGB = true);
 
+// Loads a cubemap from a set of 6 textures for the faces. Textures must be
+// passed in order starting with GL_TEXTURE_CUBE_MAP_POSITIVE_X and incrementing
+// from there; namely, in the order right, left, top, bottom, front, and back.
+unsigned int loadCubemap(std::vector<std::string> faces);
+
 struct Texture {
   unsigned int id;
   TextureType type;
