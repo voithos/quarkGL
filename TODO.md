@@ -1,31 +1,40 @@
 # TODOs
 
 ## Features
-- [ ] P0: Add a mechanism for working with textures.
-- [ ] P1: Consider supporting uniform buffer objects.
-- [ ] P1: Allow rendering a VAO with a given shader.
-- [ ] P1: Add a wireframe mode.
-- [ ] P1: Add support for framebuffers.
-- [ ] P1: Add a material class that can maintain diffuse/specular maps, similar to the light class.
+- [ ] P0: Implement blinn phong
+- [ ] P0: Add normal mapping
+- [ ] P0: Add shadow mapping / CSM
+- [ ] P0: Implement deferred shading
+- [ ] P0: Implement SSAO
+- [ ] P0: Implement PBR lighting
+- [ ] P1: Implement tessellation
+- [ ] P1: Add parallax mapping
+- [ ] P1: Add HDR
+- [ ] P1: Add Bloom
+- [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
+- [ ] P1: Implement IBL (image based lighting)
+- [ ] P1: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
+- [ ] P2: Add a scene graph. https://learnopengl.com/Guest-Articles/2021/Scene/Scene-Graph
+- [ ] P2: Implement frustum culling. https://learnopengl.com/Guest-Articles/2021/Scene/Frustum-Culling
+- [ ] P2: Consider supporting uniform buffer objects. https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
+- [ ] P2: Add a material class that can maintain diffuse/specular maps, similar to the light class.
 - [ ] P2: Go through some of the shader effects from https://lettier.github.io/3d-game-shaders-for-beginners/index.html
 - [ ] P2: Add dynamic UI support, a la https://github.com/ocornut/imgui
 - [ ] P3: Update README / documentation
-- [ ] P3: Add instancing to model.
+- [ ] P3: Add a wireframe mode.
+- [ ] P3: Add support for framebuffers?
+- [ ] P3: Add instancing to model?
 - [ ] P4: Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
 ## Cleanup
 - [ ] P2: Add a logging system, and log e.g. invalid glGetUniformLocation() calls
 - [ ] P2: Remove some duplication from light class impl
-- [ ] P2: Use GLuint, GLenum, GLint, etc
 - [ ] P3: Add a mechanism to set #define's in the shader
-- [ ] P3: Add stacktraces to exceptions.
-- [ ] P4: Add a core function (on window?) that calls a callback with a try/catch around for exception output
 
 ## Examples
 - [ ] Lighting demo (light types, spotlight)
 - [ ] Stencil buffer demo
 - [ ] Blending (alpha transparency) demo
-
 
 ## Bugs
 - [ ] P2: light registry doesn't work with >1 shaders.
@@ -57,3 +66,5 @@
 - [x] use/unuse -> activate/deactive.
 - [x] Add clang-tidy.
 - [x] Reprioritize TODOs :o)
+- [x] P0: Add a mechanism for working with textures.
+- [x] Add skybox support.

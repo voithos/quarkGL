@@ -32,6 +32,7 @@ out vec4 fragColor;
 void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
 )SHADER";
 
+// TODO: Move this to a built in shader.
 const char* skyboxVertShaderSource = R"SHADER(
 #version 330 core
 layout(location = 0) in vec3 vertexPos;
@@ -43,7 +44,9 @@ uniform mat4 projection;
 
 void main() {
   // No model transform needed for a skybox.
-  gl_Position = projection * view * vec4(vertexPos, 1.0);
+  vec4 pos = projection * view * vec4(vertexPos, 1.0);
+  // The skybox is meant to be drawn last, so to take advantage of early depth testing, we set the vertex's z component to w so that after the perspective division by w the resulting normalized device coordinate will equal 1.0, which is the maximum depth value. This allows the skybox to be rendered behind everything else.
+  gl_Position = pos.xyww;
   // The sample coordinates are equivalent to the interpolated vertex positions.
   skyboxCoords = vertexPos;
 }  
@@ -149,15 +152,8 @@ int main() {
 
   win.enableCulling();
   win.loop([&](float deltaTime) {
-    // Draw skybox. We disable depth writing so that it always appears behind.
-    glDepthMask(GL_FALSE);
-    skyboxShader.updateUniforms();
-    skyboxShader.setMat4("view",
-                         glm::mat4(glm::mat3(camera->getViewTransform())));
-    skybox.draw(skyboxShader);
-    glDepthMask(GL_TRUE);
-
     // Draw main models.
+    // TODO: Set up environment mapping with the skybox.
     mainShader.updateUniforms();
     boxCube.draw(mainShader);
     nanosuit.draw(mainShader);
@@ -172,6 +168,14 @@ int main() {
     // Draw light source.
     lampShader.updateUniforms();
     lightCube.draw(lampShader);
+
+    // Draw skybox. We disable depth writing so that it always appears behind.
+    glDepthFunc(GL_LEQUAL);
+    skyboxShader.updateUniforms();
+    skyboxShader.setMat4("view",
+                         glm::mat4(glm::mat3(camera->getViewTransform())));
+    skybox.draw(skyboxShader);
+    glDepthFunc(GL_LESS);
   });
 
   return 0;
