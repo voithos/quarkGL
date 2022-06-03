@@ -1,5 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
+# TODO: Create a mega-include for convenience.
+
 cc_library(
     name = "core",
     srcs = ["core.cc"],
@@ -135,6 +137,14 @@ cc_library(
 )
 
 cc_library(
+    name = "shader_primitives",
+    srcs = ["shader_primitives.cc"],
+    hdrs = ["shader_primitives.h"],
+    include_prefix = "qrk",
+    deps = [":shader"],
+)
+
+cc_library(
     name = "shader_defs",
     hdrs = ["shader_defs.h"],
     include_prefix = "qrk",
@@ -145,10 +155,10 @@ cc_library(
     srcs = ["shader_loader.cc"],
     hdrs = ["shader_loader.h"],
     data = glob([
-        "shaders/*.glsl",
-        "shaders/*.vert",
-        "shaders/*.frag",
-        "shaders/*.geom",
+        "shaders/**/*.glsl",
+        "shaders/**/*.vert",
+        "shaders/**/*.frag",
+        "shaders/**/*.geom",
     ]),
     include_prefix = "qrk",
     deps = [

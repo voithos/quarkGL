@@ -32,6 +32,7 @@ cc_binary(
         "//quarkgl:mesh_primitives",
         "//quarkgl:model",
         "//quarkgl:shader",
+        "//quarkgl:shader_primitives",
         "//quarkgl:vertex_array",
         "//quarkgl:window",
         "//third_party/glad",

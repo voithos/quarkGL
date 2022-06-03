@@ -128,7 +128,7 @@ int Shader::safeGetUniformLocation(const char* name) {
 }
 
 void Shader::activate() { glUseProgram(shaderProgram_); }
-void Shader::deactive() { glUseProgram(0); }
+void Shader::deactivate() { glUseProgram(0); }
 
 // TODO: Is shared_ptr really the best approach here?
 void Shader::addUniformSource(std::shared_ptr<UniformSource> source) {

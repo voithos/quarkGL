@@ -48,6 +48,7 @@ void Mesh::draw(Shader& shader) {
   vertexArray_.deactivate();
 
   // Reset.
+  shader.deactivate();
   glActiveTexture(GL_TEXTURE0);
 }
 

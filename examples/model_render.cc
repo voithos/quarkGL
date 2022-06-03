@@ -10,6 +10,7 @@
 #include <qrk/mesh_primitives.h>
 #include <qrk/model.h>
 #include <qrk/shader.h>
+#include <qrk/shader_primitives.h>
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>
 
@@ -32,45 +33,12 @@ out vec4 fragColor;
 void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
 )SHADER";
 
-// TODO: Move this to a built in shader.
-const char* skyboxVertShaderSource = R"SHADER(
-#version 330 core
-layout(location = 0) in vec3 vertexPos;
-
-out vec3 skyboxCoords;
-
-uniform mat4 view;
-uniform mat4 projection;
-
-void main() {
-  // No model transform needed for a skybox.
-  vec4 pos = projection * view * vec4(vertexPos, 1.0);
-  // The skybox is meant to be drawn last, so to take advantage of early depth testing, we set the vertex's z component to w so that after the perspective division by w the resulting normalized device coordinate will equal 1.0, which is the maximum depth value. This allows the skybox to be rendered behind everything else.
-  gl_Position = pos.xyww;
-  // The sample coordinates are equivalent to the interpolated vertex positions.
-  skyboxCoords = vertexPos;
-}  
-)SHADER";
-
-const char* skyboxFragShaderSource = R"SHADER(
-#version 330 core
-out vec4 fragColor;
-
-in vec3 skyboxCoords;
-
-uniform samplerCube skybox;
-
-void main() {    
-  fragColor = texture(skybox, skyboxCoords);
-}
-)SHADER";
-
 int main() {
   qrk::Window win(800, 600, "Model render", /* fullscreen */ false,
                   /* samples */ 4);
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   win.enableMouseCapture();
-  win.setEscBehavior(qrk::EscBehavior::TOGGLE_MOUSE_CAPTURE);
+  win.setEscBehavior(qrk::EscBehavior::CLOSE);
 
   auto camera =
       std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
@@ -92,10 +60,7 @@ int main() {
                            qrk::ShaderPath("examples/model_normals.geom"));
   normalShader.addUniformSource(camera);
 
-  // Needs to be separate due to some stupid C++ compiler nonsense.
-  auto skyboxFrag = qrk::ShaderInline(skyboxFragShaderSource);
-  qrk::Shader skyboxShader(qrk::ShaderInline(skyboxVertShaderSource),
-                           skyboxFrag);
+  qrk::SkyboxShader skyboxShader;
   skyboxShader.addUniformSource(camera);
 
   qrk::SkyboxMesh skybox({
@@ -169,13 +134,9 @@ int main() {
     lampShader.updateUniforms();
     lightCube.draw(lampShader);
 
-    // Draw skybox. We disable depth writing so that it always appears behind.
-    glDepthFunc(GL_LEQUAL);
+    // Draw skybox.
     skyboxShader.updateUniforms();
-    skyboxShader.setMat4("view",
-                         glm::mat4(glm::mat3(camera->getViewTransform())));
     skybox.draw(skyboxShader);
-    glDepthFunc(GL_LESS);
   });
 
   return 0;
