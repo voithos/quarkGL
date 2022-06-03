@@ -64,11 +64,20 @@ constexpr float cubeVertices[] = {
 };
 // clang-format on
 
-CubeMesh::CubeMesh() {
+CubeMesh::CubeMesh(std::string texturePath) {
+  std::vector<Texture> textures;
+  if (!texturePath.empty()) {
+    Texture texture;
+    texture.id = loadTexture(texturePath.c_str());
+    // TODO: Support more complex textures for primitives?
+    texture.type = TextureType::DIFFUSE;
+    texture.path = texturePath;
+    textures.push_back(texture);
+  }
+
   constexpr unsigned int cubeVertexSize = 8;
-  // TODO: Add support for CubeMesh textures.
   loadMeshData(cubeVertices, sizeof(cubeVertices) / cubeVertexSize,
-               cubeVertexSize, /*indices=*/{}, /*textures=*/{});
+               cubeVertexSize, /*indices=*/{}, textures);
 }
 
 void CubeMesh::initializeVertexAttributes() {

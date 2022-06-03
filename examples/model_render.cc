@@ -84,6 +84,11 @@ int main() {
   lightCube.setModelTransform(glm::scale(
       glm::translate(glm::mat4(), pointLight->getPosition()), glm::vec3(0.2f)));
 
+  qrk::CubeMesh boxCube("examples/assets/container.jpg");
+  boxCube.setModelTransform(
+      glm::scale(glm::translate(glm::mat4(), glm::vec3(-1.0f, 0.5f, 0.5f)),
+                 glm::vec3(0.5f)));
+
   // Load model.
   qrk::Model nanosuit("examples/assets/nanosuit/nanosuit.obj");
   // Translate the model down so it's in the center and scale it down, since
@@ -98,13 +103,15 @@ int main() {
 
   win.enableCulling();
   win.loop([&](float deltaTime) {
-    // Draw main model.
+    // Draw main models.
     mainShader.updateUniforms();
+    boxCube.draw(mainShader);
     nanosuit.draw(mainShader);
 
     if (drawNormals) {
       // Draw the normals.
       normalShader.updateUniforms();
+      boxCube.draw(normalShader);
       nanosuit.draw(normalShader);
     }
 

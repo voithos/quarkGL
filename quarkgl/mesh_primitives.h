@@ -12,7 +12,7 @@ class PrimitiveMesh : public Mesh {
 
 class CubeMesh : public PrimitiveMesh {
  public:
-  CubeMesh();
+  CubeMesh(std::string texturePath = "");
 
  protected:
   void initializeVertexAttributes() override;

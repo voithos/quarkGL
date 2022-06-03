@@ -145,6 +145,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material,
   for (unsigned int i = 0; i < material->GetTextureCount(aiType); i++) {
     aiString texturePath;
     material->GetTexture(aiType, i, &texturePath);
+    // TODO: Pull the texture loading bits into a separate class.
     // Assume that the texture path is relative to model directory.
     std::string fullPath = directory_ + "/" + texturePath.C_Str();
 
