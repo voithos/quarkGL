@@ -4,6 +4,13 @@
 #include <assimp/Importer.hpp>
 
 namespace qrk {
+namespace {
+constexpr TextureType loaderSupportedTextureTypes[] = {
+    TextureType::DIFFUSE,
+    TextureType::SPECULAR,
+    TextureType::EMISSION,
+};
+}
 
 ModelMesh::ModelMesh(std::vector<ModelVertex> vertices,
                      std::vector<unsigned int> indices,
@@ -128,7 +135,7 @@ ModelMesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
   // Process material.
   {
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    for (auto textureType : allTextureTypes()) {
+    for (auto textureType : loaderSupportedTextureTypes) {
       auto loadedMaps = loadMaterialTextures(material, textureType);
       textures.insert(textures.end(), loadedMaps.begin(), loadedMaps.end());
     }

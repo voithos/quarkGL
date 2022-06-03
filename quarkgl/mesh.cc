@@ -74,28 +74,40 @@ void Mesh::bindTextures(Shader& shader) {
   for (const Texture& texture : textures_) {
     // TODO: Take into account GL_MAX_TEXTURE_UNITS here.
     glActiveTexture(GL_TEXTURE0 + textureUnit);
-    glBindTexture(GL_TEXTURE_2D, texture.id);
 
-    std::ostringstream ss;
-    ss << "material.";
+    std::string samplerName;
+    if (texture.type == TextureType::CUBEMAP) {
+      glBindTexture(GL_TEXTURE_CUBE_MAP, texture.id);
+      samplerName = "skybox";
+    } else {
+      glBindTexture(GL_TEXTURE_2D, texture.id);
 
-    switch (texture.type) {
-      case TextureType::DIFFUSE:
-        ss << "diffuse[" << diffuseIdx << "]";
-        diffuseIdx++;
-        break;
-      case TextureType::SPECULAR:
-        ss << "specular[" << specularIdx << "]";
-        specularIdx++;
-        break;
-      case TextureType::EMISSION:
-        ss << "emission[" << emissionIdx << "]";
-        emissionIdx++;
-        break;
+      std::ostringstream ss;
+      ss << "material.";
+
+      switch (texture.type) {
+        case TextureType::DIFFUSE:
+          ss << "diffuse[" << diffuseIdx << "]";
+          diffuseIdx++;
+          break;
+        case TextureType::SPECULAR:
+          ss << "specular[" << specularIdx << "]";
+          specularIdx++;
+          break;
+        case TextureType::EMISSION:
+          ss << "emission[" << emissionIdx << "]";
+          emissionIdx++;
+          break;
+        case TextureType::CUBEMAP:
+          // Handled earlier.
+          abort();
+          break;
+      }
+      samplerName = ss.str();
     }
 
     // Set the sampler to the correct texture unit.
-    shader.setInt(ss.str(), textureUnit);
+    shader.setInt(samplerName, textureUnit);
     textureUnit++;
   }
   shader.setInt("material.diffuseCount", diffuseIdx);

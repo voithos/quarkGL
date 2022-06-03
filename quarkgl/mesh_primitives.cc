@@ -91,4 +91,68 @@ void CubeMesh::initializeVertexAttributes() {
   vertexArray_.finalizeVertexAttribs();
 }
 
+// clang-format off
+constexpr float skyboxVertices[] = {
+    // positions          
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f
+};
+// clang-format on
+
+SkyboxMesh::SkyboxMesh(std::vector<std::string> faces) {
+  Texture texture;
+  texture.id = loadCubemap(faces);
+  texture.type = TextureType::CUBEMAP;
+  texture.path = faces[0];
+
+  constexpr unsigned int skyboxVertexSize = 3;
+  loadMeshData(skyboxVertices, sizeof(skyboxVertices) / skyboxVertexSize,
+               skyboxVertexSize, /*indices=*/{}, {texture});
+}
+
+void SkyboxMesh::initializeVertexAttributes() {
+  // Skybox only has vertex positions.
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
+  vertexArray_.finalizeVertexAttribs();
+}
+
 }  // namespace qrk

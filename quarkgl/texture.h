@@ -14,16 +14,17 @@ class TextureException : public QuarkException {
 };
 
 enum class TextureType {
-  DIFFUSE,
+  DIFFUSE = 0,
   SPECULAR,
   EMISSION,
+  CUBEMAP,
   // Adding a new texture type?
   // Update allTextureTypes() below.
 };
 
 inline std::vector<TextureType> allTextureTypes() {
   std::vector<TextureType> textureTypes;
-  for (int i = 0; i <= static_cast<int>(TextureType::EMISSION); i++) {
+  for (int i = 0; i <= static_cast<int>(TextureType::CUBEMAP); i++) {
     textureTypes.push_back(static_cast<TextureType>(i));
   }
   return textureTypes;
@@ -37,9 +38,10 @@ inline const aiTextureType textureTypeToAiTextureType(TextureType type) {
       return aiTextureType_SPECULAR;
     case TextureType::EMISSION:
       return aiTextureType_EMISSIVE;
+    default:
+      throw TextureException("ERROR::TEXTURE::INVALID_TEXTURE_TYPE\n" +
+                             std::to_string(static_cast<int>(type)));
   }
-  throw TextureException("ERROR::TEXTURE::INVALID_TEXTURE_TYPE\n" +
-                         std::to_string(static_cast<int>(type)));
 }
 
 // TODO: Consider putting this in a TextureLoader class.

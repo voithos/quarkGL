@@ -20,7 +20,10 @@ cc_binary(
         "model.vert",
         "model_normals.geom",
         "assets/container.jpg",
-    ] + glob(["assets/nanosuit/*"]),
+    ] + glob([
+        "assets/nanosuit/*",
+        "assets/skybox/*",
+    ]),
     linkopts = QRK_LINKOPTS,
     deps = [
         "//quarkgl:camera",
