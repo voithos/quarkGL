@@ -18,7 +18,7 @@
 #include <iostream>
 
 const char* textureVertexSource = R"SHADER(
-#version 330 core
+#version 460 core
 layout(location = 0) in vec3 vertexPos;
 layout(location = 1) in vec2 vertexTexCoords;
 
@@ -38,7 +38,7 @@ void main() {
 )SHADER";
 
 const char* textureFragmentSource = R"SHADER(
-#version 330 core
+#version 460 core
 in vec2 texCoords;
 
 out vec4 fragColor;
@@ -49,7 +49,7 @@ void main() { fragColor = texture(texture0, texCoords); }
 )SHADER";
 
 const char* screenVertexSource = R"SHADER(
-#version 330 core
+#version 460 core
 layout(location = 0) in vec2 vertexPos;
 layout(location = 1) in vec2 vertexTexCoords;
 
@@ -63,7 +63,7 @@ void main() {
 )SHADER";
 
 const char* screenFragmentSource = R"SHADER(
-#version 330 core
+#version 460 core
 #pragma qrk_include < gamma.frag >
 #pragma qrk_include < post_processing.frag >
 #pragma qrk_include < window.frag >

@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 #pragma qrk_include < debug.geom >
 
 layout(triangles) in;

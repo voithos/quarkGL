@@ -13,7 +13,7 @@
 - [ ] P1: Add Bloom
 - [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
 - [ ] P1: Implement IBL (image based lighting)
-- [ ] P1: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
+- [ ] P2: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 - [ ] P2: Add a scene graph. https://learnopengl.com/Guest-Articles/2021/Scene/Scene-Graph
 - [ ] P2: Implement frustum culling. https://learnopengl.com/Guest-Articles/2021/Scene/Frustum-Culling
 - [ ] P2: Consider supporting uniform buffer objects. https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL

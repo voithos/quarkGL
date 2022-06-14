@@ -2,6 +2,7 @@
 #define QUARKGL_WINDOW_FRAG_
 
 uniform float qrk_deltaTime;
+// TODO: Replace these uniforms with a vec2.
 uniform int qrk_windowWidth;
 uniform int qrk_windowHeight;
 

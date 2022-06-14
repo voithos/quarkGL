@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 #pragma qrk_include < core.glsl >
 #pragma qrk_include < constants.glsl >
 #pragma qrk_include < transforms.glsl >

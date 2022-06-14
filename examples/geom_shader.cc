@@ -19,7 +19,7 @@
 #include <iostream>
 
 const char* lampShaderSource = R"SHADER(
-#version 330 core
+#version 460 core
 out vec4 fragColor;
 
 void main() { fragColor = vec4(1.0); }
