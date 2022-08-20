@@ -263,6 +263,8 @@ void Window::loop(std::function<void(float)> callback) {
     // Call the loop function.
     callback(deltaTime_);
 
+    qrkCheckForGlError();
+
     glfwSwapBuffers(window_);
     glfwPollEvents();
   }

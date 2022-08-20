@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <qrk/camera.h>
+#include <qrk/exceptions.h>
 #include <qrk/light.h>
 #include <qrk/mesh_primitives.h>
 #include <qrk/model.h>

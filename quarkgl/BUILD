@@ -32,8 +32,12 @@ cc_library(
 
 cc_library(
     name = "exceptions",
+    srcs = ["exceptions.cc"],
     hdrs = ["exceptions.h"],
     include_prefix = "qrk",
+    deps = [
+        "//third_party/glad",
+    ],
 )
 
 cc_library(
