@@ -64,18 +64,21 @@ class Shader {
   }
 
  private:
-  void compileShaderProgram(unsigned int vertexShader,
-                            unsigned int fragmentShader,
-                            unsigned int geometryShader);
-  unsigned int loadAndCompileShader(const ShaderSource& shaderSource,
-                                    const ShaderType type);
-  unsigned int compileShader(const char* shaderSource, const ShaderType type);
-
   int safeGetUniformLocation(const char* name);
 
   unsigned int shaderProgram_;
   std::vector<std::shared_ptr<UniformSource>> uniformSources_;
 };
+
+class ComputeShader {
+ public:
+  explicit ComputeShader(const ShaderSource& computeSource);
+  virtual ~ComputeShader() = default;
+
+ private:
+  unsigned int shaderProgram_;
+};
+
 }  // namespace qrk
 
 #endif

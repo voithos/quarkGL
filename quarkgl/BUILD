@@ -133,6 +133,7 @@ cc_library(
     deps = [
         ":core",
         ":exceptions",
+        ":shader_compiler",
         ":shader_defs",
         ":shader_loader",
         "//third_party/glad",
@@ -169,6 +170,18 @@ cc_library(
         ":exceptions",
         ":shader_defs",
         ":utils",
+    ],
+)
+
+cc_library(
+    name = "shader_compiler",
+    srcs = ["shader_compiler.cc"],
+    hdrs = ["shader_compiler.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":exceptions",
+        ":shader_defs",
+        ":shader_loader",
     ],
 )
 

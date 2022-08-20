@@ -50,6 +50,14 @@ void ShaderLoader::checkShaderType(std::string const& shaderPath) {
             shaderPath + "' must end in '.geom'.");
       }
       break;
+    case ShaderType::COMPUTE:
+      if (!string_has_suffix(shaderPath, ".comp")) {
+        throw ShaderLoaderException(
+            "ERROR::SHADER_LOADER::INVALID_EXTENSION\n"
+            "Loaded compute shader '" +
+            shaderPath + "' must end in '.comp'.");
+      }
+      break;
   }
 }
 

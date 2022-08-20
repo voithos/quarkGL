@@ -7,6 +7,7 @@ enum class ShaderType {
   VERTEX,
   FRAGMENT,
   GEOMETRY,
+  COMPUTE,
 };
 
 struct ShaderSource {
