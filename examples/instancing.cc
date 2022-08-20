@@ -103,7 +103,7 @@ int main() {
                   /*instanceCount=*/rockCount);
   rock.loadInstanceModels(modelTransforms, rockCount);
 
-  win.enableCulling();
+  win.enableFaceCull();
   win.loop([&](float deltaTime) {
     glm::mat4 view = camera->getViewTransform();
     glm::mat4 projection = camera->getPerspectiveTransform();

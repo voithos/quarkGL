@@ -4,7 +4,7 @@ QRK_LINKOPTS = [
     "-lGLU",
     "-lX11",
     "-lXxf86vm",
-    "-lXinerama",
+    # "-lXinerama",
     "-lXcursor",
     "-lpthread",
     "-lXrandr",

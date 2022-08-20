@@ -88,8 +88,8 @@ class Window : public UniformSource {
   }
   void disableBlending() { glDisable(GL_BLEND); }
 
-  void enableCulling() { glEnable(GL_CULL_FACE); }
-  void disableCulling() { glDisable(GL_CULL_FACE); }
+  void enableFaceCull() { glEnable(GL_CULL_FACE); }
+  void disableFaceCull() { glDisable(GL_CULL_FACE); }
 
   void cullFrontFaces() { glCullFace(GL_FRONT); }
   void cullBackFaces() { glCullFace(GL_BACK); }

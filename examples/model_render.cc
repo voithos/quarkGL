@@ -115,7 +115,7 @@ int main() {
   win.addKeyPressHandler(GLFW_KEY_1,
                          [&](int mods) { drawNormals = !drawNormals; });
 
-  win.enableCulling();
+  win.enableFaceCull();
   win.loop([&](float deltaTime) {
     // Draw main models.
     // TODO: Set up environment mapping with the skybox.

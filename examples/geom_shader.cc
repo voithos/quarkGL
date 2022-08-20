@@ -70,7 +70,7 @@ int main() {
   // Load model.
   qrk::Model nanosuit("examples/assets/nanosuit/nanosuit.obj");
 
-  win.disableCulling();
+  win.disableFaceCull();
   win.loop([&](float deltaTime) {
     glm::mat4 view = camera->getViewTransform();
     glm::mat4 projection = camera->getPerspectiveTransform();
