@@ -49,7 +49,6 @@ void Mesh::draw(Shader& shader) {
 
   // Reset.
   shader.deactivate();
-  glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::initializeVertexArrayInstanceData() {
@@ -72,18 +71,13 @@ void Mesh::bindTextures(Shader& shader) {
   unsigned int emissionIdx = 0;
 
   unsigned int textureUnit = 0;
-  for (const Texture& texture : textures_) {
-    // TODO: Take into account GL_MAX_TEXTURE_UNITS here.
-    glActiveTexture(GL_TEXTURE0 + textureUnit);
-
+  for (Texture& texture : textures_) {
     std::string samplerName;
     TextureType type = texture.getType();
+    texture.bindToUnit(textureUnit);
     if (type == TextureType::CUBEMAP) {
-      glBindTexture(GL_TEXTURE_CUBE_MAP, texture.getId());
       samplerName = "skybox";
     } else {
-      glBindTexture(GL_TEXTURE_2D, texture.getId());
-
       std::ostringstream ss;
       ss << "material.";
 
@@ -103,6 +97,9 @@ void Mesh::bindTextures(Shader& shader) {
         case TextureType::CUBEMAP:
           // Handled earlier.
           abort();
+          break;
+        case TextureType::CUSTOM:
+          // No special logic needed.
           break;
       }
       samplerName = ss.str();

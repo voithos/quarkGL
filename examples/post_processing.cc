@@ -198,8 +198,10 @@ int main() {
   quadVarray.finalizeVertexAttribs();
 
   // Load textures.
-  unsigned int cubeTexture = qrk::loadTexture("examples/assets/container.jpg");
-  unsigned int floorTexture = qrk::loadTexture("examples/assets/metal.png");
+  qrk::Texture cubeTexture = qrk::Texture::load("examples/assets/container.jpg",
+                                                qrk::TextureType::DIFFUSE);
+  qrk::Texture floorTexture = qrk::Texture::load("examples/assets/metal.png",
+                                                 qrk::TextureType::DIFFUSE);
 
   // Framebuffer.
   qrk::Framebuffer fb(win->getSize());
@@ -225,8 +227,7 @@ int main() {
 
     // Draw cubes.
     cubeVarray.activate();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, cubeTexture);
+    cubeTexture.bindToUnit(0);
     model = glm::translate(glm::mat4(), glm::vec3(-1.0f, 0.0f, -1.0f));
     mainShader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -237,7 +238,7 @@ int main() {
 
     // Draw floor.
     planeVarray.activate();
-    glBindTexture(GL_TEXTURE_2D, floorTexture);
+    floorTexture.bindToUnit(0);
     mainShader.setMat4("model", glm::mat4());
     glDrawArrays(GL_TRIANGLES, 0, 6);
     planeVarray.deactivate();

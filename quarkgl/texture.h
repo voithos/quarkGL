@@ -18,13 +18,15 @@ enum class TextureType {
   SPECULAR,
   EMISSION,
   CUBEMAP,
+  // Custom textures are not automatically understood by the renderer.
+  CUSTOM,
   // Adding a new texture type?
   // Update allTextureTypes() below.
 };
 
 inline std::vector<TextureType> allTextureTypes() {
   std::vector<TextureType> textureTypes;
-  for (int i = 0; i <= static_cast<int>(TextureType::CUBEMAP); i++) {
+  for (int i = 0; i <= static_cast<int>(TextureType::CUSTOM); i++) {
     textureTypes.push_back(static_cast<TextureType>(i));
   }
   return textureTypes;
@@ -56,6 +58,15 @@ class Texture {
   // front, and back.
   static Texture loadCubemap(std::vector<std::string> faces);
 
+  // Creates a custom texture of the given size and format.
+  static Texture create(int width, int height, GLenum internalFormat);
+
+  // Binds the texture to the given texture unit.
+  // Unit should be a number starting from 0, not the actual texture unit's
+  // GLenum. This will bind samplers normally, but will bind cubemaps as
+  // cubemaps and custom texture as image textures.
+  void bindToUnit(unsigned int textureUnit);
+
   unsigned int getId() const { return id_; }
   TextureType getType() const { return type_; }
   // Returns the path to a texture. Not applicable for cubemaps or generated
@@ -64,6 +75,8 @@ class Texture {
   int getWidth() const { return width_; }
   int getHeight() const { return height_; }
   int getNumChannels() const { return numChannels_; }
+  // TODO: Remove GLenum from this API (use a custom enum).
+  GLenum getInternalFormat() const { return internalFormat_; }
 
  private:
   unsigned int id_;
@@ -72,6 +85,7 @@ class Texture {
   int width_;
   int height_;
   int numChannels_;
+  GLenum internalFormat_;
 };
 }  // namespace qrk
 
