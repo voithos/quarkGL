@@ -73,6 +73,7 @@ cc_library(
     include_prefix = "qrk",
     deps = [
         ":mesh",
+        ":texture",
     ],
 )
 
@@ -136,6 +137,7 @@ cc_library(
         ":shader_compiler",
         ":shader_defs",
         ":shader_loader",
+        ":texture",
         "//third_party/glad",
         "//third_party/glm",
     ],

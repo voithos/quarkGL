@@ -19,6 +19,11 @@ class SkyboxShader : public Shader {
   virtual void setMat4(const char* name, const glm::mat4& matrix) override;
 };
 
+class ScreenQuadShader : public Shader {
+ public:
+  ScreenQuadShader();
+};
+
 }  // namespace qrk
 
 #endif

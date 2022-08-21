@@ -148,4 +148,31 @@ void SkyboxMesh::initializeVertexAttributes() {
   vertexArray_.finalizeVertexAttribs();
 }
 
+// clang-format off
+constexpr float screenQuadVertices[] = {
+    // positions   // texture coords
+    -1.0f,  1.0f,  0.0f, 1.0f,
+    -1.0f, -1.0f,  0.0f, 0.0f,
+     1.0f, -1.0f,  1.0f, 0.0f,
+
+    -1.0f,  1.0f,  0.0f, 1.0f,
+     1.0f, -1.0f,  1.0f, 0.0f,
+     1.0f,  1.0f,  1.0f, 1.0f
+};
+// clang-format on
+
+ScreenQuadMesh::ScreenQuadMesh(Texture texture) {
+  constexpr unsigned int quadVertexSize = 4;
+  loadMeshData(screenQuadVertices, sizeof(screenQuadVertices) / quadVertexSize,
+               quadVertexSize, /*indices=*/{}, {texture});
+}
+
+void ScreenQuadMesh::initializeVertexAttributes() {
+  // Screen positions.
+  vertexArray_.addVertexAttrib(2, GL_FLOAT);
+  // Texture coordinates.
+  vertexArray_.addVertexAttrib(2, GL_FLOAT);
+  vertexArray_.finalizeVertexAttribs();
+}
+
 }  // namespace qrk

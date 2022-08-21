@@ -86,4 +86,18 @@ ComputeShader::ComputeShader(const ShaderSource& computeSource) {
   shaderProgram_ = compiler.linkShaderProgram();
 }
 
+void ComputeShader::dispatchToTexture(Texture& texture) {
+  if (texture.getType() != TextureType::CUSTOM) {
+    throw ShaderException(
+        "ERROR::SHADER::INVALID_TEXTURE_TYPE\nCompute shader dispatch needs a "
+        "CUSTOM texture");
+  }
+
+  activate();
+  glDispatchCompute(texture.getWidth(), texture.getHeight(), 1);
+
+  // Guard until writing is complete.
+  glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+}
+
 }  // namespace qrk

@@ -2,6 +2,7 @@
 #define QUARKGL_MESH_PRIMITIVES_H_
 
 #include <qrk/mesh.h>
+#include <qrk/texture.h>
 
 namespace qrk {
 
@@ -12,7 +13,8 @@ class PrimitiveMesh : public Mesh {
 
 class CubeMesh : public PrimitiveMesh {
  public:
-  CubeMesh(std::string texturePath = "");
+  // TODO: Replace paths with Texture objects.
+  explicit CubeMesh(std::string texturePath = "");
 
  protected:
   void initializeVertexAttributes() override;
@@ -24,7 +26,16 @@ class SkyboxMesh : public PrimitiveMesh {
   // must be passed in order starting with GL_TEXTURE_CUBE_MAP_POSITIVE_X and
   // incrementing from there; namely, in the order right, left, top, bottom,
   // front, and back.
-  SkyboxMesh(std::vector<std::string> faces);
+  explicit SkyboxMesh(std::vector<std::string> faces);
+
+ protected:
+  void initializeVertexAttributes() override;
+};
+
+class ScreenQuadMesh : public PrimitiveMesh {
+ public:
+  // Creates a new screen quad mesh from a texture.
+  explicit ScreenQuadMesh(Texture texture);
 
  protected:
   void initializeVertexAttributes() override;

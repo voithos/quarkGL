@@ -112,3 +112,23 @@ cc_binary(
         "@glfw",
     ],
 )
+
+cc_binary(
+    name = "compute",
+    srcs = ["compute.cc"],
+    data = [
+        "compute.comp",
+    ],
+    linkopts = QRK_LINKOPTS,
+    deps = [
+        "//quarkgl:core",
+        "//quarkgl:mesh_primitives",
+        "//quarkgl:shader",
+        "//quarkgl:shader_primitives",
+        "//quarkgl:texture",
+        "//quarkgl:window",
+        "//third_party/glad",
+        "//third_party/glm",
+        "@glfw",
+    ],
+)

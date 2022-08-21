@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <qrk/exceptions.h>
 #include <qrk/shader_defs.h>
+#include <qrk/texture.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -75,6 +76,11 @@ class ComputeShader : public Shader {
  public:
   explicit ComputeShader(const ShaderSource& computeSource);
   virtual ~ComputeShader() = default;
+
+  // Dispatches a compute shader execution and writes to the given image
+  // texture. Assumes that the texture has already been bound to the correct
+  // texture unit.
+  void dispatchToTexture(Texture& texture);
 };
 
 }  // namespace qrk
