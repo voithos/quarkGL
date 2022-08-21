@@ -67,11 +67,8 @@ constexpr float cubeVertices[] = {
 CubeMesh::CubeMesh(std::string texturePath) {
   std::vector<Texture> textures;
   if (!texturePath.empty()) {
-    Texture texture;
-    texture.id = loadTexture(texturePath.c_str());
     // TODO: Support more complex textures for primitives?
-    texture.type = TextureType::DIFFUSE;
-    texture.path = texturePath;
+    Texture texture = Texture::load(texturePath.c_str(), TextureType::DIFFUSE);
     textures.push_back(texture);
   }
 
@@ -139,11 +136,7 @@ constexpr float skyboxVertices[] = {
 // clang-format on
 
 SkyboxMesh::SkyboxMesh(std::vector<std::string> faces) {
-  Texture texture;
-  texture.id = loadCubemap(faces);
-  texture.type = TextureType::CUBEMAP;
-  texture.path = faces[0];
-
+  Texture texture = Texture::loadCubemap(faces);
   constexpr unsigned int skyboxVertexSize = 3;
   loadMeshData(skyboxVertices, sizeof(skyboxVertices) / skyboxVertexSize,
                skyboxVertexSize, /*indices=*/{}, {texture});

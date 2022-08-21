@@ -32,7 +32,7 @@ class Shader {
          const ShaderSource& geometrySource);
   virtual ~Shader() = default;
 
-  unsigned int getProgramId() { return shaderProgram_; }
+  unsigned int getProgramId() const { return shaderProgram_; }
 
   virtual void activate();
   virtual void deactivate();
@@ -63,20 +63,18 @@ class Shader {
     setMat4(name.c_str(), matrix);
   }
 
- private:
+ protected:
+  Shader() = default;
   int safeGetUniformLocation(const char* name);
 
   unsigned int shaderProgram_;
   std::vector<std::shared_ptr<UniformSource>> uniformSources_;
 };
 
-class ComputeShader {
+class ComputeShader : public Shader {
  public:
   explicit ComputeShader(const ShaderSource& computeSource);
   virtual ~ComputeShader() = default;
-
- private:
-  unsigned int shaderProgram_;
 };
 
 }  // namespace qrk

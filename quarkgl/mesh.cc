@@ -77,16 +77,17 @@ void Mesh::bindTextures(Shader& shader) {
     glActiveTexture(GL_TEXTURE0 + textureUnit);
 
     std::string samplerName;
-    if (texture.type == TextureType::CUBEMAP) {
-      glBindTexture(GL_TEXTURE_CUBE_MAP, texture.id);
+    TextureType type = texture.getType();
+    if (type == TextureType::CUBEMAP) {
+      glBindTexture(GL_TEXTURE_CUBE_MAP, texture.getId());
       samplerName = "skybox";
     } else {
-      glBindTexture(GL_TEXTURE_2D, texture.id);
+      glBindTexture(GL_TEXTURE_2D, texture.getId());
 
       std::ostringstream ss;
       ss << "material.";
 
-      switch (texture.type) {
+      switch (type) {
         case TextureType::DIFFUSE:
           ss << "diffuse[" << diffuseIdx << "]";
           diffuseIdx++;

@@ -3,6 +3,8 @@
 #pragma qrk_include < standard_lights.frag>
 #pragma qrk_include < depth.frag>
 
+// An example fragment shader with Phong illumination.
+
 in VS_OUT {
   vec2 texCoords;
   vec3 fragPos;

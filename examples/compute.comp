@@ -1,0 +1,14 @@
+#version 460 core
+#pragma qrk_include < core.glsl>
+#pragma qrk_include < constants.glsl>
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout(rgba32f, binding = 0) uniform image2D imgOutput;
+
+void main() {
+  vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+  ivec2 texCoords = ivec2(gl_GlobalInvocationID.xy);
+  color.x = float(texCoords.x) / gl_NumWorkGroups.x;
+  color.y = float(texCoords.y) / gl_NumWorkGroups.y;
+  imageStore(imgOutput, texCoords, color);
+}

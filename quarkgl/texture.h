@@ -44,18 +44,34 @@ inline const aiTextureType textureTypeToAiTextureType(TextureType type) {
   }
 }
 
-// TODO: Consider putting this in a TextureLoader class.
-unsigned int loadTexture(const char* path, bool isSRGB = true);
+class Texture {
+ public:
+  // Loads a texture from a given path.
+  // TODO: Consider putting this in a TextureLoader class.
+  static Texture load(const char* path, TextureType type, bool isSRGB = true);
 
-// Loads a cubemap from a set of 6 textures for the faces. Textures must be
-// passed in order starting with GL_TEXTURE_CUBE_MAP_POSITIVE_X and incrementing
-// from there; namely, in the order right, left, top, bottom, front, and back.
-unsigned int loadCubemap(std::vector<std::string> faces);
+  // Loads a cubemap from a set of 6 textures for the faces. Textures must be
+  // passed in order starting with GL_TEXTURE_CUBE_MAP_POSITIVE_X and
+  // incrementing from there; namely, in the order right, left, top, bottom,
+  // front, and back.
+  static Texture loadCubemap(std::vector<std::string> faces);
 
-struct Texture {
-  unsigned int id;
-  TextureType type;
-  std::string path;
+  unsigned int getId() const { return id_; }
+  TextureType getType() const { return type_; }
+  // Returns the path to a texture. Not applicable for cubemaps or generated
+  // textures.
+  std::string getPath() const { return path_; }
+  int getWidth() const { return width_; }
+  int getHeight() const { return height_; }
+  int getNumChannels() const { return numChannels_; }
+
+ private:
+  unsigned int id_;
+  TextureType type_;
+  std::string path_;
+  int width_;
+  int height_;
+  int numChannels_;
 };
 }  // namespace qrk
 

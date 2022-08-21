@@ -1,7 +1,9 @@
 #version 460 core
-#pragma qrk_include < core.glsl >
-#pragma qrk_include < constants.glsl >
-#pragma qrk_include < transforms.glsl >
+#pragma qrk_include < core.glsl>
+#pragma qrk_include < constants.glsl>
+#pragma qrk_include < transforms.glsl>
+
+// An example geometry shader that moves triangles along their normals.
 
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;

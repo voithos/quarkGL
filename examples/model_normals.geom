@@ -1,5 +1,7 @@
 #version 460 core
-#pragma qrk_include < debug.geom >
+#pragma qrk_include < debug.geom>
+
+// An example geometry shader that generates vertices along the normal lines.
 
 layout(triangles) in;
 layout(line_strip, max_vertices = 6) out;
