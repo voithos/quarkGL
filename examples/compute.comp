@@ -8,7 +8,10 @@ layout(rgba32f, binding = 0) uniform image2D imgOutput;
 void main() {
   vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
   ivec2 texCoords = ivec2(gl_GlobalInvocationID.xy);
-  color.x = float(texCoords.x) / gl_NumWorkGroups.x;
+
+  float speed = 100;
+  color.x = mod(float(texCoords.x) + qrk_time * speed, gl_NumWorkGroups.x) /
+            gl_NumWorkGroups.x;
   color.y = float(texCoords.y) / gl_NumWorkGroups.y;
   imageStore(imgOutput, texCoords, color);
 }

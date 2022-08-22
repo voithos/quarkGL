@@ -42,9 +42,18 @@ class Window : public UniformSource {
          const char* title = DEFAULT_TITLE, bool fullscreen = false,
          int samples = 0);
   ~Window();
-  GLFWwindow* getGlfwRef() { return window_; }
+  GLFWwindow* getGlfwRef() const { return window_; }
 
   void activate();
+
+  void enableVsync() {
+    activate();
+    glfwSwapInterval(1);
+  }
+  void disableVsync() {
+    activate();
+    glfwSwapInterval(0);
+  }
 
   // TODO: Consider extracting depth test logic.
   void enableDepthTest() {
@@ -96,18 +105,19 @@ class Window : public UniformSource {
 
   void updateUniforms(Shader& shader);
 
-  ScreenSize getSize();
+  ScreenSize getSize() const;
   void setSize(int width, int height);
   void enableResizeUpdates();
   void disableResizeUpdates();
 
-  glm::vec4 getClearColor() { return clearColor_; }
+  unsigned int getFrameCount() const { return frameCount_; }
+  glm::vec4 getClearColor() const { return clearColor_; }
   void setClearColor(glm::vec4 color) { clearColor_ = color; }
 
   void makeFullscreen();
   void makeWindowed();
 
-  EscBehavior getEscBehavior() { return escBehavior_; }
+  EscBehavior getEscBehavior() const { return escBehavior_; }
   void setEscBehavior(EscBehavior behavior) { escBehavior_ = behavior; }
 
   void enableKeyInput();
@@ -144,6 +154,7 @@ class Window : public UniformSource {
 
   float lastTime_ = 0.0f;
   float deltaTime_ = 0.0f;
+  unsigned int frameCount_ = 0;
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
   EscBehavior escBehavior_ = EscBehavior::NONE;

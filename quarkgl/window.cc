@@ -62,7 +62,7 @@ void Window::updateUniforms(Shader& shader) {
   shader.setInt("qrk_windowHeight", size.height);
 }
 
-ScreenSize Window::getSize() {
+ScreenSize Window::getSize() const {
   ScreenSize size;
   glfwGetWindowSize(window_, &size.width, &size.height);
   return size;
@@ -78,13 +78,13 @@ void Window::enableResizeUpdates() {
     auto self = static_cast<Window*>(glfwGetWindowUserPointer(window));
     self->framebufferSizeCallback(window, width, height);
   };
-  glfwSetFramebufferSizeCallback(getGlfwRef(), callback);
+  glfwSetFramebufferSizeCallback(window_, callback);
   resizeUpdatesEnabled_ = true;
 }
 
 void Window::disableResizeUpdates() {
   if (!resizeUpdatesEnabled_) return;
-  glfwSetFramebufferSizeCallback(getGlfwRef(), nullptr);
+  glfwSetFramebufferSizeCallback(window_, nullptr);
   resizeUpdatesEnabled_ = false;
 }
 
@@ -166,7 +166,7 @@ void Window::makeWindowed() {
 
 void Window::processInput(float deltaTime) {
   if (boundCameraControls_) {
-    boundCameraControls_->processInput(getGlfwRef(), *boundCamera_, deltaTime);
+    boundCameraControls_->processInput(window_, *boundCamera_, deltaTime);
   }
 }
 
@@ -267,6 +267,8 @@ void Window::loop(std::function<void(float)> callback) {
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
+
+    frameCount_++;
   }
 }
 
