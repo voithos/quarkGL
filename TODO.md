@@ -1,7 +1,6 @@
 # TODOs
 
 ## Features
-- [ ] P0: Implement blinn phong
 - [ ] P0: Add normal mapping
 - [ ] P0: Add shadow mapping / CSM
 - [ ] P0: Implement deferred shading
@@ -69,3 +68,5 @@
 - [x] Reprioritize TODOs :o)
 - [x] P0: Add a mechanism for working with textures.
 - [x] Add skybox support.
+- [x] Add compute shaders.
+- [x] P0: Implement blinn phong
