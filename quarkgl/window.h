@@ -150,7 +150,6 @@ class Window : public UniformSource {
   GLFWwindow* window_;
   bool depthTestEnabled_ = false;
   bool stencilTestEnabled_ = false;
-  bool blendingEnabled_ = false;
 
   float lastTime_ = 0.0f;
   float deltaTime_ = 0.0f;
