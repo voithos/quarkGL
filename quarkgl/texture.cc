@@ -4,9 +4,8 @@
 
 namespace qrk {
 
-Texture Texture::load(const char* path, TextureType type, bool isSRGB) {
+Texture Texture::load(const char* path, bool isSRGB) {
   Texture texture;
-  texture.type_ = type;
 
   unsigned char* data = stbi_load(path, &texture.width_, &texture.height_,
                                   &texture.numChannels_, 0);
@@ -65,7 +64,6 @@ Texture Texture::loadCubemap(std::vector<std::string> faces) {
   }
 
   Texture texture;
-  texture.type_ = TextureType::CUBEMAP;
   texture.internalFormat_ = GL_RGB;  // Cubemaps must be RGB.
 
   glGenTextures(1, &texture.id_);
@@ -126,7 +124,6 @@ Texture Texture::loadCubemap(std::vector<std::string> faces) {
 
 Texture Texture::create(int width, int height, GLenum internalFormat) {
   Texture texture;
-  texture.type_ = TextureType::CUSTOM;
   texture.width_ = width;
   texture.height_ = height;
   texture.numChannels_ = 0;  // Default.
@@ -150,18 +147,25 @@ Texture Texture::create(int width, int height, GLenum internalFormat) {
   return texture;
 }
 
-void Texture::bindToUnit(unsigned int textureUnit) {
+void Texture::bindToUnit(unsigned int textureUnit, TextureBindType bindType) {
   // TODO: Take into account GL_MAX_TEXTURE_UNITS here.
   glActiveTexture(GL_TEXTURE0 + textureUnit);
 
-  if (type_ == TextureType::CUBEMAP) {
-    glBindTexture(GL_TEXTURE_CUBE_MAP, id_);
-  } else if (type_ == TextureType::CUSTOM) {
-    // Bind image unit.
-    glBindImageTexture(textureUnit, id_, /*level=*/0, /*layered=*/GL_FALSE, 0,
-                       GL_READ_WRITE, internalFormat_);
-  } else {
-    glBindTexture(GL_TEXTURE_2D, id_);
+  switch (bindType) {
+    case TextureBindType::TEXTURE:
+      glBindTexture(GL_TEXTURE_2D, id_);
+      break;
+    case TextureBindType::CUBEMAP:
+      glBindTexture(GL_TEXTURE_CUBE_MAP, id_);
+      break;
+    case TextureBindType::IMAGE_TEXTURE:
+      // Bind image unit.
+      glBindImageTexture(textureUnit, id_, /*level=*/0, /*layered=*/GL_FALSE, 0,
+                         GL_READ_WRITE, internalFormat_);
+      break;
+    default:
+      throw TextureException("ERROR::TEXTURE::INVALID_TEXTURE_BIND_TYPE\n" +
+                             std::to_string(static_cast<int>(bindType)));
   }
 }
 

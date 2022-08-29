@@ -1,13 +1,15 @@
 #include <qrk/mesh.h>
 
+#include <iostream>
+
 namespace qrk {
 void Mesh::loadMeshData(const void* vertexData, unsigned int numVertices,
                         unsigned int vertexSize,
                         std::vector<unsigned int> indices,
-                        std::vector<Texture> textures,
+                        std::vector<TextureMap> textureMaps,
                         unsigned int instanceCount) {
   indices_ = indices;
-  textures_ = textures;
+  textureMaps_ = textureMaps;
   numVertices_ = numVertices;
   vertexSize_ = vertexSize;
   instanceCount_ = instanceCount;
@@ -65,41 +67,40 @@ void Mesh::initializeVertexArrayInstanceData() {
 }
 
 void Mesh::bindTextures(Shader& shader) {
-  // Bind textures. Assumes uniform naming is "material.textureType[idx]".
+  // Bind textures. Assumes uniform naming is "material.textureMapType[idx]".
   unsigned int diffuseIdx = 0;
   unsigned int specularIdx = 0;
   unsigned int emissionIdx = 0;
 
   unsigned int textureUnit = 0;
-  for (Texture& texture : textures_) {
+  for (TextureMap& textureMap : textureMaps_) {
     std::string samplerName;
-    TextureType type = texture.getType();
-    texture.bindToUnit(textureUnit);
-    if (type == TextureType::CUBEMAP) {
+    TextureMapType type = textureMap.getType();
+    Texture& texture = textureMap.getTexture();
+    if (type == TextureMapType::CUBEMAP) {
+      texture.bindToUnit(textureUnit, TextureBindType::CUBEMAP);
       samplerName = "skybox";
     } else {
+      texture.bindToUnit(textureUnit, TextureBindType::TEXTURE);
       std::ostringstream ss;
       ss << "material.";
 
       switch (type) {
-        case TextureType::DIFFUSE:
+        case TextureMapType::DIFFUSE:
           ss << "diffuse[" << diffuseIdx << "]";
           diffuseIdx++;
           break;
-        case TextureType::SPECULAR:
+        case TextureMapType::SPECULAR:
           ss << "specular[" << specularIdx << "]";
           specularIdx++;
           break;
-        case TextureType::EMISSION:
+        case TextureMapType::EMISSION:
           ss << "emission[" << emissionIdx << "]";
           emissionIdx++;
           break;
-        case TextureType::CUBEMAP:
+        case TextureMapType::CUBEMAP:
           // Handled earlier.
           abort();
-          break;
-        case TextureType::CUSTOM:
-          // No special logic needed.
           break;
       }
       samplerName = ss.str();

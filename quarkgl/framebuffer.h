@@ -131,6 +131,8 @@ class Framebuffer {
 
   Attachment saveAttachment(unsigned int id, AttachmentTarget target);
   void updateFlags(BufferType type);
+  // Updates the draw and read buffers based on the current flags.
+  void updateBufferSource();
 };
 
 }  // namespace qrk

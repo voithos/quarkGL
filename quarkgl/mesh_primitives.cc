@@ -65,16 +65,17 @@ constexpr float cubeVertices[] = {
 // clang-format on
 
 CubeMesh::CubeMesh(std::string texturePath) {
-  std::vector<Texture> textures;
+  std::vector<TextureMap> textureMaps;
   if (!texturePath.empty()) {
     // TODO: Support more complex textures for primitives?
-    Texture texture = Texture::load(texturePath.c_str(), TextureType::DIFFUSE);
-    textures.push_back(texture);
+    TextureMap textureMap(Texture::load(texturePath.c_str()),
+                          TextureMapType::DIFFUSE);
+    textureMaps.push_back(textureMap);
   }
 
   constexpr unsigned int cubeVertexSize = 8;
   loadMeshData(cubeVertices, sizeof(cubeVertices) / cubeVertexSize,
-               cubeVertexSize, /*indices=*/{}, textures);
+               cubeVertexSize, /*indices=*/{}, textureMaps);
 }
 
 void CubeMesh::initializeVertexAttributes() {
@@ -136,10 +137,10 @@ constexpr float skyboxVertices[] = {
 // clang-format on
 
 SkyboxMesh::SkyboxMesh(std::vector<std::string> faces) {
-  Texture texture = Texture::loadCubemap(faces);
+  TextureMap textureMap(Texture::loadCubemap(faces), TextureMapType::CUBEMAP);
   constexpr unsigned int skyboxVertexSize = 3;
   loadMeshData(skyboxVertices, sizeof(skyboxVertices) / skyboxVertexSize,
-               skyboxVertexSize, /*indices=*/{}, {texture});
+               skyboxVertexSize, /*indices=*/{}, {textureMap});
 }
 
 void SkyboxMesh::initializeVertexAttributes() {
@@ -163,8 +164,10 @@ constexpr float screenQuadVertices[] = {
 
 ScreenQuadMesh::ScreenQuadMesh(Texture texture) {
   constexpr unsigned int quadVertexSize = 4;
+  // TODO: This copies the texture info, meaning it won't see updates.
+  TextureMap textureMap(texture, TextureMapType::DIFFUSE);
   loadMeshData(screenQuadVertices, sizeof(screenQuadVertices) / quadVertexSize,
-               quadVertexSize, /*indices=*/{}, {texture});
+               quadVertexSize, /*indices=*/{}, {textureMap});
 }
 
 void ScreenQuadMesh::initializeVertexAttributes() {

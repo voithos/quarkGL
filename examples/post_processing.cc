@@ -198,10 +198,9 @@ int main() {
   quadVarray.finalizeVertexAttribs();
 
   // Load textures.
-  qrk::Texture cubeTexture = qrk::Texture::load("examples/assets/container.jpg",
-                                                qrk::TextureType::DIFFUSE);
-  qrk::Texture floorTexture = qrk::Texture::load("examples/assets/metal.png",
-                                                 qrk::TextureType::DIFFUSE);
+  qrk::Texture cubeTexture =
+      qrk::Texture::load("examples/assets/container.jpg");
+  qrk::Texture floorTexture = qrk::Texture::load("examples/assets/metal.png");
 
   // Framebuffer.
   qrk::Framebuffer fb(win->getSize());

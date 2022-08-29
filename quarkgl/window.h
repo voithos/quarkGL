@@ -41,7 +41,7 @@ class Window : public UniformSource {
   Window(int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT,
          const char* title = DEFAULT_TITLE, bool fullscreen = false,
          int samples = 0);
-  ~Window();
+  virtual ~Window();
   GLFWwindow* getGlfwRef() const { return window_; }
 
   void activate();

@@ -55,10 +55,12 @@ Attachment Framebuffer::attachTexture(BufferType type) {
     throw FramebufferException("ERROR::FRAMEBUFFER::INCOMPLETE");
   }
 
+  updateFlags(type);
+  updateBufferSource();
+
   glBindTexture(textureTarget, 0);
   deactivate();
 
-  updateFlags(type);
   return saveAttachment(texture, AttachmentTarget::TEXTURE);
 }
 
@@ -93,10 +95,12 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
     throw FramebufferException("ERROR::FRAMEBUFFER::INCOMPLETE");
   }
 
+  updateFlags(type);
+  updateBufferSource();
+
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
   deactivate();
 
-  updateFlags(type);
   return saveAttachment(rbo, AttachmentTarget::RENDERBUFFER);
 }
 
@@ -125,6 +129,17 @@ void Framebuffer::updateFlags(BufferType type) {
   }
   throw FramebufferException("ERROR::FRAMEBUFFER::INVALID_BUFFER_TYPE\n" +
                              std::to_string(static_cast<int>(type)));
+}
+
+void Framebuffer::updateBufferSource() {
+  if (hasColorAttachment_) {
+    // TODO: Support color attachments >0.
+    glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+  } else {
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+  }
 }
 
 void Framebuffer::clear() {

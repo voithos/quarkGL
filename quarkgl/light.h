@@ -38,6 +38,7 @@ class LightRegistry;
 
 class Light {
  public:
+  virtual ~Light() = default;
   virtual LightType getLightType() = 0;
 
   friend LightRegistry;
@@ -84,6 +85,7 @@ class ViewSource {
 
 class LightRegistry : public UniformSource {
  public:
+  virtual ~LightRegistry() = default;
   void addLight(std::shared_ptr<Light> light);
   // Sets the view source used to update the light uniforms. The source is
   // called when updating uniforms.

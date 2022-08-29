@@ -5,19 +5,20 @@
 
 namespace qrk {
 namespace {
-constexpr TextureType loaderSupportedTextureTypes[] = {
-    TextureType::DIFFUSE,
-    TextureType::SPECULAR,
-    TextureType::EMISSION,
+constexpr TextureMapType loaderSupportedTextureMapTypes[] = {
+    TextureMapType::DIFFUSE,
+    TextureMapType::SPECULAR,
+    TextureMapType::EMISSION,
 };
 }
 
 ModelMesh::ModelMesh(std::vector<ModelVertex> vertices,
                      std::vector<unsigned int> indices,
-                     std::vector<Texture> textures, unsigned int instanceCount)
+                     std::vector<TextureMap> textureMaps,
+                     unsigned int instanceCount)
     : vertices_(vertices) {
   loadMeshData(&vertices[0], vertices.size(), sizeof(ModelVertex), indices,
-               textures, instanceCount);
+               textureMaps, instanceCount);
 }
 
 void ModelMesh::initializeVertexAttributes() {
@@ -94,7 +95,7 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 ModelMesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
   std::vector<ModelVertex> vertices;
   std::vector<unsigned int> indices;
-  std::vector<Texture> textures;
+  std::vector<TextureMap> textureMaps;
 
   for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
     ModelVertex vertex;
@@ -135,19 +136,20 @@ ModelMesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
   // Process material.
   {
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    for (auto textureType : loaderSupportedTextureTypes) {
-      auto loadedMaps = loadMaterialTextures(material, textureType);
-      textures.insert(textures.end(), loadedMaps.begin(), loadedMaps.end());
+    for (auto type : loaderSupportedTextureMapTypes) {
+      auto loadedMaps = loadMaterialTextureMaps(material, type);
+      textureMaps.insert(textureMaps.end(), loadedMaps.begin(),
+                         loadedMaps.end());
     }
   }
 
-  return ModelMesh(vertices, indices, textures, instanceCount_);
+  return ModelMesh(vertices, indices, textureMaps, instanceCount_);
 }
 
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material,
-                                                 TextureType type) {
-  auto aiType = textureTypeToAiTextureType(type);
-  std::vector<Texture> textures;
+std::vector<TextureMap> Model::loadMaterialTextureMaps(aiMaterial* material,
+                                                       TextureMapType type) {
+  auto aiType = textureMapTypeToAiTextureType(type);
+  std::vector<TextureMap> textureMaps;
 
   for (unsigned int i = 0; i < material->GetTextureCount(aiType); i++) {
     aiString texturePath;
@@ -157,22 +159,22 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material,
     std::string fullPath = directory_ + "/" + texturePath.C_Str();
 
     // Don't re-load a texture if it's already been loaded.
-    auto item = loadedTextures_.find(fullPath);
-    if (item != loadedTextures_.end()) {
+    auto item = loadedTextureMaps_.find(fullPath);
+    if (item != loadedTextureMaps_.end()) {
       // Texture has already been loaded.
-      textures.push_back(item->second);
+      textureMaps.push_back(item->second);
       continue;
     }
 
     // Assume that diffuse textures are in sRGB.
     // TODO: Allow for a way to override this if necessary.
-    bool isSRGB = type == TextureType::DIFFUSE;
+    bool isSRGB = type == TextureMapType::DIFFUSE;
 
-    Texture texture = Texture::load(fullPath.c_str(), type, isSRGB);
-    textures.push_back(texture);
-    loadedTextures_[fullPath] = texture;
+    TextureMap textureMap(Texture::load(fullPath.c_str(), isSRGB), type);
+    textureMaps.push_back(textureMap);
+    loadedTextureMaps_.insert(std::make_pair(fullPath, textureMap));
   }
-  return textures;
+  return textureMaps;
 }
 
 }  // namespace qrk

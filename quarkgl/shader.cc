@@ -87,13 +87,8 @@ ComputeShader::ComputeShader(const ShaderSource& computeSource) {
 }
 
 void ComputeShader::dispatchToTexture(Texture& texture) {
-  if (texture.getType() != TextureType::CUSTOM) {
-    throw ShaderException(
-        "ERROR::SHADER::INVALID_TEXTURE_TYPE\nCompute shader dispatch needs a "
-        "CUSTOM texture");
-  }
-
   activate();
+  texture.bindToUnit(0, TextureBindType::IMAGE_TEXTURE);
   glDispatchCompute(texture.getWidth(), texture.getHeight(), 1);
 
   // Guard until writing is complete.

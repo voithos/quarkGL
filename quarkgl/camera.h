@@ -48,6 +48,7 @@ class Camera : public UniformSource, public ViewSource {
          float speed = DEFAULT_SPEED, float sensitivity = DEFAULT_SENSITIVITY,
          float fov = DEFAULT_FOV, float aspectRatio = DEFAULT_ASPECT_RATIO,
          float near = DEFAULT_NEAR, float far = DEFAULT_FAR);
+  virtual ~Camera() = default;
 
   glm::vec3 getPosition() { return position_; }
   glm::vec3 getFront() { return front_; }
@@ -109,6 +110,7 @@ class CameraControls {
 // Camera controls that implement a fly mode, similar to DCC tools.
 class FlyCameraControls : public CameraControls {
  public:
+  virtual ~FlyCameraControls() = default;
   void resizeWindow(int width, int height);
   void scroll(Camera& camera, double xoffset, double yoffset);
   void mouseMove(Camera& camera, double xpos, double ypos);

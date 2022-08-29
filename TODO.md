@@ -2,7 +2,7 @@
 
 ## Features
 - [ ] P0: Add normal mapping
-- [ ] P0: Add shadow mapping / CSM
+- [ ] P0: Add shadow mapping
 - [ ] P0: Implement deferred shading
 - [ ] P0: Implement SSAO
 - [ ] P0: Implement PBR lighting
@@ -11,6 +11,7 @@
 - [ ] P1: Add HDR
 - [ ] P1: Add Bloom
 - [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
+- [ ] P1: Implement CSM
 - [ ] P1: Implement virtual textures. http://holger.dammertz.org/stuff/notes_VirtualTexturing.html
 - [ ] P1: Implement IBL (image based lighting)
 - [ ] P2: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation

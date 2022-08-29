@@ -59,7 +59,7 @@ cc_library(
     include_prefix = "qrk",
     deps = [
         ":shader",
-        ":texture",
+        ":texture_map",
         ":vertex_array",
         "//third_party/glad",
         "//third_party/glm",
@@ -74,6 +74,7 @@ cc_library(
     deps = [
         ":mesh",
         ":texture",
+        ":texture_map",
     ],
 )
 
@@ -86,6 +87,17 @@ cc_library(
         ":exceptions",
         "//third_party/glad",
         "//third_party/stb_image",
+    ],
+)
+
+cc_library(
+    name = "texture_map",
+    hdrs = ["texture_map.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":exceptions",
+        ":texture",
+        "//third_party/glad",
         "@assimp",
     ],
 )
@@ -113,6 +125,7 @@ cc_library(
         ":mesh",
         ":shader",
         ":texture",
+        ":texture_map",
         "//third_party/glad",
         "//third_party/glm",
         "//third_party/stb_image",

@@ -6,7 +6,7 @@
 #include <qrk/exceptions.h>
 #include <qrk/mesh.h>
 #include <qrk/shader.h>
-#include <qrk/texture.h>
+#include <qrk/texture_map.h>
 
 #include <glm/glm.hpp>
 #include <string>
@@ -27,8 +27,11 @@ struct ModelVertex {
 class ModelMesh : public Mesh {
  public:
   ModelMesh(std::vector<ModelVertex> vertices,
-            std::vector<unsigned int> indices, std::vector<Texture> textures,
+            std::vector<unsigned int> indices,
+            std::vector<TextureMap> textureMaps,
             unsigned int instanceCount = 0);
+
+  virtual ~ModelMesh() = default;
 
  private:
   void initializeVertexAttributes() override;
@@ -41,6 +44,7 @@ constexpr auto DEFAULT_LOAD_FLAGS =
 class Model : public Renderable {
  public:
   explicit Model(const char* path, unsigned int instanceCount = 0);
+  virtual ~Model() = default;
   void loadInstanceModels(const std::vector<glm::mat4>& models);
   void loadInstanceModels(const glm::mat4* models, unsigned int size);
   void draw(Shader& shader) override;
@@ -49,13 +53,13 @@ class Model : public Renderable {
   void loadModel(std::string path);
   void processNode(aiNode* node, const aiScene* scene);
   ModelMesh processMesh(aiMesh* mesh, const aiScene* scene);
-  std::vector<Texture> loadMaterialTextures(aiMaterial* material,
-                                            TextureType type);
+  std::vector<TextureMap> loadMaterialTextureMaps(aiMaterial* material,
+                                                  TextureMapType type);
 
   unsigned int instanceCount_;
   std::vector<ModelMesh> meshes_;
   std::string directory_;
-  std::unordered_map<std::string, Texture> loadedTextures_;
+  std::unordered_map<std::string, TextureMap> loadedTextureMaps_;
 };
 
 }  // namespace qrk
