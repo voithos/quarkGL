@@ -176,6 +176,7 @@ int main() {
   qrk::Shader screenShader((qrk::ShaderInline(screenVertexSource)),
                            qrk::ShaderInline(screenFragmentSource));
 
+  // TODO: Clean this up to use mesh primitives.
   // Create a VAO for the boxes.
   qrk::VertexArray cubeVarray;
   cubeVarray.loadVertexData(cubeVertices, sizeof(cubeVertices));

@@ -132,3 +132,26 @@ cc_binary(
         "@glfw",
     ],
 )
+
+cc_binary(
+    name = "shadow_map",
+    srcs = ["shadow_map.cc"],
+    data = [
+        "assets/wood.png",
+        "model.vert",
+        "phong.frag",
+    ],
+    linkopts = QRK_LINKOPTS,
+    deps = [
+        "//quarkgl:core",
+        "//quarkgl:mesh_primitives",
+        "//quarkgl:shader",
+        "//quarkgl:shader_primitives",
+        "//quarkgl:texture",
+        "//quarkgl:texture_map",
+        "//quarkgl:window",
+        "//third_party/glad",
+        "//third_party/glm",
+        "@glfw",
+    ],
+)
