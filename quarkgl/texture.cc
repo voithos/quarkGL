@@ -5,6 +5,13 @@
 namespace qrk {
 
 Texture Texture::load(const char* path, bool isSRGB) {
+  TextureParams params = {.filtering = TextureFiltering::ANISOTROPIC,
+                          .wrapMode = TextureWrapMode::REPEAT};
+  return load(path, isSRGB, params);
+}
+
+Texture Texture::load(const char* path, bool isSRGB,
+                      const TextureParams& params) {
   Texture texture;
 
   unsigned char* data = stbi_load(path, &texture.width_, &texture.height_,
@@ -43,13 +50,7 @@ Texture Texture::load(const char* path, bool isSRGB) {
   glGenerateMipmap(GL_TEXTURE_2D);
 
   // Set texture-wrapping/filtering options.
-  // TODO: Make some of these configurable.
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, 4.0f);
+  applyParams(params);
 
   stbi_image_free(data);
 
@@ -123,6 +124,13 @@ Texture Texture::loadCubemap(std::vector<std::string> faces) {
 }
 
 Texture Texture::create(int width, int height, GLenum internalFormat) {
+  TextureParams params = {.filtering = TextureFiltering::BILINEAR,
+                          .wrapMode = TextureWrapMode::CLAMP_TO_EDGE};
+  return create(width, height, internalFormat, params);
+}
+
+Texture Texture::create(int width, int height, GLenum internalFormat,
+                        const TextureParams& params) {
   Texture texture;
   texture.width_ = width;
   texture.height_ = height;
@@ -138,11 +146,11 @@ Texture Texture::create(int width, int height, GLenum internalFormat) {
 
   // Set texture-wrapping/filtering options. We disable mipmapping since this
   // is a custom texture.
-  // TODO: Make some of these configurable.
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  // TODO: Theoretically there may be use cases for this?
+  if (params.filtering >= TextureFiltering::TRILINEAR) {
+    throw TextureException("ERROR::TEXTURE::INVALID_PARAMS");
+  }
+  applyParams(params);
 
   return texture;
 }
@@ -166,6 +174,41 @@ void Texture::bindToUnit(unsigned int textureUnit, TextureBindType bindType) {
     default:
       throw TextureException("ERROR::TEXTURE::INVALID_TEXTURE_BIND_TYPE\n" +
                              std::to_string(static_cast<int>(bindType)));
+  }
+}
+
+void Texture::applyParams(const TextureParams& params) {
+  switch (params.filtering) {
+    case TextureFiltering::NEAREST:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      break;
+    case TextureFiltering::BILINEAR:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      break;
+    case TextureFiltering::TRILINEAR:
+    case TextureFiltering::ANISOTROPIC:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                      GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      if (params.filtering == TextureFiltering::ANISOTROPIC) {
+        constexpr float MAX_ANISOTROPY_SAMPLES = 4.0f;
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY,
+                        MAX_ANISOTROPY_SAMPLES);
+      }
+      break;
+  }
+
+  switch (params.wrapMode) {
+    case TextureWrapMode::REPEAT:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      break;
+    case TextureWrapMode::CLAMP_TO_EDGE:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      break;
   }
 }
 

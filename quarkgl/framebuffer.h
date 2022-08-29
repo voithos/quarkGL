@@ -25,7 +25,7 @@ struct Attachment {
 };
 
 enum class BufferType {
-  COLOR,
+  COLOR = 0,
   DEPTH,
   STENCIL,
   DEPTH_AND_STENCIL,
