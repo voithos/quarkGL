@@ -91,6 +91,7 @@ class Texture {
   // Applies the given params to the currently-active texture. Assumes the
   // texture is a 2d texture (e.g. not a cubemap).
   static void applyParams(const TextureParams& params);
+  friend class Framebuffer;
 };
 }  // namespace qrk
 

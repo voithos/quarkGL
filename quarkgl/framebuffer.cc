@@ -20,6 +20,13 @@ ScreenSize Framebuffer::getSize() {
 }
 
 Attachment Framebuffer::attachTexture(BufferType type) {
+  TextureParams params = {.filtering = TextureFiltering::BILINEAR,
+                          .wrapMode = TextureWrapMode::REPEAT};
+  return attachTexture(type, params);
+}
+
+Attachment Framebuffer::attachTexture(BufferType type,
+                                      const TextureParams& params) {
   activate();
 
   GLenum textureTarget = samples_ ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
@@ -43,8 +50,8 @@ Attachment Framebuffer::attachTexture(BufferType type) {
     glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, internalFormat, width_,
                  height_, 0, format, dataType, nullptr);
   }
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  Texture::applyParams(params);
 
   // Attach the texture to the framebuffer.
   GLenum attachmentType = bufferTypeToGlAttachmentType(type);

@@ -2,6 +2,7 @@
 #define QUARKGL_FRAMEBUFFER_H_
 
 #include <qrk/shader.h>
+#include <qrk/texture.h>
 #include <qrk/window.h>
 
 #include <glm/glm.hpp>
@@ -113,6 +114,7 @@ class Framebuffer {
   ScreenSize getSize();
 
   Attachment attachTexture(BufferType type);
+  Attachment attachTexture(BufferType type, const TextureParams& params);
   Attachment attachRenderbuffer(BufferType type);
 
   // TODO: Add support for glBlitFramebuffer, when multisampled.
