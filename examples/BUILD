@@ -144,9 +144,11 @@ cc_binary(
     linkopts = QRK_LINKOPTS,
     deps = [
         "//quarkgl:core",
+        "//quarkgl:framebuffer",
         "//quarkgl:mesh_primitives",
         "//quarkgl:shader",
         "//quarkgl:shader_primitives",
+        "//quarkgl:shadows",
         "//quarkgl:texture",
         "//quarkgl:texture_map",
         "//quarkgl:window",

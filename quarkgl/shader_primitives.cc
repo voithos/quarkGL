@@ -37,4 +37,8 @@ ScreenQuadShader::ScreenQuadShader()
     : Shader(ShaderPath("quarkgl/shaders/builtin/screen_quad.vert"),
              ShaderPath("quarkgl/shaders/builtin/screen_quad.frag")) {}
 
+ShadowMapShader::ShadowMapShader()
+    : Shader(ShaderPath("quarkgl/shaders/builtin/shadow_map.vert"),
+             ShaderPath("quarkgl/shaders/builtin/shadow_map.frag")) {}
+
 }  // namespace qrk

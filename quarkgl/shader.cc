@@ -66,7 +66,8 @@ void Shader::setFloat(const char* name, float value) {
 
 void Shader::setVec3(const char* name, const glm::vec3& vector) {
   activate();
-  glUniform3fv(safeGetUniformLocation(name), 1, glm::value_ptr(vector));
+  glUniform3fv(safeGetUniformLocation(name), /*count=*/1,
+               glm::value_ptr(vector));
 }
 
 void Shader::setVec3(const char* name, float v0, float v1, float v2) {
@@ -76,8 +77,8 @@ void Shader::setVec3(const char* name, float v0, float v1, float v2) {
 
 void Shader::setMat4(const char* name, const glm::mat4& matrix) {
   activate();
-  glUniformMatrix4fv(safeGetUniformLocation(name), 1, GL_FALSE,
-                     glm::value_ptr(matrix));
+  glUniformMatrix4fv(safeGetUniformLocation(name), /*count=*/1,
+                     /*transpose=*/GL_FALSE, glm::value_ptr(matrix));
 }
 
 ComputeShader::ComputeShader(const ShaderSource& computeSource) {

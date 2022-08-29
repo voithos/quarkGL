@@ -29,12 +29,12 @@ void Camera::updateCameraVectors() {
   up_ = glm::normalize(glm::cross(right_, front_));
 }
 
-glm::mat4 Camera::getViewTransform() {
+glm::mat4 Camera::getViewTransform() const {
   glm::vec3 center = position_ + front_;
   return glm::lookAt(/*eye=*/position_, center, up_);
 }
 
-glm::mat4 Camera::getPerspectiveTransform() {
+glm::mat4 Camera::getPerspectiveTransform() const {
   return glm::perspective(glm::radians(getFov()), aspectRatio_, near_, far_);
 }
 

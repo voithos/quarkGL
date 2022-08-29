@@ -24,6 +24,11 @@ class ScreenQuadShader : public Shader {
   ScreenQuadShader();
 };
 
+class ShadowMapShader : public Shader {
+ public:
+  ShadowMapShader();
+};
+
 }  // namespace qrk
 
 #endif

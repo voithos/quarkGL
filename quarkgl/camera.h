@@ -50,20 +50,20 @@ class Camera : public UniformSource, public ViewSource {
          float near = DEFAULT_NEAR, float far = DEFAULT_FAR);
   virtual ~Camera() = default;
 
-  glm::vec3 getPosition() { return position_; }
-  glm::vec3 getFront() { return front_; }
-  float getFov() { return fov_; }
+  glm::vec3 getPosition() const { return position_; }
+  glm::vec3 getFront() const { return front_; }
+  float getFov() const { return fov_; }
 
   // TODO: Allow programmatic position modification.
   // TODO: Add the rest of the getters/setters for fields.
-  float getAspectRatio() { return aspectRatio_; }
+  float getAspectRatio() const { return aspectRatio_; }
   void setAspectRatio(float aspectRatio) { aspectRatio_ = aspectRatio; }
   void setAspectRatio(ScreenSize size) {
     aspectRatio_ = size.width / static_cast<float>(size.height);
   }
 
-  glm::mat4 getViewTransform() override;
-  glm::mat4 getPerspectiveTransform();
+  glm::mat4 getViewTransform() const override;
+  glm::mat4 getPerspectiveTransform() const;
 
   void updateUniforms(Shader& shader) override;
 

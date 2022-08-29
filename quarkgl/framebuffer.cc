@@ -3,6 +3,15 @@
 
 namespace qrk {
 
+Texture Attachment::asTexture() {
+  if (target != AttachmentTarget::TEXTURE) {
+    throw FramebufferException("ERROR::FRAMEBUFFER::INVALID_ATTACHMENT_TARGET");
+  }
+  Texture texture;
+  texture.id_ = id;
+  return texture;
+}
+
 Framebuffer::Framebuffer(int width, int height, int samples)
     : width_(width), height_(height), samples_(samples) {
   glGenFramebuffers(1, &fbo_);
@@ -10,7 +19,10 @@ Framebuffer::Framebuffer(int width, int height, int samples)
 
 Framebuffer::~Framebuffer() { glDeleteFramebuffers(1, &fbo_); }
 
-void Framebuffer::activate() { glBindFramebuffer(GL_FRAMEBUFFER, fbo_); }
+void Framebuffer::activate() {
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+  glViewport(0, 0, width_, height_);
+}
 
 void Framebuffer::deactivate() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 

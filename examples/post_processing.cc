@@ -245,6 +245,8 @@ int main() {
 
     fb.deactivate();
 
+    win->setViewport();
+
     // Finally, draw to the screen based on the framebuffer contents.
     screenShader.updateUniforms();
     screenShader.activate();

@@ -39,7 +39,7 @@ class LightRegistry;
 class Light {
  public:
   virtual ~Light() = default;
-  virtual LightType getLightType() = 0;
+  virtual LightType getLightType() const = 0;
 
   friend LightRegistry;
 
@@ -63,7 +63,7 @@ class Light {
     hasViewBeenApplied_ = false;
   }
 
-  virtual std::string getUniformName(unsigned int lightIdx) = 0;
+  virtual std::string getUniformName(unsigned int lightIdx) const = 0;
   virtual void updateUniforms(Shader& shader) = 0;
   virtual void applyViewTransform(const glm::mat4& view) = 0;
 
@@ -80,7 +80,7 @@ class Light {
 // A source for the camera view transform.
 class ViewSource {
  public:
-  virtual glm::mat4 getViewTransform() = 0;
+  virtual glm::mat4 getViewTransform() const = 0;
 };
 
 class LightRegistry : public UniformSource {
@@ -114,31 +114,31 @@ class DirectionalLight : public Light {
                    glm::vec3 diffuse = DEFAULT_DIFFUSE,
                    glm::vec3 specular = DEFAULT_SPECULAR);
 
-  LightType getLightType() { return LightType::DIRECTIONAL_LIGHT; }
+  LightType getLightType() const { return LightType::DIRECTIONAL_LIGHT; }
 
-  glm::vec3 getDirection() { return direction_; }
+  glm::vec3 getDirection() const { return direction_; }
   void setDirection(glm::vec3 direction) {
     direction_ = direction;
     hasViewDependentChanged_ = true;
   }
-  glm::vec3 getAmbient() { return ambient_; }
+  glm::vec3 getAmbient() const { return ambient_; }
   void setAmbient(glm::vec3 ambient) {
     ambient_ = ambient;
     hasLightChanged_ = true;
   }
-  glm::vec3 getDiffuse() { return diffuse_; }
+  glm::vec3 getDiffuse() const { return diffuse_; }
   void setDiffuse(glm::vec3 diffuse) {
     diffuse_ = diffuse;
     hasLightChanged_ = true;
   }
-  glm::vec3 getSpecular() { return specular_; }
+  glm::vec3 getSpecular() const { return specular_; }
   void setSpecular(glm::vec3 specular) {
     specular_ = specular;
     hasLightChanged_ = true;
   }
 
  protected:
-  std::string getUniformName(unsigned int lightIdx) {
+  std::string getUniformName(unsigned int lightIdx) const {
     return "qrk_directionalLights[" + std::to_string(lightIdx) + "]";
   }
   void updateUniforms(Shader& shader);
@@ -161,36 +161,36 @@ class PointLight : public Light {
              glm::vec3 specular = DEFAULT_SPECULAR,
              Attenuation attenuation = DEFAULT_ATTENUATION);
 
-  LightType getLightType() { return LightType::POINT_LIGHT; }
+  LightType getLightType() const { return LightType::POINT_LIGHT; }
 
-  glm::vec3 getPosition() { return position_; }
+  glm::vec3 getPosition() const { return position_; }
   void setPosition(glm::vec3 position) {
     position_ = position;
     hasViewDependentChanged_ = true;
   }
-  glm::vec3 getAmbient() { return ambient_; }
+  glm::vec3 getAmbient() const { return ambient_; }
   void setAmbient(glm::vec3 ambient) {
     ambient_ = ambient;
     hasLightChanged_ = true;
   }
-  glm::vec3 getDiffuse() { return diffuse_; }
+  glm::vec3 getDiffuse() const { return diffuse_; }
   void setDiffuse(glm::vec3 diffuse) {
     diffuse_ = diffuse;
     hasLightChanged_ = true;
   }
-  glm::vec3 getSpecular() { return specular_; }
+  glm::vec3 getSpecular() const { return specular_; }
   void setSpecular(glm::vec3 specular) {
     specular_ = specular;
     hasLightChanged_ = true;
   }
-  Attenuation getAttenuation() { return attenuation_; }
+  Attenuation getAttenuation() const { return attenuation_; }
   void setAttenuation(Attenuation attenuation) {
     attenuation_ = attenuation;
     hasLightChanged_ = true;
   }
 
  protected:
-  std::string getUniformName(unsigned int lightIdx) {
+  std::string getUniformName(unsigned int lightIdx) const {
     return "qrk_pointLights[" + std::to_string(lightIdx) + "]";
   }
   void updateUniforms(Shader& shader);
@@ -218,41 +218,41 @@ class SpotLight : public Light {
             glm::vec3 specular = DEFAULT_SPECULAR,
             Attenuation attenuation = DEFAULT_ATTENUATION);
 
-  LightType getLightType() { return LightType::SPOT_LIGHT; }
+  LightType getLightType() const { return LightType::SPOT_LIGHT; }
 
-  glm::vec3 getPosition() { return position_; }
+  glm::vec3 getPosition() const { return position_; }
   void setPosition(glm::vec3 position) {
     position_ = position;
     hasViewDependentChanged_ = true;
   }
-  glm::vec3 getDirection() { return direction_; }
+  glm::vec3 getDirection() const { return direction_; }
   void setDirection(glm::vec3 direction) {
     direction_ = direction;
     hasViewDependentChanged_ = true;
   }
-  glm::vec3 getAmbient() { return ambient_; }
+  glm::vec3 getAmbient() const { return ambient_; }
   void setAmbient(glm::vec3 ambient) {
     ambient_ = ambient;
     hasLightChanged_ = true;
   }
-  glm::vec3 getDiffuse() { return diffuse_; }
+  glm::vec3 getDiffuse() const { return diffuse_; }
   void setDiffuse(glm::vec3 diffuse) {
     diffuse_ = diffuse;
     hasLightChanged_ = true;
   }
-  glm::vec3 getSpecular() { return specular_; }
+  glm::vec3 getSpecular() const { return specular_; }
   void setSpecular(glm::vec3 specular) {
     specular_ = specular;
     hasLightChanged_ = true;
   }
-  Attenuation getAttenuation() { return attenuation_; }
+  Attenuation getAttenuation() const { return attenuation_; }
   void setAttenuation(Attenuation attenuation) {
     attenuation_ = attenuation;
     hasLightChanged_ = true;
   }
 
  protected:
-  std::string getUniformName(unsigned int lightIdx) {
+  std::string getUniformName(unsigned int lightIdx) const {
     return "qrk_spotLights[" + std::to_string(lightIdx) + "]";
   }
   void updateUniforms(Shader& shader);

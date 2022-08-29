@@ -9,6 +9,8 @@
 #include <qrk/mesh_primitives.h>
 #include <qrk/shader.h>
 #include <qrk/shader_primitives.h>
+#include <qrk/shadows.h>
+#include <qrk/framebuffer.h>
 #include <qrk/window.h>
 
 #include <glm/glm.hpp>
@@ -40,12 +42,8 @@ int main() {
   registry->setViewSource(camera);
   mainShader.addUniformSource(registry);
 
-  // Need a fake "position" for the directional light in order to calculate
-  // shadow maps.
-  glm::vec3 directionalLightPos(-2.0f, 4.0f, -1.0f);
-
   auto directionalLight =
-      std::make_shared<qrk::DirectionalLight>(-directionalLightPos);
+      std::make_shared<qrk::DirectionalLight>(glm::vec3(2.0f, -4.0f, 1.0f));
   directionalLight->setSpecular(glm::vec3(0.3f, 0.3f, 0.3f));
   registry->addLight(directionalLight);
 
@@ -54,6 +52,23 @@ int main() {
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
+  // Setup shadow mapping.
+  constexpr int SHADOW_MAP_SIZE = 1024;
+  qrk::Framebuffer shadowFb(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+  qrk::Texture shadowMap =
+      shadowFb
+          .attachTexture(qrk::BufferType::DEPTH,
+                         {.filtering = qrk::TextureFiltering::NEAREST})
+          .asTexture();
+  qrk::ShadowMapShader shadowShader;
+  auto shadowCamera = std::make_shared<qrk::ShadowCamera>(directionalLight);
+  shadowShader.addUniformSource(shadowCamera);
+
+  // Debug drawing shader.
+  qrk::ScreenQuadMesh screenQuad(shadowMap);
+  qrk::ScreenQuadShader screenShader;
+
+  // Setup objects.
   // TODO: Because we don't adjust UVs, this ends up looking goofy.
   qrk::PlaneMesh plane("examples/assets/wood.png");
   plane.setModelTransform(
@@ -70,13 +85,31 @@ int main() {
                  glm::vec3(1.0f)));
   qrk::CubeMesh box3("examples/assets/wood.png");
   box3.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(1.0f, 0.0f, 1.0f)),
+      glm::rotate(glm::translate(glm::mat4(), glm::vec3(-1.0f, 0.0f, 2.0f)),
                   glm::radians(60.0f),
                   glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f))),
       glm::vec3(0.5f)));
 
+  bool drawShadowMap = false;
+  win.addKeyPressHandler(GLFW_KEY_1,
+                         [&](int mods) { drawShadowMap = !drawShadowMap; });
+
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
+    shadowFb.activate();
+    shadowFb.clear();
+    shadowShader.updateUniforms();
+    plane.draw(shadowShader);
+    box1.draw(shadowShader);
+    box2.draw(shadowShader);
+    box3.draw(shadowShader);
+    shadowFb.deactivate();
+
+    win.setViewport();
+    if (drawShadowMap) {
+      screenQuad.draw(screenShader);
+    }
+
     mainShader.updateUniforms();
     plane.draw(mainShader);
     box1.draw(mainShader);

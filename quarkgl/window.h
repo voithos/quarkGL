@@ -44,7 +44,14 @@ class Window : public UniformSource {
   virtual ~Window();
   GLFWwindow* getGlfwRef() const { return window_; }
 
+  // TODO: Should this be called something different, and 'activate' be used for
+  // setViewport?
   void activate();
+
+  void setViewport() {
+    ScreenSize size = getSize();
+    glViewport(0, 0, size.width, size.height);
+  }
 
   void enableVsync() {
     activate();

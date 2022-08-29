@@ -20,9 +20,15 @@ enum class AttachmentTarget {
   RENDERBUFFER,
 };
 
-struct Attachment {
+class Attachment {
+ public:
+  // TODO: Make these private.
   unsigned int id;
   AttachmentTarget target;
+
+  Texture asTexture();
+
+  // TODO: Include width/height.
 };
 
 enum class BufferType {

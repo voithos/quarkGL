@@ -201,6 +201,19 @@ cc_library(
 )
 
 cc_library(
+    name = "shadows",
+    srcs = ["shadows.cc"],
+    hdrs = ["shadows.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":exceptions",
+        ":light",
+        ":shader",
+        "//third_party/glm",
+    ],
+)
+
+cc_library(
     name = "utils",
     hdrs = ["utils.h"],
     include_prefix = "qrk",

@@ -43,7 +43,7 @@ void LightRegistry::applyViewTransform(const glm::mat4& view) {
 
 DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec3 ambient,
                                    glm::vec3 diffuse, glm::vec3 specular)
-    : direction_(direction),
+    : direction_(glm::normalize(direction)),
       ambient_(ambient),
       diffuse_(diffuse),
       specular_(specular) {}
