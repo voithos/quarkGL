@@ -11,6 +11,44 @@ void PrimitiveMesh::draw(Shader& shader) {
 }
 
 // clang-format off
+constexpr float planeVertices[] = {
+    // positions          // normals           // texture coords
+    -0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+     0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+
+     0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+    -0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f
+};
+// clang-format on
+
+PlaneMesh::PlaneMesh(std::string texturePath) {
+  std::vector<TextureMap> textureMaps;
+  if (!texturePath.empty()) {
+    // TODO: Support more complex textures for primitives?
+    TextureMap textureMap(Texture::load(texturePath.c_str()),
+                          TextureMapType::DIFFUSE);
+    textureMaps.push_back(textureMap);
+  }
+
+  constexpr unsigned int planeVertexSize = 8;
+  loadMeshData(planeVertices, sizeof(planeVertices) / planeVertexSize,
+               planeVertexSize, /*indices=*/{}, textureMaps);
+}
+
+void PlaneMesh::initializeVertexAttributes() {
+  // Positions.
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
+  // Normals.
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
+  // Texture coordinates.
+  vertexArray_.addVertexAttrib(2, GL_FLOAT);
+
+  vertexArray_.finalizeVertexAttribs();
+}
+
+// clang-format off
 constexpr float cubeVertices[] = {
     // positions          // normals           // texture coords
 

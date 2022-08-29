@@ -54,24 +54,31 @@ int main() {
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
+  // TODO: Because we don't adjust UVs, this ends up looking goofy.
+  qrk::PlaneMesh plane("examples/assets/wood.png");
+  plane.setModelTransform(
+      glm::scale(glm::translate(glm::mat4(), glm::vec3(0.0f, -0.5f, 0.0f)),
+                 glm::vec3(25.0f)));
+
   qrk::CubeMesh box1("examples/assets/wood.png");
   box1.setModelTransform(
       glm::scale(glm::translate(glm::mat4(), glm::vec3(0.0f, 1.5f, 0.0f)),
-                 glm::vec3(0.5f)));
+                 glm::vec3(1.0f)));
   qrk::CubeMesh box2("examples/assets/wood.png");
   box2.setModelTransform(
       glm::scale(glm::translate(glm::mat4(), glm::vec3(2.0f, 0.0f, 1.0f)),
-                 glm::vec3(0.5f)));
+                 glm::vec3(1.0f)));
   qrk::CubeMesh box3("examples/assets/wood.png");
   box3.setModelTransform(glm::scale(
       glm::rotate(glm::translate(glm::mat4(), glm::vec3(1.0f, 0.0f, 1.0f)),
                   glm::radians(60.0f),
                   glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f))),
-      glm::vec3(0.25f)));
+      glm::vec3(0.5f)));
 
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
     mainShader.updateUniforms();
+    plane.draw(mainShader);
     box1.draw(mainShader);
     box2.draw(mainShader);
     box3.draw(mainShader);

@@ -11,6 +11,15 @@ class PrimitiveMesh : public Mesh {
   virtual void draw(Shader& shader) override;
 };
 
+class PlaneMesh : public PrimitiveMesh {
+ public:
+  // TODO: Replace paths with Texture objects.
+  explicit PlaneMesh(std::string texturePath = "");
+
+ protected:
+  void initializeVertexAttributes() override;
+};
+
 class CubeMesh : public PrimitiveMesh {
  public:
   // TODO: Replace paths with Texture objects.
