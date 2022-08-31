@@ -86,6 +86,7 @@ cc_library(
     deps = [
         ":exceptions",
         "//third_party/glad",
+        "//third_party/glm",
         "//third_party/stb_image",
     ],
 )

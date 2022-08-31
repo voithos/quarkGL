@@ -2,6 +2,8 @@
 #include <qrk/texture.h>
 #include <stb/stb_image.h>
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace qrk {
 
 Texture Texture::load(const char* path, bool isSRGB) {
@@ -208,6 +210,12 @@ void Texture::applyParams(const TextureParams& params) {
     case TextureWrapMode::CLAMP_TO_EDGE:
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      break;
+    case TextureWrapMode::CLAMP_TO_BORDER:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+      glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR,
+                       glm::value_ptr(params.borderColor));
       break;
   }
 }

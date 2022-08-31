@@ -17,6 +17,7 @@ glm::mat4 ShadowCamera::getViewTransform() {
                      glm::vec3(0.0f), worldUp_);
 }
 
+// TODO: Rename to getProjectionTransform.
 glm::mat4 ShadowCamera::getPerspectiveTransform() {
   // Directional lights cast orthographic shadows.
   return glm::ortho(-cuboidExtents_, cuboidExtents_, -cuboidExtents_,

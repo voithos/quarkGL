@@ -3,6 +3,7 @@
 
 #include <qrk/exceptions.h>
 
+#include <glm/glm.hpp>
 #include <string>
 #include <vector>
 
@@ -36,12 +37,14 @@ enum class TextureFiltering {
 enum class TextureWrapMode {
   REPEAT = 0,
   CLAMP_TO_EDGE,
+  CLAMP_TO_BORDER,
   // TODO: Add the others?
 };
 
 struct TextureParams {
   TextureFiltering filtering = TextureFiltering::NEAREST;
   TextureWrapMode wrapMode = TextureWrapMode::REPEAT;
+  glm::vec4 borderColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 };
 
 class Texture {

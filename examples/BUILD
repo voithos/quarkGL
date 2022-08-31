@@ -138,8 +138,8 @@ cc_binary(
     srcs = ["shadow_map.cc"],
     data = [
         "assets/wood.png",
-        "model.vert",
-        "phong.frag",
+        "shadowed_model.vert",
+        "shadowed_phong.frag",
     ],
     linkopts = QRK_LINKOPTS,
     deps = [

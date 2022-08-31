@@ -33,8 +33,8 @@ int main() {
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader(qrk::ShaderPath("examples/model.vert"),
-                         qrk::ShaderPath("examples/phong.frag"));
+  qrk::Shader mainShader(qrk::ShaderPath("examples/shadowed_model.vert"),
+                         qrk::ShaderPath("examples/shadowed_phong.frag"));
   mainShader.addUniformSource(camera);
 
   // Create light registry and add lights.
@@ -57,12 +57,18 @@ int main() {
   qrk::Framebuffer shadowFb(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
   qrk::Texture shadowMap =
       shadowFb
+          // TODO: Extract this into a reusable pattern.
           .attachTexture(qrk::BufferType::DEPTH,
-                         {.filtering = qrk::TextureFiltering::NEAREST})
+                         {
+                             .filtering = qrk::TextureFiltering::NEAREST,
+                             .wrapMode = qrk::TextureWrapMode::CLAMP_TO_BORDER,
+                             .borderColor = glm::vec4(1.0f),
+                         })
           .asTexture();
   qrk::ShadowMapShader shadowShader;
   auto shadowCamera = std::make_shared<qrk::ShadowCamera>(directionalLight);
   shadowShader.addUniformSource(shadowCamera);
+  mainShader.addUniformSource(shadowCamera);
 
   // Debug drawing shader.
   qrk::ScreenQuadMesh screenQuad(shadowMap);
@@ -73,7 +79,7 @@ int main() {
   qrk::PlaneMesh plane("examples/assets/wood.png");
   plane.setModelTransform(
       glm::scale(glm::translate(glm::mat4(), glm::vec3(0.0f, -0.5f, 0.0f)),
-                 glm::vec3(25.0f)));
+                 glm::vec3(125.0f)));
 
   qrk::CubeMesh box1("examples/assets/wood.png");
   box1.setModelTransform(
@@ -108,13 +114,16 @@ int main() {
     win.setViewport();
     if (drawShadowMap) {
       screenQuad.draw(screenShader);
+    } else {
+      mainShader.updateUniforms();
+      // TODO: Make this more generic.
+      shadowMap.bindToUnit(10);
+      mainShader.setInt("shadowMap", 10);
+      plane.draw(mainShader);
+      box1.draw(mainShader);
+      box2.draw(mainShader);
+      box3.draw(mainShader);
     }
-
-    mainShader.updateUniforms();
-    plane.draw(mainShader);
-    box1.draw(mainShader);
-    box2.draw(mainShader);
-    box3.draw(mainShader);
   });
 
   return 0;

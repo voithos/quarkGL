@@ -110,8 +110,9 @@ float qrk_sumEmissionAlpha(QrkMaterial material, vec2 texCoords) {
 vec3 qrk_shadeBlinnPhong(QrkMaterial material, vec3 lightAmbient,
                          vec3 lightDiffuse, vec3 lightSpecular, vec3 lightDir,
                          vec3 viewDir, vec3 normal, vec2 texCoords,
-                         float intensity) {
+                         float intensity, float shadow) {
   vec3 result = vec3(0.0);
+  float shadowMultiplier = 1.0 - shadow;
 
   // Ambient and diffuse components.
   float diffuseAlphaSum = qrk_sumDiffuseAlpha(material, texCoords);
@@ -120,13 +121,13 @@ vec3 qrk_shadeBlinnPhong(QrkMaterial material, vec3 lightAmbient,
     vec4 diffuseMap = texture(material.diffuse[i], texCoords);
     float alphaRatio = qrk_optAlpha(diffuseMap.a) / diffuseAlphaSum;
 
-    // Ambient component.
+    // Ambient component. Don't include shadow calculation here.
     result += lightAmbient * vec3(diffuseMap) * alphaRatio;
 
     // Diffuse component.
     result +=
         (lightDiffuse * (diffuseIntensity * vec3(diffuseMap) * alphaRatio)) *
-        intensity;
+        intensity * shadowMultiplier;
   }
 
   // Specular component.
@@ -139,7 +140,7 @@ vec3 qrk_shadeBlinnPhong(QrkMaterial material, vec3 lightAmbient,
     float alphaRatio = qrk_optAlpha(specularMap.a) / specularAlphaSum;
     result +=
         (lightSpecular * (specularIntensity * vec3(specularMap) * alphaRatio)) *
-        intensity;
+        intensity * shadowMultiplier;
   }
 
   return result;
@@ -156,14 +157,15 @@ float qrk_calcAttenuation(QrkAttenuation attenuation, float fragDist) {
 
 /** Calculate shading for a directional light source. */
 vec3 qrk_shadeDirectionalLight(QrkMaterial material, QrkDirectionalLight light,
-                               vec3 fragPos, vec3 normal, vec2 texCoords) {
+                               vec3 fragPos, vec3 normal, vec2 texCoords,
+                               float shadow) {
   vec3 lightDir = normalize(-light.direction);
   vec3 viewDir = normalize(-fragPos);
 
   return qrk_shadeBlinnPhong(material, light.ambient, light.diffuse,
                              light.specular, lightDir, viewDir, normal,
                              texCoords,
-                             /* intensity */ 1.0);
+                             /*intensity=*/1.0, shadow);
 }
 
 /** Calculate shading for a point light source. */
@@ -176,9 +178,9 @@ vec3 qrk_shadePointLight(QrkMaterial material, QrkPointLight light,
   float lightDist = length(light.position - fragPos);
   float attenuation = qrk_calcAttenuation(light.attenuation, lightDist);
 
-  vec3 result = qrk_shadeBlinnPhong(material, light.ambient, light.diffuse,
-                                    light.specular, lightDir, viewDir, normal,
-                                    texCoords, /* intensity */ 1.0);
+  vec3 result = qrk_shadeBlinnPhong(
+      material, light.ambient, light.diffuse, light.specular, lightDir, viewDir,
+      normal, texCoords, /*intensity=*/1.0, /*shadow=*/0.0);
   // Apply attenuation.
   return result * attenuation;
 }
@@ -210,7 +212,7 @@ vec3 qrk_shadeSpotLight(QrkMaterial material, QrkSpotLight light, vec3 fragPos,
 
   vec3 result = qrk_shadeBlinnPhong(material, light.ambient, light.diffuse,
                                     light.specular, lightDir, viewDir, normal,
-                                    texCoords, intensity);
+                                    texCoords, intensity, /*shadow=*/0.0);
   // Apply attenuation.
   return result * attenuation;
 }

@@ -1,6 +1,6 @@
 #ifndef QUARKGL_STANDARD_LIGHTS_FRAG_
 #define QUARKGL_STANDARD_LIGHTS_FRAG_
-#pragma qrk_include < lighting.frag >
+#pragma qrk_include < lighting.frag>
 
 #ifndef QRK_MAX_DIRECTIONAL_LIGHTS
 #define QRK_MAX_DIRECTIONAL_LIGHTS 10
@@ -22,11 +22,11 @@ uniform int qrk_spotLightCount;
 
 /** Calculate shading from all active directional lights. */
 vec3 qrk_shadeAllDirectionalLights(QrkMaterial material, vec3 fragPos,
-                                   vec3 normal, vec2 texCoords) {
+                                   vec3 normal, vec2 texCoords, float shadow) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_directionalLightCount; i++) {
     result += qrk_shadeDirectionalLight(material, qrk_directionalLights[i],
-                                        fragPos, normal, texCoords);
+                                        fragPos, normal, texCoords, shadow);
   }
   return result;
 }
@@ -55,12 +55,18 @@ vec3 qrk_shadeAllSpotLights(QrkMaterial material, vec3 fragPos, vec3 normal,
 
 /** Calculate shading from all light sources, except emission textures. */
 vec3 qrk_shadeAllLights(QrkMaterial material, vec3 fragPos, vec3 normal,
-                        vec2 texCoords) {
-  vec3 directional =
-      qrk_shadeAllDirectionalLights(material, fragPos, normal, texCoords);
+                        vec2 texCoords, float shadow) {
+  vec3 directional = qrk_shadeAllDirectionalLights(material, fragPos, normal,
+                                                   texCoords, shadow);
   vec3 point = qrk_shadeAllPointLights(material, fragPos, normal, texCoords);
   vec3 spot = qrk_shadeAllSpotLights(material, fragPos, normal, texCoords);
   return directional + point + spot;
+}
+
+vec3 qrk_shadeAllLights(QrkMaterial material, vec3 fragPos, vec3 normal,
+                        vec2 texCoords) {
+  return qrk_shadeAllLights(material, fragPos, normal, texCoords,
+                            /*shadow=*/0.0);
 }
 
 /**

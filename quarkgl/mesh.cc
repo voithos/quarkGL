@@ -83,6 +83,7 @@ void Mesh::bindTextures(Shader& shader) {
     } else {
       texture.bindToUnit(textureUnit, TextureBindType::TEXTURE);
       std::ostringstream ss;
+      // TODO: Make this more configurable / less generic?
       ss << "material.";
 
       switch (type) {
