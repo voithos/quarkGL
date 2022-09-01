@@ -25,6 +25,22 @@ float qrk_shadowBias(float minBias, float maxBias, vec3 normal, vec3 lightDir) {
   return max(maxBias * (1.0 - dot(normal, lightDir)), minBias);
 }
 
+/** Sample from a shadow map using 9-texel percentage-closer filtering. */
+float qrk_shadowSamplePCF(sampler2D shadowMap, vec2 shadowTexCoords,
+                          float currentDepth, float bias) {
+  float shadow = 0.0;
+  vec2 texelOffset = 1.0 / textureSize(shadowMap, /*mip=*/0);
+  for (int x = -1; x <= 1; x++) {
+    for (int y = -1; y <= 1; y++) {
+      float pcfDepth =
+          texture(shadowMap, shadowTexCoords + vec2(x, y) * texelOffset).r;
+      // Check whether in shadow.
+      shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+  return shadow / 9.0;
+}
+
 /**
  * Calculate whether the given fragment is in shadow.
  * Returns 1.0 if in shadow, 0.0 if not.
@@ -39,10 +55,9 @@ float qrk_shadow(sampler2D shadowMap, vec4 fragPosLightSpace, float bias) {
     // Assume not in shadow.
     return 0.0;
   }
-  float closestDepth = texture(shadowMap, projectedPos.xy).r;
+  vec2 shadowTexCoords = projectedPos.xy;
   float currentDepth = projectedPos.z;
-  // Check whether in shadow.
-  return currentDepth - bias > closestDepth ? 1.0 : 0.0;
+  return qrk_shadowSamplePCF(shadowMap, shadowTexCoords, currentDepth, bias);
 }
 
 void main() {
