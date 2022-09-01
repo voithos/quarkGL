@@ -26,7 +26,7 @@ class ShadowCamera : public UniformSource {
   virtual ~ShadowCamera() = default;
 
   glm::mat4 getViewTransform();
-  glm::mat4 getPerspectiveTransform();
+  glm::mat4 getProjectionTransform();
 
   void updateUniforms(Shader& shader) override;
 

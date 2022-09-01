@@ -106,7 +106,7 @@ int main() {
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
     glm::mat4 view = camera->getViewTransform();
-    glm::mat4 projection = camera->getPerspectiveTransform();
+    glm::mat4 projection = camera->getProjectionTransform();
     registry->applyViewTransform(view);
 
     // Setup shader and lights.

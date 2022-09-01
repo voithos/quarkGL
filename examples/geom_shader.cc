@@ -73,7 +73,7 @@ int main() {
   win.disableFaceCull();
   win.loop([&](float deltaTime) {
     glm::mat4 view = camera->getViewTransform();
-    glm::mat4 projection = camera->getPerspectiveTransform();
+    glm::mat4 projection = camera->getProjectionTransform();
 
     // Setup shader and lights.
     mainShader.activate();

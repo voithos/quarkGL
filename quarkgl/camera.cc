@@ -34,13 +34,13 @@ glm::mat4 Camera::getViewTransform() const {
   return glm::lookAt(/*eye=*/position_, center, up_);
 }
 
-glm::mat4 Camera::getPerspectiveTransform() const {
+glm::mat4 Camera::getProjectionTransform() const {
   return glm::perspective(glm::radians(getFov()), aspectRatio_, near_, far_);
 }
 
 void Camera::updateUniforms(Shader& shader) {
   shader.setMat4("view", getViewTransform());
-  shader.setMat4("projection", getPerspectiveTransform());
+  shader.setMat4("projection", getProjectionTransform());
 }
 
 void Camera::move(CameraDirection direction, float deltaTime) {

@@ -63,7 +63,7 @@ class Camera : public UniformSource, public ViewSource {
   }
 
   glm::mat4 getViewTransform() const override;
-  glm::mat4 getPerspectiveTransform() const;
+  glm::mat4 getProjectionTransform() const;
 
   void updateUniforms(Shader& shader) override;
 

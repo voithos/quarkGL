@@ -215,7 +215,7 @@ int main() {
     fb.clear();
 
     glm::mat4 view = camera->getViewTransform();
-    glm::mat4 projection = camera->getPerspectiveTransform();
+    glm::mat4 projection = camera->getProjectionTransform();
 
     // Setup shader and textures for the framebuffer.
     mainShader.activate();
