@@ -22,6 +22,7 @@
 #include <qrk/shadows.h>
 #include <qrk/texture.h>
 #include <qrk/texture_map.h>
+#include <qrk/texture_registry.h>
 #include <qrk/utils.h>
 #include <qrk/vertex_array.h>
 #include <qrk/window.h>

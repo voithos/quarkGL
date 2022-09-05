@@ -98,6 +98,7 @@ class Texture {
   friend class Framebuffer;
   friend class Attachment;
 };
+
 }  // namespace qrk
 
 #endif

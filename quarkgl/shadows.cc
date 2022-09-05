@@ -30,4 +30,23 @@ void ShadowCamera::updateUniforms(Shader& shader) {
                  getProjectionTransform() * getViewTransform());
 }
 
+ShadowMap::ShadowMap(int width, int height) : Framebuffer(width, height) {
+  // Attach the depth texture used for the shadow map.
+  // TODO: Support omnidirectional shadow maps.
+  depthAttachment_ = attachTexture(
+      BufferType::DEPTH, {
+                             .filtering = TextureFiltering::NEAREST,
+                             .wrapMode = TextureWrapMode::CLAMP_TO_BORDER,
+                             .borderColor = glm::vec4(1.0f),
+                         });
+}
+
+unsigned int ShadowMap::bindTexture(unsigned int nextTextureUnit,
+                                    Shader& shader) {
+  depthAttachment_.asTexture().bindToUnit(nextTextureUnit);
+  // TODO: Make this more generic.
+  shader.setInt("shadowMap", nextTextureUnit);
+  return nextTextureUnit + 1;
+}
+
 }  // namespace qrk

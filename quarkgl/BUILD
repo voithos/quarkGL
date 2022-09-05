@@ -22,6 +22,7 @@ cc_library(
         ":shadows",
         ":texture",
         ":texture_map",
+        ":texture_registry",
         ":utils",
         ":vertex_array",
         ":window",
@@ -88,6 +89,7 @@ cc_library(
     deps = [
         ":shader",
         ":texture_map",
+        ":texture_registry",
         ":vertex_array",
         "//third_party/glad",
         "//third_party/glm",
@@ -128,6 +130,18 @@ cc_library(
         ":texture",
         "//third_party/glad",
         "@assimp",
+    ],
+)
+
+cc_library(
+    name = "texture_registry",
+    srcs = ["texture_registry.cc"],
+    hdrs = ["texture_registry.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":exceptions",
+        ":shader",
+        ":texture",
     ],
 )
 
@@ -236,8 +250,11 @@ cc_library(
     include_prefix = "qrk",
     deps = [
         ":exceptions",
+        ":framebuffer",
         ":light",
         ":shader",
+        ":texture",
+        ":texture_registry",
         "//third_party/glm",
     ],
 )

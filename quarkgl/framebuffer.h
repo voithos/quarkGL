@@ -105,7 +105,7 @@ class Framebuffer {
   Framebuffer(int width, int height, int samples = 0);
   explicit Framebuffer(ScreenSize size, int samples = 0)
       : Framebuffer(size.width, size.height, samples) {}
-  ~Framebuffer();
+  virtual ~Framebuffer();
 
   // Activates the current framebuffer.
   void activate();

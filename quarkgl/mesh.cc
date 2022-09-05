@@ -36,10 +36,10 @@ void Mesh::loadInstanceModels(const glm::mat4* models, unsigned int size) {
   vertexArray_.loadInstanceVertexData(&models[0], size * sizeof(glm::mat4));
 }
 
-void Mesh::draw(Shader& shader) {
+void Mesh::draw(Shader& shader, TextureRegistry* textureRegistry) {
   // Note: Model transform handling is done by child classes.
 
-  bindTextures(shader);
+  bindTextures(shader, textureRegistry);
 
   // Draw using the VAO.
   shader.activate();
@@ -66,13 +66,18 @@ void Mesh::initializeVertexArrayInstanceData() {
   }
 }
 
-void Mesh::bindTextures(Shader& shader) {
+void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
   // Bind textures. Assumes uniform naming is "material.textureMapType[idx]".
   unsigned int diffuseIdx = 0;
   unsigned int specularIdx = 0;
   unsigned int emissionIdx = 0;
 
+  // If a TextureRegistry isn't provided, just start with texture unit 0.
   unsigned int textureUnit = 0;
+  if (textureRegistry != nullptr) {
+    textureRegistry->pushUsageBlock();
+    textureUnit = textureRegistry->getNextTextureUnit();
+  }
   for (TextureMap& textureMap : textureMaps_) {
     std::string samplerName;
     TextureMapType type = textureMap.getType();
@@ -106,10 +111,17 @@ void Mesh::bindTextures(Shader& shader) {
       }
       samplerName = ss.str();
     }
-
     // Set the sampler to the correct texture unit.
     shader.setInt(samplerName, textureUnit);
-    textureUnit++;
+
+    if (textureRegistry != nullptr) {
+      textureUnit = textureRegistry->getNextTextureUnit();
+    } else {
+      textureUnit++;
+    }
+  }
+  if (textureRegistry != nullptr) {
+    textureRegistry->popUsageBlock();
   }
   shader.setInt("material.diffuseCount", diffuseIdx);
   shader.setInt("material.specularCount", specularIdx);

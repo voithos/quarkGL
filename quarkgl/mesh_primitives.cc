@@ -2,12 +2,12 @@
 
 namespace qrk {
 
-void PrimitiveMesh::draw(Shader& shader) {
+void PrimitiveMesh::draw(Shader& shader, TextureRegistry* textureRegistry) {
   // First we set the model transform.
   shader.setMat4("model", getModelTransform());
 
   // Then render as normal.
-  Mesh::draw(shader);
+  Mesh::draw(shader, textureRegistry);
 }
 
 // clang-format off

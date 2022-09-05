@@ -30,14 +30,14 @@ int main() {
   mainShader.addUniformSource(camera);
 
   // Create light registry and add lights.
-  auto registry = std::make_shared<qrk::LightRegistry>();
-  registry->setViewSource(camera);
-  mainShader.addUniformSource(registry);
+  auto lightRegistry = std::make_shared<qrk::LightRegistry>();
+  lightRegistry->setViewSource(camera);
+  mainShader.addUniformSource(lightRegistry);
 
   auto directionalLight =
       std::make_shared<qrk::DirectionalLight>(glm::vec3(2.0f, -4.0f, 1.0f));
   directionalLight->setSpecular(glm::vec3(0.3f, 0.3f, 0.3f));
-  registry->addLight(directionalLight);
+  lightRegistry->addLight(directionalLight);
 
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
@@ -46,24 +46,19 @@ int main() {
 
   // Setup shadow mapping.
   constexpr int SHADOW_MAP_SIZE = 1024;
-  qrk::Framebuffer shadowFb(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
-  qrk::Texture shadowMap =
-      shadowFb
-          // TODO: Extract this into a reusable pattern.
-          .attachTexture(qrk::BufferType::DEPTH,
-                         {
-                             .filtering = qrk::TextureFiltering::NEAREST,
-                             .wrapMode = qrk::TextureWrapMode::CLAMP_TO_BORDER,
-                             .borderColor = glm::vec4(1.0f),
-                         })
-          .asTexture();
+  auto shadowMap =
+      std::make_shared<qrk::ShadowMap>(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+  auto textureRegistry = std::make_shared<qrk::TextureRegistry>();
+  textureRegistry->addTextureSource(shadowMap);
+  mainShader.addUniformSource(textureRegistry);
+
   qrk::ShadowMapShader shadowShader;
   auto shadowCamera = std::make_shared<qrk::ShadowCamera>(directionalLight);
   shadowShader.addUniformSource(shadowCamera);
   mainShader.addUniformSource(shadowCamera);
 
   // Debug drawing shader.
-  qrk::ScreenQuadMesh screenQuad(shadowMap);
+  qrk::ScreenQuadMesh screenQuad(shadowMap->getDepthTexture());
   qrk::ScreenQuadShader screenShader;
 
   // Setup objects.
@@ -94,27 +89,24 @@ int main() {
 
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
-    shadowFb.activate();
-    shadowFb.clear();
+    shadowMap->activate();
+    shadowMap->clear();
     shadowShader.updateUniforms();
     plane.draw(shadowShader);
     box1.draw(shadowShader);
     box2.draw(shadowShader);
     box3.draw(shadowShader);
-    shadowFb.deactivate();
+    shadowMap->deactivate();
 
     win.setViewport();
     if (drawShadowMap) {
       screenQuad.draw(screenShader);
     } else {
       mainShader.updateUniforms();
-      // TODO: Make this more generic.
-      shadowMap.bindToUnit(10);
-      mainShader.setInt("shadowMap", 10);
-      plane.draw(mainShader);
-      box1.draw(mainShader);
-      box2.draw(mainShader);
-      box3.draw(mainShader);
+      plane.draw(mainShader, textureRegistry.get());
+      box1.draw(mainShader, textureRegistry.get());
+      box2.draw(mainShader, textureRegistry.get());
+      box3.draw(mainShader, textureRegistry.get());
     }
   });
 

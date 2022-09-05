@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <qrk/shader.h>
 #include <qrk/texture_map.h>
+#include <qrk/texture_registry.h>
 #include <qrk/vertex_array.h>
 
 #include <glm/glm.hpp>
@@ -20,7 +21,8 @@ class Renderable {
   glm::mat4 getModelTransform() const { return model_; }
   void setModelTransform(const glm::mat4& model) { model_ = model; }
 
-  virtual void draw(Shader& shader) = 0;
+  virtual void draw(Shader& shader,
+                    TextureRegistry* textureRegistry = nullptr) = 0;
 
  protected:
   // The model transform matrix.
@@ -35,7 +37,8 @@ class Mesh : public Renderable {
 
   void loadInstanceModels(const std::vector<glm::mat4>& models);
   void loadInstanceModels(const glm::mat4* models, unsigned int size);
-  void draw(Shader& shader) override;
+  void draw(Shader& shader,
+            TextureRegistry* textureRegistry = nullptr) override;
 
   std::vector<unsigned int> getIndices() { return indices_; }
   std::vector<TextureMap> getTextureMaps() { return textureMaps_; }
@@ -54,7 +57,7 @@ class Mesh : public Renderable {
   // Allocates and initializes vertex array instance data.
   virtual void initializeVertexArrayInstanceData();
   // Binds texture maps to texture units and sets shader sampler uniforms.
-  virtual void bindTextures(Shader& shader);
+  virtual void bindTextures(Shader& shader, TextureRegistry* textureRegistry);
   // Emits glDraw* calls based on the mesh instancing/indexing. Requires shaders
   // and VAOs to be active prior to calling.
   virtual void glDraw();

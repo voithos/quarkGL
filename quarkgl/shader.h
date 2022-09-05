@@ -21,6 +21,8 @@ class ShaderException : public QuarkException {
 };
 
 // An interface for a unified way of configuring shader uniforms.
+// TODO: Extract to a "UniformContext" class that is used by the shader, rather
+// than the shader collecting UniformSources directly.
 class UniformSource {
  public:
   virtual void updateUniforms(Shader& shader) = 0;

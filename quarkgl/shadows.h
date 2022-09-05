@@ -2,8 +2,11 @@
 #define QUARKGL_SHADOWS_H_
 
 #include <qrk/exceptions.h>
+#include <qrk/framebuffer.h>
 #include <qrk/light.h>
 #include <qrk/shader.h>
+#include <qrk/texture.h>
+#include <qrk/texture_registry.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -18,11 +21,10 @@ class ShadowCamera : public UniformSource {
  public:
   // TODO: Currently only renders the origin. Make this more dynamic, and have
   // it automatically determine a best-fit frustum based on the scene.
-  explicit ShadowCamera(std::shared_ptr<DirectionalLight> light,
-                        float cuboidExtents = 10.0f, float near = 0.1f,
-                        float far = 15.0f,
-                        float shadowCameraDistanceFromOrigin = 7.0f,
-                        glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
+  ShadowCamera(std::shared_ptr<DirectionalLight> light,
+               float cuboidExtents = 10.0f, float near = 0.1f,
+               float far = 15.0f, float shadowCameraDistanceFromOrigin = 7.0f,
+               glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
   virtual ~ShadowCamera() = default;
 
   glm::mat4 getViewTransform();
@@ -41,6 +43,20 @@ class ShadowCamera : public UniformSource {
   // The fake distance from the origin that the shadow camera is positioned at.
   float shadowCameraDistanceFromOrigin_;
   glm::vec3 worldUp_;
+};
+
+class ShadowMap : public Framebuffer, public TextureSource {
+ public:
+  explicit ShadowMap(int width = 1024, int height = 1024);
+  explicit ShadowMap(ScreenSize size) : ShadowMap(size.width, size.height) {}
+  virtual ~ShadowMap() = default;
+
+  Texture getDepthTexture() { return depthAttachment_.asTexture(); }
+  unsigned int bindTexture(unsigned int nextTextureUnit,
+                           Shader& shader) override;
+
+ private:
+  Attachment depthAttachment_;
 };
 
 }  // namespace qrk
