@@ -138,6 +138,7 @@ class Framebuffer {
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
   Attachment saveAttachment(unsigned int id, AttachmentTarget target);
+  void checkFlags(BufferType type);
   void updateFlags(BufferType type);
   // Updates the draw and read buffers based on the current flags.
   void updateBufferSource();

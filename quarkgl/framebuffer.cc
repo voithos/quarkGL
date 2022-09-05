@@ -39,6 +39,7 @@ Attachment Framebuffer::attachTexture(BufferType type) {
 
 Attachment Framebuffer::attachTexture(BufferType type,
                                       const TextureParams& params) {
+  checkFlags(type);
   activate();
 
   GLenum textureTarget = samples_ ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
@@ -84,6 +85,7 @@ Attachment Framebuffer::attachTexture(BufferType type,
 }
 
 Attachment Framebuffer::attachRenderbuffer(BufferType type) {
+  checkFlags(type);
   activate();
 
   // Create and configure renderbuffer.
@@ -128,6 +130,35 @@ Attachment Framebuffer::saveAttachment(unsigned int id,
   Attachment attachment = {.id = id, .target = target};
   attachments_.push_back(attachment);
   return attachment;
+}
+
+void Framebuffer::checkFlags(BufferType type) {
+  switch (type) {
+    case BufferType::COLOR:
+      // Multiple color attachments OK.
+      return;
+    case BufferType::DEPTH:
+      if (hasDepthAttachment_) {
+        throw FramebufferException(
+            "ERROR::FRAMEBUFFER::BUFFER_TYPE_ALREADY_IN_USE\n" +
+            std::to_string(static_cast<int>(type)));
+      }
+      return;
+    case BufferType::STENCIL:
+      if (hasStencilAttachment_) {
+        throw FramebufferException(
+            "ERROR::FRAMEBUFFER::BUFFER_TYPE_ALREADY_IN_USE\n" +
+            std::to_string(static_cast<int>(type)));
+      }
+      return;
+    case BufferType::DEPTH_AND_STENCIL:
+      if (hasDepthAttachment_ || hasStencilAttachment_) {
+        throw FramebufferException(
+            "ERROR::FRAMEBUFFER::BUFFER_TYPE_ALREADY_IN_USE\n" +
+            std::to_string(static_cast<int>(type)));
+      }
+      return;
+  }
 }
 
 void Framebuffer::updateFlags(BufferType type) {
