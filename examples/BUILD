@@ -1,16 +1,4 @@
-# TODO: Pull these into a common location.
-QRK_LINKOPTS = [
-    "-lGL",
-    "-lGLU",
-    "-lX11",
-    "-lXxf86vm",
-    # "-lXinerama",
-    "-lXcursor",
-    "-lpthread",
-    "-lXrandr",
-    "-lXi",
-    "-ldl",
-]
+load("//quarkgl:quarkgl.bzl", "LINUX_LINKOPTS")
 
 filegroup(
     name = "shaders",
@@ -27,7 +15,7 @@ cc_binary(
         "assets/nanosuit/*",
         "assets/skybox/*",
     ]),
-    linkopts = QRK_LINKOPTS,
+    linkopts = LINUX_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -45,7 +33,7 @@ cc_binary(
         "assets/rock/*",
         "assets/planet/*",
     ]),
-    linkopts = QRK_LINKOPTS,
+    linkopts = LINUX_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -60,7 +48,7 @@ cc_binary(
     data = [
         ":shaders",
     ] + glob(["assets/nanosuit/*"]),
-    linkopts = QRK_LINKOPTS,
+    linkopts = LINUX_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -76,7 +64,7 @@ cc_binary(
         "assets/container.jpg",
         "assets/metal.png",
     ],
-    linkopts = QRK_LINKOPTS,
+    linkopts = LINUX_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -91,7 +79,7 @@ cc_binary(
     data = [
         ":shaders",
     ],
-    linkopts = QRK_LINKOPTS,
+    linkopts = LINUX_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glm",
@@ -105,7 +93,7 @@ cc_binary(
         "assets/wood.png",
         ":shaders",
     ],
-    linkopts = QRK_LINKOPTS,
+    linkopts = LINUX_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
