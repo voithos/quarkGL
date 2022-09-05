@@ -2,10 +2,10 @@
 
 ## Features
 - [ ] P0: Add normal mapping
-- [ ] P0: Add shadow mapping
 - [ ] P0: Implement deferred shading
 - [ ] P0: Implement SSAO
 - [ ] P0: Implement PBR lighting
+- [ ] P1: Implement point light shadow maps: https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
 - [ ] P1: Implement tessellation
 - [ ] P1: Add parallax mapping
 - [ ] P1: Add HDR
@@ -21,6 +21,7 @@
 - [ ] P2: Add a material class that can maintain diffuse/specular maps, similar to the light class.
 - [ ] P2: Go through some of the shader effects from https://lettier.github.io/3d-game-shaders-for-beginners/index.html
 - [ ] P2: Add dynamic UI support, a la https://github.com/ocornut/imgui
+- [ ] P3: Tons of shadow map improvements described here: https://docs.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps
 - [ ] P3: Update README / documentation
 - [ ] P3: Add a wireframe mode.
 - [ ] P3: Add support for framebuffers?
@@ -71,3 +72,4 @@
 - [x] Add skybox support.
 - [x] Add compute shaders.
 - [x] P0: Implement blinn phong
+- [x] P0: Add shadow mapping
