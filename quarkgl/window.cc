@@ -43,6 +43,7 @@ Window::Window(int width, int height, const char* title, bool fullscreen,
   enableKeyInput();
   enableScrollInput();
   enableMouseMoveInput();
+  enableMouseButtonInput();
 }
 
 Window::~Window() {
@@ -137,6 +138,22 @@ void Window::disableMouseMoveInput() {
   mouseMoveInputEnabled_ = false;
 }
 
+void Window::enableMouseButtonInput() {
+  if (mouseButtonInputEnabled_) return;
+  auto callback = [](GLFWwindow* window, int button, int action, int mods) {
+    auto self = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    self->mouseButtonCallback(button, action, mods);
+  };
+  glfwSetMouseButtonCallback(window_, callback);
+  mouseButtonInputEnabled_ = true;
+}
+
+void Window::disableMouseButtonInput() {
+  if (!mouseButtonInputEnabled_) return;
+  glfwSetMouseButtonCallback(window_, nullptr);
+  mouseButtonInputEnabled_ = false;
+}
+
 void Window::framebufferSizeCallback(GLFWwindow* window, int width,
                                      int height) {
   glViewport(0, 0, width, height);
@@ -181,6 +198,14 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
       }
     } else if (escBehavior_ == EscBehavior::CLOSE) {
       glfwSetWindowShouldClose(window_, true);
+    } else if (escBehavior_ == EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE) {
+      auto inputMode = glfwGetInputMode(window_, GLFW_CURSOR);
+      if (inputMode == GLFW_CURSOR_DISABLED) {
+        disableMouseCapture();
+      } else {
+        // Close since mouse is not captured.
+        glfwSetWindowShouldClose(window_, true);
+      }
     }
   }
 
@@ -210,8 +235,33 @@ void Window::mouseMoveCallback(double xpos, double ypos) {
   }
 }
 
+void Window::mouseButtonCallback(int button, int action, int mods) {
+  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    if (mouseButtonBehavior_ == MouseButtonBehavior::CAPTURE_MOUSE) {
+      enableMouseCapture();
+    }
+  }
+
+  // Run handlers.
+  if (action == GLFW_PRESS) {
+    for (auto pair : mouseButtonHandlers_) {
+      int glfwMouseButton;
+      std::function<void(int)> handler;
+      std::tie(glfwMouseButton, handler) = pair;
+
+      if (button == glfwMouseButton) {
+        handler(mods);
+      }
+    }
+  }
+}
+
 void Window::addKeyPressHandler(int glfwKey, std::function<void(int)> handler) {
   keyPressHandlers_.push_back(std::make_tuple(glfwKey, handler));
+}
+void Window::addMouseButtonHandler(int glfwMouseButton,
+                                   std::function<void(int)> handler) {
+  mouseButtonHandlers_.push_back(std::make_tuple(glfwMouseButton, handler));
 }
 
 void Window::enableMouseCapture() {

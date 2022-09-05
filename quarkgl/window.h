@@ -30,10 +30,19 @@ constexpr int DEFAULT_HEIGHT = 600;
 constexpr char const* DEFAULT_TITLE = "quarkGL";
 const glm::vec4 DEFAULT_CLEAR_COLOR = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
+// Controls special convenience behavior when Esc is pressed.
 enum class EscBehavior {
   NONE,
   TOGGLE_MOUSE_CAPTURE,
   CLOSE,
+  // Uncaptures the mouse if it is captured, or else closes the app.
+  UNCAPTURE_MOUSE_OR_CLOSE,
+};
+
+// Controls special convenience behavior when the LMB is pressed.
+enum class MouseButtonBehavior {
+  NONE,
+  CAPTURE_MOUSE,
 };
 
 class Window : public UniformSource {
@@ -127,12 +136,21 @@ class Window : public UniformSource {
   EscBehavior getEscBehavior() const { return escBehavior_; }
   void setEscBehavior(EscBehavior behavior) { escBehavior_ = behavior; }
 
+  MouseButtonBehavior getMouseButtonBehavior() const {
+    return mouseButtonBehavior_;
+  }
+  void setMouseButtonBehavior(MouseButtonBehavior behavior) {
+    mouseButtonBehavior_ = behavior;
+  }
+
   void enableKeyInput();
   void disableKeyInput();
   void enableScrollInput();
   void disableScrollInput();
   void enableMouseMoveInput();
   void disableMouseMoveInput();
+  void enableMouseButtonInput();
+  void disableMouseButtonInput();
 
   void enableMouseCapture();
   void disableMouseCapture();
@@ -142,6 +160,8 @@ class Window : public UniformSource {
 
   // TODO: Add a way to remove handlers.
   void addKeyPressHandler(int glfwKey, std::function<void(int)> handler);
+  void addMouseButtonHandler(int glfwMouseButton,
+                             std::function<void(int)> handler);
 
   void loop(std::function<void(float)> callback);
 
@@ -152,6 +172,7 @@ class Window : public UniformSource {
   void keyCallback(int key, int scancode, int action, int mods);
   void scrollCallback(double xoffset, double yoffset);
   void mouseMoveCallback(double xpos, double ypos);
+  void mouseButtonCallback(int button, int action, int mods);
   void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
   GLFWwindow* window_;
@@ -164,11 +185,14 @@ class Window : public UniformSource {
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
   EscBehavior escBehavior_ = EscBehavior::NONE;
+  MouseButtonBehavior mouseButtonBehavior_ = MouseButtonBehavior::NONE;
   bool resizeUpdatesEnabled_ = false;
   bool keyInputEnabled_ = false;
   bool scrollInputEnabled_ = false;
   bool mouseMoveInputEnabled_ = false;
+  bool mouseButtonInputEnabled_ = false;
   std::vector<std::tuple<int, std::function<void(int)>>> keyPressHandlers_;
+  std::vector<std::tuple<int, std::function<void(int)>>> mouseButtonHandlers_;
 
   std::shared_ptr<Camera> boundCamera_ = nullptr;
   std::shared_ptr<CameraControls> boundCameraControls_ = nullptr;
