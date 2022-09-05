@@ -33,8 +33,9 @@ int main() {
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader(qrk::ShaderPath("examples/shadowed_model.vert"),
-                         qrk::ShaderPath("examples/shadowed_phong.frag"));
+  qrk::Shader mainShader(
+      qrk::ShaderPath("examples/shaders/shadowed_model.vert"),
+      qrk::ShaderPath("examples/shaders/shadowed_phong.frag"));
   mainShader.addUniformSource(camera);
 
   // Create light registry and add lights.

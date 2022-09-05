@@ -24,7 +24,8 @@ int main() {
   win.setClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
   win.setEscBehavior(qrk::EscBehavior::CLOSE);
 
-  qrk::ComputeShader computeShader(qrk::ShaderPath("examples/compute.comp"));
+  qrk::ComputeShader computeShader(
+      qrk::ShaderPath("examples/shaders/compute.comp"));
   qrk::Texture computeTexture = qrk::Texture::create(width, height, GL_RGBA32F);
   qrk::ScreenQuadMesh screenQuad(computeTexture);
   qrk::ScreenQuadShader screenShader;

@@ -30,16 +30,17 @@ int main() {
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader(qrk::ShaderPath("examples/model.vert"),
-                         qrk::ShaderPath("examples/phong.frag"));
+  qrk::Shader mainShader(qrk::ShaderPath("examples/shaders/model.vert"),
+                         qrk::ShaderPath("examples/shaders/phong.frag"));
 
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
-  qrk::Shader instancedShader(qrk::ShaderPath("examples/instanced_model.vert"),
-                              qrk::ShaderPath("examples/phong.frag"));
+  qrk::Shader instancedShader(
+      qrk::ShaderPath("examples/shaders/instanced_model.vert"),
+      qrk::ShaderPath("examples/shaders/phong.frag"));
 
   instancedShader.setFloat("material.shininess", 32.0f);
   instancedShader.setFloat("material.emissionAttenuation.constant", 1.0f);

@@ -12,13 +12,16 @@ QRK_LINKOPTS = [
     "-ldl",
 ]
 
+filegroup(
+    name = "shaders",
+    srcs = glob(["shaders/*"]),
+)
+
 cc_binary(
     name = "model_render",
     srcs = ["model_render.cc"],
     data = [
-        "phong.frag",
-        "model.vert",
-        "model_normals.geom",
+        ":shaders",
         "assets/container.jpg",
     ] + glob([
         "assets/nanosuit/*",
@@ -45,9 +48,7 @@ cc_binary(
     name = "instancing",
     srcs = ["instancing.cc"],
     data = [
-        "phong.frag",
-        "model.vert",
-        "instanced_model.vert",
+        ":shaders",
     ] + glob([
         "assets/rock/*",
         "assets/planet/*",
@@ -71,9 +72,7 @@ cc_binary(
     name = "geom_shader",
     srcs = ["geom_shader.cc"],
     data = [
-        "phong.frag",
-        "model.vert",
-        "explode.geom",
+        ":shaders",
     ] + glob(["assets/nanosuit/*"]),
     linkopts = QRK_LINKOPTS,
     deps = [
@@ -117,7 +116,7 @@ cc_binary(
     name = "compute",
     srcs = ["compute.cc"],
     data = [
-        "compute.comp",
+        ":shaders",
     ],
     linkopts = QRK_LINKOPTS,
     deps = [
@@ -138,8 +137,7 @@ cc_binary(
     srcs = ["shadow_map.cc"],
     data = [
         "assets/wood.png",
-        "shadowed_model.vert",
-        "shadowed_phong.frag",
+        ":shaders",
     ],
     linkopts = QRK_LINKOPTS,
     deps = [

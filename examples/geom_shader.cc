@@ -37,9 +37,9 @@ int main() {
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader(qrk::ShaderPath("examples/model.vert"),
-                         qrk::ShaderPath("examples/phong.frag"),
-                         qrk::ShaderPath("examples/explode.geom"));
+  qrk::Shader mainShader(qrk::ShaderPath("examples/shaders/model.vert"),
+                         qrk::ShaderPath("examples/shaders/phong.frag"),
+                         qrk::ShaderPath("examples/shaders/explode.geom"));
 
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
@@ -60,7 +60,7 @@ int main() {
   pointLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
   registry->addLight(pointLight);
 
-  qrk::Shader lampShader(qrk::ShaderPath("examples/model.vert"),
+  qrk::Shader lampShader(qrk::ShaderPath("examples/shaders/model.vert"),
                          qrk::ShaderInline(lampShaderSource));
 
   // Create a mesh for the light.
