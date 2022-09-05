@@ -25,12 +25,13 @@ static inline std::string rtrim(std::string s) {
 
 static inline std::string trim(std::string s) { return ltrim(rtrim(s)); }
 
-bool string_has_suffix(const std::string& str, const std::string& suffix) {
+static inline bool string_has_suffix(const std::string& str,
+                                     const std::string& suffix) {
   return str.size() >= suffix.size() &&
          str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
-std::string resolvePath(std::string const& path) {
+static inline std::string resolvePath(std::string const& path) {
   char resolvedPath[PATH_MAX];
   realpath(path.c_str(), resolvedPath);
   return std::string(resolvedPath);

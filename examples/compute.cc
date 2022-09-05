@@ -1,15 +1,7 @@
 // clang-format off
 // Must precede glfw/glad, to include OpenGL functions.
-#include <qrk/core.h>
+#include <qrk/quarkgl.h>
 // clang-format on
-
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-#include <qrk/exceptions.h>
-#include <qrk/mesh_primitives.h>
-#include <qrk/shader.h>
-#include <qrk/shader_primitives.h>
-#include <qrk/window.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

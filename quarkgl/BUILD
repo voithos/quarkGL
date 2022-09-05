@@ -1,6 +1,34 @@
 package(default_visibility = ["//visibility:public"])
 
-# TODO: Create a mega-include for convenience.
+cc_library(
+    name = "quarkgl",
+    hdrs = ["quarkgl.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":camera",
+        ":core",
+        ":exceptions",
+        ":framebuffer",
+        ":light",
+        ":mesh",
+        ":mesh_primitives",
+        ":model",
+        ":screen",
+        ":shader",
+        ":shader_compiler",
+        ":shader_defs",
+        ":shader_loader",
+        ":shader_primitives",
+        ":shadows",
+        ":texture",
+        ":texture_map",
+        ":utils",
+        ":vertex_array",
+        ":window",
+        "//third_party/glad",
+        "@glfw",
+    ],
+)
 
 cc_library(
     name = "core",
