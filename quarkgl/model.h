@@ -21,6 +21,7 @@ class ModelLoaderException : public QuarkException {
 struct ModelVertex {
   glm::vec3 position;
   glm::vec3 normal;
+  glm::vec3 tangent;
   glm::vec2 texCoords;
 };
 
@@ -42,7 +43,15 @@ constexpr auto DEFAULT_LOAD_FLAGS =
     // Ensure that all non-triangular polygon are converted to triangles.
     aiProcess_Triangulate |
     // Generate normals if the model doesn't have them.
-    aiProcess_GenNormals;
+    aiProcess_GenNormals |
+    // Calculates tangent space if the model doesn't have them.
+    aiProcess_CalcTangentSpace |
+    // Generate UV coords if they aren't present.
+    aiProcess_GenUVCoords |
+    // Reduce vertex duplication.
+    aiProcess_JoinIdenticalVertices |
+    // Sort the result by primitive type.
+    aiProcess_SortByPType;
 
 class Model : public Renderable {
  public:

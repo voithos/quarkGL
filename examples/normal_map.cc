@@ -51,8 +51,8 @@ int main() {
   qrk::PlaneMesh plane("examples/assets/brickwall.jpg");
   plane.setModelTransform(glm::scale(
       glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f)),
-                  glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-      glm::vec3(4.0f)));
+                  glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+      glm::vec3(5.0f)));
 
   qrk::Texture normalMap =
       qrk::Texture::load("examples/assets/brickwall_normal.jpg");

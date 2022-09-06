@@ -25,7 +25,8 @@ void ModelMesh::initializeVertexAttributes() {
   // Positions.
   vertexArray_.addVertexAttrib(3, GL_FLOAT);
   // Normals.
-  // TODO: Allow drawing models that don't have normals.
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
+  // Tangents.
   vertexArray_.addVertexAttrib(3, GL_FLOAT);
   // Texture coordinates.
   vertexArray_.addVertexAttrib(2, GL_FLOAT);
@@ -100,24 +101,30 @@ ModelMesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
   for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
     ModelVertex vertex;
 
-    // Process vertex positions, normals, and texture coordinates.
+    // Process vertex positions, normals, tangents, and texture coordinates.
     auto inputPos = mesh->mVertices[i];
     glm::vec3 position(inputPos.x, inputPos.y, inputPos.z);
     vertex.position = position;
 
     if (mesh->HasNormals()) {
       auto inputNorm = mesh->mNormals[i];
-      glm::vec3 normal(inputNorm.x, inputNorm.y, inputNorm.z);
-      vertex.normal = normal;
+      vertex.normal = glm::vec3(inputNorm.x, inputNorm.y, inputNorm.z);
     } else {
       vertex.normal = glm::vec3(0.0f);
+    }
+
+    if (mesh->HasTangentsAndBitangents()) {
+      auto inputTangent = mesh->mTangents[i];
+      vertex.tangent =
+          glm::vec3(inputTangent.x, inputTangent.y, inputTangent.z);
+    } else {
+      vertex.tangent = glm::vec3(0.0f);
     }
 
     // TODO: This is only using the first texture coord set.
     if (mesh->HasTextureCoords(0)) {
       auto inputTexCoords = mesh->mTextureCoords[0][i];
-      glm::vec2 texCoords(inputTexCoords.x, inputTexCoords.y);
-      vertex.texCoords = texCoords;
+      vertex.texCoords = glm::vec2(inputTexCoords.x, inputTexCoords.y);
     } else {
       vertex.texCoords = glm::vec2(0.0f);
     }

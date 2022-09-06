@@ -15,11 +15,14 @@ out vec4 fragColor;
 
 uniform QrkMaterial material;
 uniform sampler2D normalMap;
+uniform mat4 model;
+uniform mat4 view;
 
 void main() {
   // Lookup normal and map from color components [0..1] to vector components
   // [-1..1].
   vec3 normal = normalize(texture(normalMap, fs_in.texCoords).rgb * 2.0 - 1.0);
+  normal = mat3(transpose(inverse(view))) * normal;
 
   // Shade with normal lights.
   vec3 result =
