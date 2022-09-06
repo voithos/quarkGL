@@ -42,6 +42,9 @@ enum class TextureWrapMode {
 };
 
 struct TextureParams {
+  // OpenGL texture coordinates start at the bottom-right of the image, so we
+  // flip vertically by default.
+  bool flipVerticallyOnLoad = true;
   TextureFiltering filtering = TextureFiltering::NEAREST;
   TextureWrapMode wrapMode = TextureWrapMode::REPEAT;
   glm::vec4 borderColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);

@@ -39,7 +39,10 @@ class ModelMesh : public Mesh {
 };
 
 constexpr auto DEFAULT_LOAD_FLAGS =
-    aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs;
+    // Ensure that all non-triangular polygon are converted to triangles.
+    aiProcess_Triangulate |
+    // Generate normals if the model doesn't have them.
+    aiProcess_GenNormals;
 
 class Model : public Renderable {
  public:
