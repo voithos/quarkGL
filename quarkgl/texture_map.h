@@ -19,6 +19,7 @@ enum class TextureMapType {
   DIFFUSE = 0,
   SPECULAR,
   EMISSION,
+  NORMAL,
   CUBEMAP,
   // Adding a new texture type?
   // Update allTextureTypes() below.
@@ -40,6 +41,8 @@ inline const aiTextureType textureMapTypeToAiTextureType(TextureMapType type) {
       return aiTextureType_SPECULAR;
     case TextureMapType::EMISSION:
       return aiTextureType_EMISSIVE;
+    case TextureMapType::NORMAL:
+      return aiTextureType_NORMALS;
     default:
       throw TextureMapException(
           "ERROR::TEXTURE_MAP::INVALID_TEXTURE_MAP_TYPE\n" +

@@ -9,6 +9,7 @@ constexpr TextureMapType loaderSupportedTextureMapTypes[] = {
     TextureMapType::DIFFUSE,
     TextureMapType::SPECULAR,
     TextureMapType::EMISSION,
+    TextureMapType::NORMAL,
 };
 }
 

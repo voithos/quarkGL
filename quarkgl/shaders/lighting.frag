@@ -28,6 +28,8 @@ struct QrkMaterial {
   int specularCount;
   sampler2D emission[QRK_MAX_EMISSION_TEXTURES];
   int emissionCount;
+  sampler2D normal;
+  int normalCount;
 
   float shininess;
 

@@ -71,6 +71,7 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
   unsigned int diffuseIdx = 0;
   unsigned int specularIdx = 0;
   unsigned int emissionIdx = 0;
+  unsigned int normalCount = 0;
 
   // If a TextureRegistry isn't provided, just start with texture unit 0.
   unsigned int textureUnit = 0;
@@ -104,6 +105,11 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
           ss << "emission[" << emissionIdx << "]";
           emissionIdx++;
           break;
+        case TextureMapType::NORMAL:
+          // Only a single normal map supported.
+          ss << "normal";
+          normalCount = 1;
+          break;
         case TextureMapType::CUBEMAP:
           // Handled earlier.
           abort();
@@ -126,6 +132,7 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
   shader.setInt("material.diffuseCount", diffuseIdx);
   shader.setInt("material.specularCount", specularIdx);
   shader.setInt("material.emissionCount", emissionIdx);
+  shader.setInt("material.normalCount", normalCount);
 }
 
 void Mesh::glDraw() {
