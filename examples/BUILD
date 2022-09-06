@@ -101,3 +101,20 @@ cc_binary(
         "@glfw",
     ],
 )
+
+cc_binary(
+    name = "normal_map",
+    srcs = ["normal_map.cc"],
+    data = [
+        "assets/brickwall.jpg",
+        "assets/brickwall_normal.jpg",
+        ":shaders",
+    ],
+    linkopts = LINUX_LINKOPTS,
+    deps = [
+        "//quarkgl",
+        "//third_party/glad",
+        "//third_party/glm",
+        "@glfw",
+    ],
+)

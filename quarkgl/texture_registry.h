@@ -19,6 +19,7 @@ class TextureSource {
   // Binds one or more textures to the next available texture unit, and
   // assigns shader uniforms. It must return the next texture unit that can be
   // used.
+  // TODO: Maybe instead allow the source to call getNextTextureUnit().
   virtual unsigned int bindTexture(unsigned int nextTextureUnit,
                                    Shader& shader) = 0;
 };
