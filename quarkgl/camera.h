@@ -50,6 +50,8 @@ class Camera : public UniformSource, public ViewSource {
          float near = DEFAULT_NEAR, float far = DEFAULT_FAR);
   virtual ~Camera() = default;
 
+  void lookAt(glm::vec3 center);
+
   glm::vec3 getPosition() const { return position_; }
   glm::vec3 getFront() const { return front_; }
   float getFov() const { return fov_; }

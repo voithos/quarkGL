@@ -29,6 +29,14 @@ void Camera::updateCameraVectors() {
   up_ = glm::normalize(glm::cross(right_, front_));
 }
 
+void Camera::lookAt(glm::vec3 center) {
+  glm::vec3 dir = glm::normalize(center - position_);
+  pitch_ = glm::degrees(asin(dir.y));
+  yaw_ = glm::mod<float>(glm::degrees(atan2(dir.x, dir.z)) * -1.0f, 360.0f) +
+         90.0f;
+  updateCameraVectors();
+}
+
 glm::mat4 Camera::getViewTransform() const {
   glm::vec3 center = position_ + front_;
   return glm::lookAt(/*eye=*/position_, center, up_);
