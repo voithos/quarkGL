@@ -12,12 +12,12 @@ constexpr TextureMapType loaderSupportedTextureMapTypes[] = {
 };
 }
 
-ModelMesh::ModelMesh(std::vector<ModelVertex> vertices,
-                     std::vector<unsigned int> indices,
-                     std::vector<TextureMap> textureMaps,
+ModelMesh::ModelMesh(const std::vector<ModelVertex>& vertices,
+                     const std::vector<unsigned int>& indices,
+                     const std::vector<TextureMap>& textureMaps,
                      unsigned int instanceCount)
     : vertices_(vertices) {
-  loadMeshData(&vertices[0], vertices.size(), sizeof(ModelVertex), indices,
+  loadMeshData(&vertices_[0], vertices_.size(), sizeof(ModelVertex), indices,
                textureMaps, instanceCount);
 }
 

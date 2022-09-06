@@ -121,7 +121,8 @@ vec3 qrk_shadeBlinnPhong(QrkMaterial material, vec3 lightAmbient,
     vec4 diffuseMap = texture(material.diffuse[i], texCoords);
     float alphaRatio = qrk_optAlpha(diffuseMap.a) / diffuseAlphaSum;
 
-    // Ambient component. Don't include shadow calculation here.
+    // Ambient component. Don't include shadow calculation here, since it
+    // shouldn't affect ambient light.
     result += lightAmbient * vec3(diffuseMap) * alphaRatio;
 
     // Diffuse component.
@@ -131,16 +132,23 @@ vec3 qrk_shadeBlinnPhong(QrkMaterial material, vec3 lightAmbient,
   }
 
   // Specular component.
-  float specularAlphaSum = qrk_sumSpecularAlpha(material, texCoords);
   vec3 halfwayDir = normalize(lightDir + viewDir);
   float specularIntensity =
       pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
-  for (int i = 0; i < material.specularCount; i++) {
-    vec4 specularMap = texture(material.specular[i], texCoords);
-    float alphaRatio = qrk_optAlpha(specularMap.a) / specularAlphaSum;
-    result +=
-        (lightSpecular * (specularIntensity * vec3(specularMap) * alphaRatio)) *
-        intensity * shadowMultiplier;
+  // In the absence of a specular map, we just calculate the full specular
+  // component without diminishing it by a map lookup.
+  if (material.specularCount == 0) {
+    result += lightSpecular * specularIntensity * intensity * shadowMultiplier;
+  } else {
+    // Specular maps present.
+    float specularAlphaSum = qrk_sumSpecularAlpha(material, texCoords);
+    for (int i = 0; i < material.specularCount; i++) {
+      vec4 specularMap = texture(material.specular[i], texCoords);
+      float alphaRatio = qrk_optAlpha(specularMap.a) / specularAlphaSum;
+      result += (lightSpecular *
+                 (specularIntensity * vec3(specularMap) * alphaRatio)) *
+                intensity * shadowMultiplier;
+    }
   }
 
   return result;

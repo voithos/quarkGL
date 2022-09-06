@@ -3,6 +3,7 @@
 
 #include <qrk/mesh.h>
 #include <qrk/texture.h>
+#include <qrk/texture_map.h>
 
 namespace qrk {
 
@@ -14,19 +15,21 @@ class PrimitiveMesh : public Mesh {
 
 class PlaneMesh : public PrimitiveMesh {
  public:
-  // TODO: Replace paths with Texture objects.
   explicit PlaneMesh(std::string texturePath = "");
+  explicit PlaneMesh(const std::vector<TextureMap>& textureMaps);
 
  protected:
+  void loadMeshAndTextures(const std::vector<TextureMap>& textureMaps);
   void initializeVertexAttributes() override;
 };
 
 class CubeMesh : public PrimitiveMesh {
  public:
-  // TODO: Replace paths with Texture objects.
   explicit CubeMesh(std::string texturePath = "");
+  explicit CubeMesh(const std::vector<TextureMap>& textureMaps);
 
  protected:
+  void loadMeshAndTextures(const std::vector<TextureMap>& textureMaps);
   void initializeVertexAttributes() override;
 };
 

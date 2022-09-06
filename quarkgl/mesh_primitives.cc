@@ -26,12 +26,19 @@ constexpr float planeVertices[] = {
 PlaneMesh::PlaneMesh(std::string texturePath) {
   std::vector<TextureMap> textureMaps;
   if (!texturePath.empty()) {
-    // TODO: Support more complex textures for primitives?
     TextureMap textureMap(Texture::load(texturePath.c_str()),
                           TextureMapType::DIFFUSE);
     textureMaps.push_back(textureMap);
   }
+  loadMeshAndTextures(textureMaps);
+}
 
+PlaneMesh::PlaneMesh(const std::vector<TextureMap>& textureMaps) {
+  loadMeshAndTextures(textureMaps);
+}
+
+void PlaneMesh::loadMeshAndTextures(
+    const std::vector<TextureMap>& textureMaps) {
   constexpr unsigned int planeVertexSize = 8;
   loadMeshData(planeVertices, sizeof(planeVertices) / planeVertexSize,
                planeVertexSize, /*indices=*/{}, textureMaps);
@@ -105,17 +112,22 @@ constexpr float cubeVertices[] = {
 CubeMesh::CubeMesh(std::string texturePath) {
   std::vector<TextureMap> textureMaps;
   if (!texturePath.empty()) {
-    // TODO: Support more complex textures for primitives?
     TextureMap textureMap(Texture::load(texturePath.c_str()),
                           TextureMapType::DIFFUSE);
     textureMaps.push_back(textureMap);
   }
+  loadMeshAndTextures(textureMaps);
+}
 
+CubeMesh::CubeMesh(const std::vector<TextureMap>& textureMaps) {
+  loadMeshAndTextures(textureMaps);
+}
+
+void CubeMesh::loadMeshAndTextures(const std::vector<TextureMap>& textureMaps) {
   constexpr unsigned int cubeVertexSize = 8;
   loadMeshData(cubeVertices, sizeof(cubeVertices) / cubeVertexSize,
                cubeVertexSize, /*indices=*/{}, textureMaps);
 }
-
 void CubeMesh::initializeVertexAttributes() {
   // Positions.
   vertexArray_.addVertexAttrib(3, GL_FLOAT);

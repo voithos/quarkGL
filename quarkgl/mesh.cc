@@ -5,8 +5,8 @@
 namespace qrk {
 void Mesh::loadMeshData(const void* vertexData, unsigned int numVertices,
                         unsigned int vertexSize,
-                        std::vector<unsigned int> indices,
-                        std::vector<TextureMap> textureMaps,
+                        const std::vector<unsigned int>& indices,
+                        const std::vector<TextureMap>& textureMaps,
                         unsigned int instanceCount) {
   indices_ = indices;
   textureMaps_ = textureMaps;

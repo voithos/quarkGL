@@ -36,7 +36,8 @@ int main() {
 
   auto directionalLight =
       std::make_shared<qrk::DirectionalLight>(glm::vec3(2.0f, -4.0f, 1.0f));
-  directionalLight->setSpecular(glm::vec3(0.3f, 0.3f, 0.3f));
+  directionalLight->setDiffuse(glm::vec3(0.9f));
+  directionalLight->setSpecular(glm::vec3(0.3f));
   lightRegistry->addLight(directionalLight);
 
   mainShader.setFloat("material.shininess", 32.0f);

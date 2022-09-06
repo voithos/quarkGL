@@ -49,8 +49,8 @@ class Mesh : public Renderable {
   // immediately after construction.
   virtual void loadMeshData(const void* vertexData, unsigned int numVertices,
                             unsigned int vertexSize,
-                            std::vector<unsigned int> indices,
-                            std::vector<TextureMap> textureMaps,
+                            const std::vector<unsigned int>& indices,
+                            const std::vector<TextureMap>& textureMaps,
                             unsigned int instanceCount = 0);
   // Initializes vertex attributes.
   virtual void initializeVertexAttributes() = 0;

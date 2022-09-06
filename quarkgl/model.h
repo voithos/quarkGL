@@ -26,9 +26,9 @@ struct ModelVertex {
 
 class ModelMesh : public Mesh {
  public:
-  ModelMesh(std::vector<ModelVertex> vertices,
-            std::vector<unsigned int> indices,
-            std::vector<TextureMap> textureMaps,
+  ModelMesh(const std::vector<ModelVertex>& vertices,
+            const std::vector<unsigned int>& indices,
+            const std::vector<TextureMap>& textureMaps,
             unsigned int instanceCount = 0);
 
   virtual ~ModelMesh() = default;
