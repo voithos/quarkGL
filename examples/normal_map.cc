@@ -8,6 +8,20 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
+const char* lampShaderSource = R"SHADER(
+#version 460 core
+out vec4 fragColor;
+
+void main() { fragColor = vec4(1.0); }
+)SHADER";
+
+const char* normalShaderSource = R"SHADER(
+#version 460 core
+out vec4 fragColor;
+
+void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
+)SHADER";
+
 int main() {
   constexpr int width = 800, height = 600;
 
@@ -29,15 +43,31 @@ int main() {
                          qrk::ShaderPath("examples/shaders/normal_phong.frag"));
   mainShader.addUniformSource(camera);
 
+  qrk::Shader normalShader(
+      qrk::ShaderPath("examples/shaders/normal_model.vert"),
+      qrk::ShaderInline(normalShaderSource),
+      qrk::ShaderPath("examples/shaders/model_tangents.geom"));
+  normalShader.addUniformSource(camera);
+
   // Create light registry and add lights.
   auto lightRegistry = std::make_shared<qrk::LightRegistry>();
   lightRegistry->setViewSource(camera);
   mainShader.addUniformSource(lightRegistry);
 
-  auto pointLight = std::make_shared<qrk::PointLight>(glm::vec3(0.5, 1.0, 0.3));
+  auto pointLight = std::make_shared<qrk::PointLight>(glm::vec3(0.5, 1.0, 0.7));
   pointLight->setDiffuse(glm::vec3(1.0f));
   pointLight->setSpecular(glm::vec3(0.2f));
   lightRegistry->addLight(pointLight);
+
+  qrk::Shader lampShader(qrk::ShaderPath("examples/shaders/model.vert"),
+                         qrk::ShaderInline(lampShaderSource));
+  lampShader.addUniformSource(camera);
+
+  // Create a mesh for the light.
+  // TODO: Make this into a sphere.
+  qrk::CubeMesh lightCube;
+  lightCube.setModelTransform(glm::scale(
+      glm::translate(glm::mat4(), pointLight->getPosition()), glm::vec3(0.2f)));
 
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
@@ -49,21 +79,43 @@ int main() {
 
   // Setup objects.
   qrk::PlaneMesh plane("examples/assets/brickwall.jpg");
-  plane.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f)),
-                  glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-      glm::vec3(5.0f)));
 
   qrk::Texture normalMap =
-      qrk::Texture::load("examples/assets/brickwall_normal.jpg");
+      qrk::Texture::load("examples/assets/brickwall_normal.jpg", false,
+                         {.flipVerticallyOnLoad = false});
+
+  bool useVertexNormals = false;
+  win.addKeyPressHandler(
+      GLFW_KEY_1, [&](int mods) { useVertexNormals = !useVertexNormals; });
+  bool drawNormals = false;
+  win.addKeyPressHandler(GLFW_KEY_2,
+                         [&](int mods) { drawNormals = !drawNormals; });
 
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
+    plane.setModelTransform(glm::scale(
+        glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f)),
+                    glm::radians(qrk::time() * -20.0f),
+                    glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))),
+        glm::vec3(3.0f)));
+
+    // Draw the plane.
     mainShader.updateUniforms();
     unsigned int textureUnit = textureRegistry->getNextTextureUnit();
     normalMap.bindToUnit(textureUnit);
     mainShader.setInt("normalMap", textureUnit);
+    mainShader.setBool("useVertexNormals", useVertexNormals);
     plane.draw(mainShader, textureRegistry.get());
+
+    if (drawNormals) {
+      // Draw the normals.
+      normalShader.updateUniforms();
+      plane.draw(normalShader);
+    }
+
+    // Draw light source.
+    lampShader.updateUniforms();
+    lightCube.draw(lampShader);
   });
 
   return 0;
