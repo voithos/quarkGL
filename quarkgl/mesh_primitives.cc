@@ -39,7 +39,7 @@ PlaneMesh::PlaneMesh(const std::vector<TextureMap>& textureMaps) {
 
 void PlaneMesh::loadMeshAndTextures(
     const std::vector<TextureMap>& textureMaps) {
-  constexpr unsigned int planeVertexSize = 8;
+  constexpr unsigned int planeVertexSize = 11;
   loadMeshData(planeVertices, sizeof(planeVertices) / planeVertexSize,
                planeVertexSize, /*indices=*/{}, textureMaps);
 }
@@ -126,7 +126,7 @@ CubeMesh::CubeMesh(const std::vector<TextureMap>& textureMaps) {
 }
 
 void CubeMesh::loadMeshAndTextures(const std::vector<TextureMap>& textureMaps) {
-  constexpr unsigned int cubeVertexSize = 8;
+  constexpr unsigned int cubeVertexSize = 11;
   loadMeshData(cubeVertices, sizeof(cubeVertices) / cubeVertexSize,
                cubeVertexSize, /*indices=*/{}, textureMaps);
 }
