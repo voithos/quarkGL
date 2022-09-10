@@ -19,16 +19,16 @@ void VertexArray::loadVertexData(const std::vector<char>& data) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo_);
   // TODO: Allow other draw strategies besides GL_STATIC_DRAW.
   glBufferData(GL_ARRAY_BUFFER, data.size(), &data[0], GL_STATIC_DRAW);
-  vertexSize_ = data.size();
+  vertexSizeBytes_ = data.size();
 }
 
-void VertexArray::loadVertexData(const void* data, unsigned int size) {
+void VertexArray::loadVertexData(const void* data, unsigned int sizeBytes) {
   activate();
 
   if (!vbo_) glGenBuffers(1, &vbo_);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-  glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-  vertexSize_ = size;
+  glBufferData(GL_ARRAY_BUFFER, sizeBytes, data, GL_STATIC_DRAW);
+  vertexSizeBytes_ = sizeBytes;
 }
 
 void VertexArray::allocateInstanceVertexData(unsigned int size) {

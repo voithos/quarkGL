@@ -1,21 +1,19 @@
 #include <qrk/mesh.h>
 
-#include <iostream>
-
 namespace qrk {
 void Mesh::loadMeshData(const void* vertexData, unsigned int numVertices,
-                        unsigned int vertexSize,
+                        unsigned int vertexSizeBytes,
                         const std::vector<unsigned int>& indices,
                         const std::vector<TextureMap>& textureMaps,
                         unsigned int instanceCount) {
   indices_ = indices;
   textureMaps_ = textureMaps;
   numVertices_ = numVertices;
-  vertexSize_ = vertexSize;
+  vertexSizeBytes_ = vertexSizeBytes;
   instanceCount_ = instanceCount;
 
   // Load VBO.
-  vertexArray_.loadVertexData(vertexData, numVertices_ * vertexSize_);
+  vertexArray_.loadVertexData(vertexData, numVertices_ * vertexSizeBytes);
 
   initializeVertexAttributes();
   initializeVertexArrayInstanceData();

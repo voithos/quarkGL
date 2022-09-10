@@ -39,9 +39,9 @@ PlaneMesh::PlaneMesh(const std::vector<TextureMap>& textureMaps) {
 
 void PlaneMesh::loadMeshAndTextures(
     const std::vector<TextureMap>& textureMaps) {
-  constexpr unsigned int planeVertexSize = 11;
-  loadMeshData(planeVertices, sizeof(planeVertices) / planeVertexSize,
-               planeVertexSize, /*indices=*/{}, textureMaps);
+  constexpr unsigned int planeVertexSizeBytes = 11 * sizeof(float);
+  loadMeshData(planeVertices, sizeof(planeVertices) / planeVertexSizeBytes,
+               planeVertexSizeBytes, /*indices=*/{}, textureMaps);
 }
 
 void PlaneMesh::initializeVertexAttributes() {
@@ -126,9 +126,9 @@ CubeMesh::CubeMesh(const std::vector<TextureMap>& textureMaps) {
 }
 
 void CubeMesh::loadMeshAndTextures(const std::vector<TextureMap>& textureMaps) {
-  constexpr unsigned int cubeVertexSize = 11;
-  loadMeshData(cubeVertices, sizeof(cubeVertices) / cubeVertexSize,
-               cubeVertexSize, /*indices=*/{}, textureMaps);
+  constexpr unsigned int cubeVertexSizeBytes = 11 * sizeof(float);
+  loadMeshData(cubeVertices, sizeof(cubeVertices) / cubeVertexSizeBytes,
+               cubeVertexSizeBytes, /*indices=*/{}, textureMaps);
 }
 void CubeMesh::initializeVertexAttributes() {
   // Positions.
@@ -192,9 +192,9 @@ constexpr float skyboxVertices[] = {
 
 SkyboxMesh::SkyboxMesh(std::vector<std::string> faces) {
   TextureMap textureMap(Texture::loadCubemap(faces), TextureMapType::CUBEMAP);
-  constexpr unsigned int skyboxVertexSize = 3;
-  loadMeshData(skyboxVertices, sizeof(skyboxVertices) / skyboxVertexSize,
-               skyboxVertexSize, /*indices=*/{}, {textureMap});
+  constexpr unsigned int skyboxVertexSizeBytes = 3 * sizeof(float);
+  loadMeshData(skyboxVertices, sizeof(skyboxVertices) / skyboxVertexSizeBytes,
+               skyboxVertexSizeBytes, /*indices=*/{}, {textureMap});
 }
 
 void SkyboxMesh::initializeVertexAttributes() {
@@ -217,11 +217,12 @@ constexpr float screenQuadVertices[] = {
 // clang-format on
 
 ScreenQuadMesh::ScreenQuadMesh(Texture texture) {
-  constexpr unsigned int quadVertexSize = 4;
+  constexpr unsigned int quadVertexSizeBytes = 4 * sizeof(float);
   // TODO: This copies the texture info, meaning it won't see updates.
   TextureMap textureMap(texture, TextureMapType::DIFFUSE);
-  loadMeshData(screenQuadVertices, sizeof(screenQuadVertices) / quadVertexSize,
-               quadVertexSize, /*indices=*/{}, {textureMap});
+  loadMeshData(screenQuadVertices,
+               sizeof(screenQuadVertices) / quadVertexSizeBytes,
+               quadVertexSizeBytes, /*indices=*/{}, {textureMap});
 }
 
 void ScreenQuadMesh::initializeVertexAttributes() {

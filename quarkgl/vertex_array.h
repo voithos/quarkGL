@@ -42,7 +42,7 @@ class VertexArray {
   unsigned int instanceVbo_ = 0;
   unsigned int ebo_ = 0;
 
-  unsigned int vertexSize_ = 0;
+  unsigned int vertexSizeBytes_ = 0;
   unsigned int elementSize_ = 0;
 
   std::vector<VertexAttrib> attribs_;

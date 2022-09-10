@@ -48,7 +48,7 @@ class Mesh : public Renderable {
   // initializeVertexArrayInstanceData under the hood. Must be called
   // immediately after construction.
   virtual void loadMeshData(const void* vertexData, unsigned int numVertices,
-                            unsigned int vertexSize,
+                            unsigned int vertexSizeBytes,
                             const std::vector<unsigned int>& indices,
                             const std::vector<TextureMap>& textureMaps,
                             unsigned int instanceCount = 0);
@@ -69,7 +69,7 @@ class Mesh : public Renderable {
   // The number of vertices in the mesh.
   unsigned int numVertices_;
   // The size, in bytes, of each vertex.
-  unsigned int vertexSize_;
+  unsigned int vertexSizeBytes_;
   unsigned int instanceCount_;
 };
 
