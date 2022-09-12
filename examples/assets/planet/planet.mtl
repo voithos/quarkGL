@@ -1,13 +1,3 @@
-# Blender MTL
-# Material Count: 1
-
-newmtl Material.001
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.087302 0.087302 0.087302
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd planet_Quom1200.png
-map_Bump planet_Quom1200.png
+version https://git-lfs.github.com/spec/v1
+oid sha256:8659bcf5ec86b6137b966f7bb7f0b8bc23956e9ecc55e5d1785a8569d86e5815
+size 245
