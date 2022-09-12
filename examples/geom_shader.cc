@@ -76,11 +76,10 @@ int main() {
 
     // Draw main model.
     // Translate the model down so it's in the center.
-    glm::mat4 model =
-        glm::translate(glm::mat4(), glm::vec3(0.0f, -1.75f, 0.0f));
     // Scale it down, since it's too big.
-    model = glm::scale(model, glm::vec3(0.2f));
-    mainShader.setMat4("model", model);
+    nanosuit.setModelTransform(
+        glm::scale(glm::translate(glm::mat4(), glm::vec3(0.0f, -1.75f, 0.0f)),
+                   glm::vec3(0.2f)));
 
     nanosuit.draw(mainShader);
 
@@ -88,8 +87,8 @@ int main() {
     glm::mat4 lightModel =
         glm::translate(glm::mat4(), pointLight->getPosition());
     lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+    lightCube.setModelTransform(lightModel);
     lampShader.activate();
-    lampShader.setMat4("model", lightModel);
     lampShader.setMat4("view", view);
     lampShader.setMat4("projection", projection);
     lightCube.draw(lampShader);
