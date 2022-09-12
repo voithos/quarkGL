@@ -31,7 +31,7 @@ int main() {
   mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
 
   qrk::Shader instancedShader(
-      qrk::ShaderPath("examples/shaders/instanced_model.vert"),
+      qrk::ShaderPath("examples/shaders/instancing.vert"),
       qrk::ShaderPath("examples/shaders/phong.frag"));
 
   instancedShader.setFloat("material.shininess", 32.0f);

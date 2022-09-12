@@ -8,18 +8,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
+// TODO: Pull into a simple color shader.
 const char* lampShaderSource = R"SHADER(
 #version 460 core
 out vec4 fragColor;
 
 void main() { fragColor = vec4(1.0); }
-)SHADER";
-
-const char* normalShaderSource = R"SHADER(
-#version 460 core
-out vec4 fragColor;
-
-void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
 )SHADER";
 
 int main() {
@@ -39,8 +33,8 @@ int main() {
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader(qrk::ShaderPath("examples/shaders/normal_model.vert"),
-                         qrk::ShaderPath("examples/shaders/normal_phong.frag"));
+  qrk::Shader mainShader(qrk::ShaderPath("examples/shaders/normal_map.vert"),
+                         qrk::ShaderPath("examples/shaders/normal_map.frag"));
   mainShader.addUniformSource(camera);
 
   // Create light registry and add lights.

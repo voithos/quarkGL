@@ -1,7 +1,6 @@
 # TODOs
 
 ## Features
-- [ ] P0: Add normal mapping
 - [ ] P0: Implement deferred shading
 - [ ] P0: Implement SSAO
 - [ ] P0: Implement PBR lighting
@@ -73,3 +72,4 @@
 - [x] Add compute shaders.
 - [x] P0: Implement blinn phong
 - [x] P0: Add shadow mapping
+- [x] P0: Add normal mapping
