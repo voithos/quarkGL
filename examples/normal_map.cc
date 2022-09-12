@@ -43,12 +43,6 @@ int main() {
                          qrk::ShaderPath("examples/shaders/normal_phong.frag"));
   mainShader.addUniformSource(camera);
 
-  qrk::Shader normalShader(
-      qrk::ShaderPath("examples/shaders/normal_model.vert"),
-      qrk::ShaderInline(normalShaderSource),
-      qrk::ShaderPath("examples/shaders/model_tangents.geom"));
-  normalShader.addUniformSource(camera);
-
   // Create light registry and add lights.
   auto lightRegistry = std::make_shared<qrk::LightRegistry>();
   lightRegistry->setViewSource(camera);
@@ -80,16 +74,15 @@ int main() {
   // Setup objects.
   qrk::PlaneMesh plane("examples/assets/brickwall.jpg");
 
-  qrk::Texture normalMap =
-      qrk::Texture::load("examples/assets/brickwall_normal.jpg", false,
-                         {.flipVerticallyOnLoad = false});
+  qrk::Texture normalMap = qrk::Texture::load(
+      "examples/assets/brickwall_normal.jpg", /*isSRGB=*/false);
 
   bool useVertexNormals = false;
   win.addKeyPressHandler(
       GLFW_KEY_1, [&](int mods) { useVertexNormals = !useVertexNormals; });
-  bool drawNormals = false;
+  bool renderNormals = false;
   win.addKeyPressHandler(GLFW_KEY_2,
-                         [&](int mods) { drawNormals = !drawNormals; });
+                         [&](int mods) { renderNormals = !renderNormals; });
 
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
@@ -105,13 +98,8 @@ int main() {
     normalMap.bindToUnit(textureUnit);
     mainShader.setInt("normalMap", textureUnit);
     mainShader.setBool("useVertexNormals", useVertexNormals);
+    mainShader.setBool("renderNormals", renderNormals);
     plane.draw(mainShader, textureRegistry.get());
-
-    if (drawNormals) {
-      // Draw the normals.
-      normalShader.updateUniforms();
-      plane.draw(normalShader);
-    }
 
     // Draw light source.
     lampShader.updateUniforms();

@@ -6,10 +6,9 @@ layout(location = 3) in vec2 vertexTexCoords;
 
 out VS_OUT {
   vec2 texCoords;
-  vec3 fragPos;
-  vec3 fragNormal;
-  vec3 fragTangent;
-  mat3 fragTBN;  // Tangent, bitangent, normal frame.
+  vec3 fragPos_viewSpace;
+  vec3 fragNormal_viewSpace;
+  mat3 fragTBN_viewSpace;  // Transforms from tangent frame to view frame.
 }
 vs_out;
 
@@ -21,14 +20,12 @@ void main() {
   gl_Position = projection * view * model * vec4(vertexPos, 1.0);
 
   vs_out.texCoords = vertexTexCoords;
-  vs_out.fragPos = vec3(view * model * vec4(vertexPos, 1.0));
+  vs_out.fragPos_viewSpace = vec3(view * model * vec4(vertexPos, 1.0));
 
   mat3 modelViewInverseTranspose = mat3(transpose(inverse(view * model)));
-  // Calculate the fragment normal just based on the vertex normal, for
-  // illustrative purposes.
-  vs_out.fragNormal = modelViewInverseTranspose * vertexNormal;
 
-  vs_out.fragTangent = modelViewInverseTranspose * vertexTangent;
+  // Transform vertex normal, to compare with normal mapping.
+  vs_out.fragNormal_viewSpace = modelViewInverseTranspose * vertexNormal;
 
   // Build a tangent space transform matrix.
   vec3 T = normalize(modelViewInverseTranspose * vertexTangent);
@@ -37,5 +34,5 @@ void main() {
   T = normalize(T - dot(T, N) * N);
   vec3 B = cross(N, T);
 
-  vs_out.fragTBN = mat3(T, B, N);
+  vs_out.fragTBN_viewSpace = mat3(T, B, N);
 }
