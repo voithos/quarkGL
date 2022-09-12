@@ -2,6 +2,7 @@
 #define QUARKGL_LIGHTING_FRAG_
 
 #pragma qrk_include < gamma.frag>
+#pragma qrk_include < normals.frag>
 
 struct QrkAttenuation {
   float constant;
@@ -245,6 +246,22 @@ vec3 qrk_shadeEmission(QrkMaterial material, vec3 fragPos, vec2 texCoords) {
   }
 
   return result;
+}
+
+/** ============================ Normals ============================ **/
+
+/**
+ * Looks up a normal from the material, using the provided TBN matrix to
+ * convert from tangent space to the target space, or returns a vertex normal
+ * if no normal map is present.
+ */
+vec3 qrk_getNormal(QrkMaterial material, vec2 texCoords, mat3 TBN,
+                   vec3 vertexNormal) {
+  if (material.normalCount == 0) {
+    return normalize(vertexNormal);
+  } else {
+    return normalize(TBN * qrk_sampleNormalMap(material.normal, texCoords));
+  }
 }
 
 /** ============================ Shadows ============================ **/

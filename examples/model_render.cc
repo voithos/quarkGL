@@ -66,8 +66,8 @@ int main(int argc, char** argv) {
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader(qrk::ShaderPath("examples/shaders/model.vert"),
-                         qrk::ShaderPath("examples/shaders/phong.frag"));
+  qrk::Shader mainShader(qrk::ShaderPath("examples/shaders/model_render.vert"),
+                         qrk::ShaderPath("examples/shaders/model_render.frag"));
   mainShader.addUniformSource(camera);
 
   mainShader.setFloat("material.shininess", 32.0f);
