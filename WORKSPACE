@@ -37,6 +37,13 @@ http_archive(
 )
 
 http_archive(
+    name = "com_google_absl",
+    sha256 = "6764f226bd6e2d8ab9fe2f3cab5f45fb1a4a15c04b58b87ba7fa87456054f98b",
+    strip_prefix = "abseil-cpp-273292d1cfc0a94a65082ee350509af1d113344d",
+    urls = ["https://github.com/abseil/abseil-cpp/archive/273292d1cfc0a94a65082ee350509af1d113344d.zip"],
+)
+
+http_archive(
     name = "glfw",
     build_file = "@//:BUILD.glfw",
     sha256 = "fd21a5f65bcc0fc3c76e0f8865776e852de09ef6fbc3620e09ce96d2b2807e04",
