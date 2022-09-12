@@ -1,4 +1,5 @@
 #version 460 core
+#pragma qrk_include < transforms.glsl>
 layout(location = 0) in vec3 vertexPos;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec3 vertexTangent;
@@ -28,11 +29,8 @@ void main() {
   vs_out.fragNormal_viewSpace = modelViewInverseTranspose * vertexNormal;
 
   // Build a tangent space transform matrix.
-  vec3 T = normalize(modelViewInverseTranspose * vertexTangent);
-  vec3 N = normalize(modelViewInverseTranspose * vertexNormal);
-  // Make sure TBN is orthogonal.
-  T = normalize(T - dot(T, N) * N);
-  vec3 B = cross(N, T);
-
-  vs_out.fragTBN_viewSpace = mat3(T, B, N);
+  vec3 normal_viewSpace = normalize(modelViewInverseTranspose * vertexNormal);
+  vec3 tangent_viewSpace = normalize(modelViewInverseTranspose * vertexTangent);
+  vs_out.fragTBN_viewSpace =
+      qrk_calculateTBN(normal_viewSpace, tangent_viewSpace);
 }
