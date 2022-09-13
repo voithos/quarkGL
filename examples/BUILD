@@ -12,7 +12,7 @@ cc_binary(
         ":shaders",
         "assets/container.jpg",
     ] + glob([
-        "assets/nanosuit/*",
+        "assets/DamagedHelmet/*",
         "assets/skybox/*",
     ]),
     linkopts = LINUX_LINKOPTS,

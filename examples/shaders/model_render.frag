@@ -17,12 +17,18 @@ fs_in;
 out vec4 fragColor;
 
 uniform QrkMaterial material;
+uniform bool useVertexNormals;
 
 void main() {
-  // Lookup normal and map from tangent space to view space.
-  vec3 normal_viewSpace =
-      qrk_getNormal(material, fs_in.texCoords, fs_in.fragTBN_viewSpace,
-                    fs_in.fragNormal_viewSpace);
+  vec3 normal_viewSpace;
+  if (useVertexNormals) {
+    normal_viewSpace = normalize(fs_in.fragNormal_viewSpace);
+  } else {
+    // Lookup normal and map from tangent space to view space.
+    normal_viewSpace =
+        qrk_getNormal(material, fs_in.texCoords, fs_in.fragTBN_viewSpace,
+                      fs_in.fragNormal_viewSpace);
+  }
 
   // Shade with normal lights.
   vec3 result = qrk_shadeAllLights(material, fs_in.fragPos_viewSpace,

@@ -36,16 +36,17 @@ std::unique_ptr<qrk::Model> loadModel() {
     return std::make_unique<qrk::Model>(modelPath.c_str());
   }
 
-  // Default to the nanosuit.
-  auto nanosuit =
-      std::make_unique<qrk::Model>("examples/assets/nanosuit/nanosuit.obj");
+  // Default to the gltf DamagedHelmet.
+  auto helmet = std::make_unique<qrk::Model>(
+      "examples/assets/DamagedHelmet/DamagedHelmet.gltf");
 
   // Translate the model down so it's in the center and scale it down, since
   // it's too big.
-  nanosuit->setModelTransform(
-      glm::scale(glm::translate(glm::mat4(), glm::vec3(0.0f, -1.75f, 0.0f)),
-                 glm::vec3(0.2f)));
-  return nanosuit;
+  helmet->setModelTransform(glm::scale(
+      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f)),
+                  glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+      glm::vec3(1.0f)));
+  return helmet;
 }
 
 int main(int argc, char** argv) {
@@ -126,6 +127,10 @@ int main(int argc, char** argv) {
   // Load model.
   std::unique_ptr<qrk::Model> model = loadModel();
 
+  // TODO: Extract this out into a struct for the model viewer.
+  bool useVertexNormals = false;
+  win.addKeyPressHandler(
+      GLFW_KEY_N, [&](int mods) { useVertexNormals = !useVertexNormals; });
   bool drawNormals = false;
   win.addKeyPressHandler(GLFW_KEY_1,
                          [&](int mods) { drawNormals = !drawNormals; });
@@ -135,6 +140,7 @@ int main(int argc, char** argv) {
     // Draw main models.
     // TODO: Set up environment mapping with the skybox.
     mainShader.updateUniforms();
+    mainShader.setBool("useVertexNormals", useVertexNormals);
     boxCube.draw(mainShader);
     model->draw(mainShader);
 
