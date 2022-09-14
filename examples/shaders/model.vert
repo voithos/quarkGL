@@ -17,10 +17,13 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform bool inverseNormals;
+
 void main() {
   gl_Position = projection * view * model * vec4(vertexPos, 1.0);
 
   vs_out.texCoords = vertexTexCoords;
   vs_out.fragPos = vec3(view * model * vec4(vertexPos, 1.0));
-  vs_out.fragNormal = mat3(transpose(inverse(view * model))) * vertexNormal;
+  vs_out.fragNormal = mat3(transpose(inverse(view * model))) *
+                      (inverseNormals ? -vertexNormal : vertexNormal);
 }

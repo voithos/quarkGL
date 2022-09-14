@@ -15,6 +15,7 @@ fs_in;
 out vec4 fragColor;
 
 uniform QrkMaterial material;
+uniform bool skipGamma;
 
 void main() {
   vec3 normal = normalize(fs_in.fragNormal);
@@ -27,5 +28,7 @@ void main() {
   result += qrk_shadeEmission(material, fs_in.fragPos, fs_in.texCoords);
 
   fragColor = vec4(result, qrk_materialAlpha(material, fs_in.texCoords));
-  fragColor.rgb = qrk_gammaCorrect(fragColor.rgb);
+  if (!skipGamma) {
+    fragColor.rgb = qrk_gammaCorrect(fragColor.rgb);
+  }
 }

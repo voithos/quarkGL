@@ -37,7 +37,7 @@ constexpr float DEFAULT_FAR = 100.0f;
 constexpr float DEFAULT_ASPECT_RATIO = 4.0f / 3.0f;
 
 constexpr float MIN_FOV = 1.0f;
-constexpr float MAX_FOV = 45.0f;
+constexpr float MAX_FOV = 90.0f;
 
 class Camera : public UniformSource, public ViewSource {
  public:
@@ -58,6 +58,8 @@ class Camera : public UniformSource, public ViewSource {
 
   // TODO: Allow programmatic position modification.
   // TODO: Add the rest of the getters/setters for fields.
+  float getSpeed() const { return speed_; }
+  void setSpeed(float speed) { speed_ = speed; }
   float getAspectRatio() const { return aspectRatio_; }
   void setAspectRatio(float aspectRatio) { aspectRatio_ = aspectRatio; }
   void setAspectRatio(ScreenSize size) {

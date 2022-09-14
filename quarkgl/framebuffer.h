@@ -33,6 +33,10 @@ class Attachment {
 
 enum class BufferType {
   COLOR = 0,
+  // HDR color attachment, allowing color values to exceed 1.0
+  COLOR_HDR,
+  COLOR_ALPHA,
+  COLOR_HDR_ALPHA,
   DEPTH,
   STENCIL,
   DEPTH_AND_STENCIL,
@@ -41,6 +45,9 @@ enum class BufferType {
 inline const GLenum bufferTypeToGlAttachmentType(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
+    case BufferType::COLOR_HDR:
+    case BufferType::COLOR_ALPHA:
+    case BufferType::COLOR_HDR_ALPHA:
       // TODO: Support color attachments >0.
       return GL_COLOR_ATTACHMENT0;
     case BufferType::DEPTH:
@@ -58,6 +65,12 @@ inline const GLenum bufferTypeToGlInternalFormat(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
       return GL_RGB;
+    case BufferType::COLOR_HDR:
+      return GL_RGB16F;
+    case BufferType::COLOR_ALPHA:
+      return GL_RGBA;
+    case BufferType::COLOR_HDR_ALPHA:
+      return GL_RGBA16F;
     case BufferType::DEPTH:
       return GL_DEPTH_COMPONENT32F;
     case BufferType::STENCIL:
@@ -72,7 +85,11 @@ inline const GLenum bufferTypeToGlInternalFormat(BufferType type) {
 inline const GLenum bufferTypeToGlFormat(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
+    case BufferType::COLOR_HDR:
       return GL_RGB;
+    case BufferType::COLOR_ALPHA:
+    case BufferType::COLOR_HDR_ALPHA:
+      return GL_RGBA;
     case BufferType::DEPTH:
       return GL_DEPTH_COMPONENT;
     case BufferType::STENCIL:
@@ -87,7 +104,11 @@ inline const GLenum bufferTypeToGlFormat(BufferType type) {
 inline const GLenum bufferTypeToGlInternalDataType(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
+    case BufferType::COLOR_ALPHA:
       return GL_UNSIGNED_BYTE;
+    case BufferType::COLOR_HDR:
+    case BufferType::COLOR_HDR_ALPHA:
+      return GL_FLOAT;
     case BufferType::DEPTH:
       return GL_FLOAT;
     case BufferType::STENCIL:

@@ -22,6 +22,7 @@ class SkyboxShader : public Shader {
 class ScreenQuadShader : public Shader {
  public:
   ScreenQuadShader();
+  explicit ScreenQuadShader(const ShaderSource& fragmentSource);
 };
 
 class ShadowMapShader : public Shader {

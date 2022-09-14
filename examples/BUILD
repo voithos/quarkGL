@@ -121,3 +121,19 @@ cc_binary(
         "@glfw",
     ],
 )
+
+cc_binary(
+    name = "hdr",
+    srcs = ["hdr.cc"],
+    data = [
+        "assets/wood.png",
+        ":shaders",
+    ],
+    linkopts = LINUX_LINKOPTS,
+    deps = [
+        "//quarkgl",
+        "//third_party/glad",
+        "//third_party/glm",
+        "@glfw",
+    ],
+)

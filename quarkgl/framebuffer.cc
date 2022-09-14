@@ -135,6 +135,9 @@ Attachment Framebuffer::saveAttachment(unsigned int id,
 void Framebuffer::checkFlags(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
+    case BufferType::COLOR_HDR:
+    case BufferType::COLOR_ALPHA:
+    case BufferType::COLOR_HDR_ALPHA:
       // Multiple color attachments OK.
       return;
     case BufferType::DEPTH:
@@ -164,6 +167,9 @@ void Framebuffer::checkFlags(BufferType type) {
 void Framebuffer::updateFlags(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
+    case BufferType::COLOR_HDR:
+    case BufferType::COLOR_ALPHA:
+    case BufferType::COLOR_HDR_ALPHA:
       hasColorAttachment_ = true;
       return;
     case BufferType::DEPTH:
