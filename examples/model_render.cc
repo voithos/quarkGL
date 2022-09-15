@@ -119,11 +119,6 @@ int main(int argc, char** argv) {
   lightCube.setModelTransform(glm::scale(
       glm::translate(glm::mat4(), pointLight->getPosition()), glm::vec3(0.2f)));
 
-  qrk::CubeMesh boxCube("examples/assets/container.jpg");
-  boxCube.setModelTransform(
-      glm::scale(glm::translate(glm::mat4(), glm::vec3(-1.0f, 0.5f, 0.5f)),
-                 glm::vec3(0.5f)));
-
   // Load model.
   std::unique_ptr<qrk::Model> model = loadModel();
 
@@ -141,13 +136,11 @@ int main(int argc, char** argv) {
     // TODO: Set up environment mapping with the skybox.
     mainShader.updateUniforms();
     mainShader.setBool("useVertexNormals", useVertexNormals);
-    boxCube.draw(mainShader);
     model->draw(mainShader);
 
     if (drawNormals) {
       // Draw the normals.
       normalShader.updateUniforms();
-      boxCube.draw(normalShader);
       model->draw(normalShader);
     }
 
