@@ -81,6 +81,11 @@ int main() {
 
   bool useHdr = true;
   win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) { useHdr = !useHdr; });
+  int toneMapTechnique = 0;
+  constexpr int NUM_TONEMAP_TECHNIQUES = 3;
+  win.addKeyPressHandler(GLFW_KEY_2, [&](int mods) {
+    toneMapTechnique = (toneMapTechnique + 1) % NUM_TONEMAP_TECHNIQUES;
+  });
 
   // win.enableFaceCull();
   win.loop([&](float deltaTime) {
@@ -98,6 +103,7 @@ int main() {
     win.setViewport();
     screenShader.updateUniforms();
     screenShader.setBool("useHdr", useHdr);
+    screenShader.setInt("toneMapTechnique", toneMapTechnique);
     screenQuad.draw(screenShader);
   });
 

@@ -7,7 +7,6 @@
 - [ ] P1: Implement point light shadow maps: https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
 - [ ] P1: Implement tessellation
 - [ ] P1: Add parallax mapping
-- [ ] P1: Add HDR
 - [ ] P1: Add Bloom
 - [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
 - [ ] P1: Implement CSM
@@ -20,6 +19,7 @@
 - [ ] P2: Add a material class that can maintain diffuse/specular maps, similar to the light class.
 - [ ] P2: Go through some of the shader effects from https://lettier.github.io/3d-game-shaders-for-beginners/index.html
 - [ ] P2: Add dynamic UI support, a la https://github.com/ocornut/imgui
+- [ ] P2: Add automatic exposure: https://bruop.github.io/exposure/
 - [ ] P3: Tons of shadow map improvements described here: https://docs.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps
 - [ ] P3: Update README / documentation
 - [ ] P3: Add a wireframe mode.
@@ -73,3 +73,4 @@
 - [x] P0: Implement blinn phong
 - [x] P0: Add shadow mapping
 - [x] P0: Add normal mapping
+- [x] P1: Add HDR
