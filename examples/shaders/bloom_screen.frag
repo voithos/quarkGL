@@ -16,7 +16,7 @@ void main() {
     color += texture(bloomTexture, texCoords).rgb;
   }
 
-  color = qrk_toneMapReinhard(color);
+  color = qrk_toneMapAcesApprox(color);
   color = qrk_gammaCorrect(color);
   fragColor = vec4(color, 1.0);
 }

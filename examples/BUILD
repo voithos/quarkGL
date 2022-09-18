@@ -142,6 +142,7 @@ cc_binary(
     name = "bloom",
     srcs = ["bloom.cc"],
     data = [
+        "assets/container2.png",
         "assets/wood.png",
         ":shaders",
     ],

@@ -19,7 +19,7 @@ int main() {
   win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
 
   auto camera =
-      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 2.5f));
+      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 5.0f));
   camera->setSpeed(10.0f);
   camera->lookAt(glm::vec3(0.0f, 0.0f, 10.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
@@ -30,6 +30,10 @@ int main() {
                          qrk::ShaderPath("examples/shaders/bloom.frag"));
   mainShader.addUniformSource(camera);
 
+  qrk::Shader lampShader(qrk::ShaderPath("examples/shaders/model.vert"),
+                         qrk::ShaderPath("examples/shaders/bloom_lamp.frag"));
+  lampShader.addUniformSource(camera);
+
   // Create light registry and add lights.
   auto lightRegistry = std::make_shared<qrk::LightRegistry>();
   lightRegistry->setViewSource(camera);
@@ -38,17 +42,17 @@ int main() {
   std::vector<std::shared_ptr<qrk::PointLight>> lights;
   glm::vec3 ambient(0.0f);
   lights.push_back(std::make_shared<qrk::PointLight>(
-      /*position=*/glm::vec3(0.0f, 0.0f, 49.5f), ambient,
-      /*diffuse=*/glm::vec3(200.0f)));
+      /*position=*/glm::vec3(0.0f, 0.5f, 1.5f), ambient,
+      /*diffuse=*/glm::vec3(5.0f)));
   lights.push_back(std::make_shared<qrk::PointLight>(
-      /*position=*/glm::vec3(-1.4f, -1.9f, 9.0f), ambient,
-      /*diffuse=*/glm::vec3(0.1f, 0.0f, 0.0f)));
+      /*position=*/glm::vec3(-4.0f, 0.5f, -3.0f), ambient,
+      /*diffuse=*/glm::vec3(10.0f, 0.0f, 0.0f)));
   lights.push_back(std::make_shared<qrk::PointLight>(
-      /*position=*/glm::vec3(0.0f, -1.8f, 4.0f), ambient,
-      /*diffuse=*/glm::vec3(0.0f, 0.0f, 0.2f)));
+      /*position=*/glm::vec3(3.0f, 0.5f, 1.0f), ambient,
+      /*diffuse=*/glm::vec3(0.0f, 0.0f, 15.0f)));
   lights.push_back(std::make_shared<qrk::PointLight>(
-      /*position=*/glm::vec3(0.8f, -1.7f, 6.0f), ambient,
-      /*diffuse=*/glm::vec3(0.0f, 0.1f, 0.0f)));
+      /*position=*/glm::vec3(-0.8f, 2.4f, -1.0f), ambient,
+      /*diffuse=*/glm::vec3(0.0f, 5.0f, 0.0f)));
 
   qrk::Attenuation attenuation = {
       .constant = 0.0f, .linear = 0.0f, .quadratic = 1.0f};
@@ -64,12 +68,59 @@ int main() {
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
   mainShader.setFloat("material.emissionAttenuation.quadratic", 1.032f);
 
-  // Setup the tunnel.
-  qrk::CubeMesh tunnel("examples/assets/wood.png");
-  tunnel.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 25.0f)),
+  // Create the scene.
+  std::vector<qrk::Mesh*> meshes;
+  qrk::CubeMesh floor("examples/assets/wood.png");
+  floor.setModelTransform(glm::scale(
+      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, -1.0f, 0.0f)),
                   glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
-      glm::vec3(5.0f, 5.0f, 55.0f)));
+      glm::vec3(25.0f, 1.0f, 25.0f)));
+  meshes.push_back(&floor);
+
+  qrk::CubeMesh cube1("examples/assets/container2.png");
+  cube1.setModelTransform(glm::scale(
+      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 1.5f, 0.0f)),
+                  glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+      glm::vec3(1.0f)));
+  meshes.push_back(&cube1);
+
+  qrk::CubeMesh cube2("examples/assets/container2.png");
+  cube2.setModelTransform(glm::scale(
+      glm::rotate(glm::translate(glm::mat4(), glm::vec3(2.0f, 0.0f, 1.0f)),
+                  glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+      glm::vec3(1.0f)));
+  meshes.push_back(&cube2);
+
+  qrk::CubeMesh cube3("examples/assets/container2.png");
+  cube3.setModelTransform(glm::scale(
+      glm::rotate(glm::translate(glm::mat4(), glm::vec3(-1.0f, -1.0f, 2.0f)),
+                  glm::radians(60.0f),
+                  glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f))),
+      glm::vec3(2.0f)));
+  meshes.push_back(&cube3);
+
+  qrk::CubeMesh cube4("examples/assets/container2.png");
+  cube4.setModelTransform(glm::scale(
+      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 2.7f, 4.0f)),
+                  glm::radians(23.0f),
+                  glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f))),
+      glm::vec3(2.5f)));
+  meshes.push_back(&cube4);
+
+  qrk::CubeMesh cube5("examples/assets/container2.png");
+  cube5.setModelTransform(glm::scale(
+      glm::rotate(glm::translate(glm::mat4(), glm::vec3(-2.0f, 1.0f, -3.0f)),
+                  glm::radians(124.0f),
+                  glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f))),
+      glm::vec3(2.0f)));
+  meshes.push_back(&cube5);
+
+  qrk::CubeMesh cube6("examples/assets/container2.png");
+  cube6.setModelTransform(glm::scale(
+      glm::rotate(glm::translate(glm::mat4(), glm::vec3(-3.0f, 0.0f, 0.0f)),
+                  glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+      glm::vec3(1.0f)));
+  meshes.push_back(&cube6);
 
   // Framebuffer.
   qrk::Framebuffer mainFb(win.getSize());
@@ -112,9 +163,20 @@ int main() {
     mainFb.clear();
 
     mainShader.updateUniforms();
-    mainShader.setBool("inverseNormals", true);
-    mainShader.setBool("skipGamma", true);
-    tunnel.draw(mainShader);
+
+    // Draw meshes and lights
+    for (auto mesh : meshes) {
+      mesh->draw(mainShader);
+    }
+
+    lampShader.updateUniforms();
+    for (auto& light : lights) {
+      qrk::CubeMesh lightCube;
+      lightCube.setModelTransform(glm::scale(
+          glm::translate(glm::mat4(), light->getPosition()), glm::vec3(1.0f)));
+      lampShader.setVec3("lightColor", light->getDiffuse());
+      lightCube.draw(lampShader);
+    }
 
     mainFb.deactivate();
 
