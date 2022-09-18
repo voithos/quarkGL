@@ -15,7 +15,11 @@ vec2 qrk_kernelOffsets[9] = vec2[](
     vec2(-QRK_KERNEL_GRANULARITY, -QRK_KERNEL_GRANULARITY),  // bottom-left
     vec2(0.0f, -QRK_KERNEL_GRANULARITY),                     // bottom-center
     vec2(QRK_KERNEL_GRANULARITY, -QRK_KERNEL_GRANULARITY)    // bottom-right
-    );
+);
+
+// Default gaussian weights, from center out.
+float qrk_defaultGaussianWeights[5] =
+    float[](0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
 /**
  * Applies a 3x3 kernel using a sampler2D and fragment coordinates.
@@ -45,7 +49,7 @@ vec4 qrk_sharpenKernel(sampler2D screenTexture, vec2 texCoords) {
   return qrk_applyKernel(screenTexture, texCoords, kernel);
 }
 
-/** Applies a blurring kernel. */
+/** Applies a simple blurring kernel. */
 vec4 qrk_blurKernel(sampler2D screenTexture, vec2 texCoords) {
   // clang-format off
   float kernel[9] = float[](
@@ -92,6 +96,32 @@ vec4 qrk_grayscale(vec4 color) {
 vec4 qrk_grayscaleSimple(vec4 color) {
   float average = (color.r + color.g + color.b) / 3.0;
   return vec4(average, average, average, color.a);
+}
+
+/**
+ * Performs a single pass of gaussian blur in either the x or y direction.
+ */
+vec4 qrk_gaussianBlurOnePass(sampler2D image, vec2 texCoords, bool horizontal) {
+  vec2 texOffset = 1.0 / textureSize(image, /*mip=*/0);
+  // Begin aggregating samples.
+  // TODO: This doesn't handle alpha. Use premultiplied alpha?
+  vec3 result = texture(image, texCoords).rgb * qrk_defaultGaussianWeights[0];
+  if (horizontal) {
+    for (int i = 1; i < 5; i++) {
+      result += texture(image, texCoords + vec2(texOffset.x * i, 0.0)).rgb *
+                qrk_defaultGaussianWeights[i];
+      result += texture(image, texCoords - vec2(texOffset.x * i, 0.0)).rgb *
+                qrk_defaultGaussianWeights[i];
+    }
+  } else {
+    for (int i = 1; i < 5; i++) {
+      result += texture(image, texCoords + vec2(0.0, texOffset.y * i)).rgb *
+                qrk_defaultGaussianWeights[i];
+      result += texture(image, texCoords - vec2(0.0, texOffset.y * i)).rgb *
+                qrk_defaultGaussianWeights[i];
+    }
+  }
+  return vec4(result, 1.0);
 }
 
 #endif

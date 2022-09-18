@@ -33,7 +33,7 @@ ScreenSize Framebuffer::getSize() {
 
 Attachment Framebuffer::attachTexture(BufferType type) {
   TextureParams params = {.filtering = TextureFiltering::BILINEAR,
-                          .wrapMode = TextureWrapMode::REPEAT};
+                          .wrapMode = TextureWrapMode::CLAMP_TO_EDGE};
   return attachTexture(type, params);
 }
 
@@ -192,7 +192,6 @@ void Framebuffer::updateFlags(BufferType type) {
 
 void Framebuffer::updateBufferSources() {
   if (hasColorAttachment_) {
-    // TODO: Support color attachments >0.
     if (numColorAttachments_ == 1) {
       glDrawBuffer(GL_COLOR_ATTACHMENT0);
     } else {
