@@ -67,7 +67,8 @@ Attachment Framebuffer::attachTexture(BufferType type,
   Texture::applyParams(params);
 
   // Attach the texture to the framebuffer.
-  GLenum attachmentType = bufferTypeToGlAttachmentType(type);
+  GLenum attachmentType =
+      bufferTypeToGlAttachmentType(type, numColorAttachments_);
   glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, textureTarget, texture,
                          /* mipmap level */ 0);
 
@@ -76,7 +77,7 @@ Attachment Framebuffer::attachTexture(BufferType type,
   }
 
   updateFlags(type);
-  updateBufferSource();
+  updateBufferSources();
 
   glBindTexture(textureTarget, 0);
   deactivate();
@@ -108,7 +109,8 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   }
 
   // Attach the renderbuffer to the framebuffer.
-  GLenum attachmentType = bufferTypeToGlAttachmentType(type);
+  GLenum attachmentType =
+      bufferTypeToGlAttachmentType(type, numColorAttachments_);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachmentType, GL_RENDERBUFFER,
                             rbo);
 
@@ -117,7 +119,7 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   }
 
   updateFlags(type);
-  updateBufferSource();
+  updateBufferSources();
 
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
   deactivate();
@@ -171,6 +173,7 @@ void Framebuffer::updateFlags(BufferType type) {
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
       hasColorAttachment_ = true;
+      numColorAttachments_++;
       return;
     case BufferType::DEPTH:
       hasDepthAttachment_ = true;
@@ -187,10 +190,19 @@ void Framebuffer::updateFlags(BufferType type) {
                              std::to_string(static_cast<int>(type)));
 }
 
-void Framebuffer::updateBufferSource() {
+void Framebuffer::updateBufferSources() {
   if (hasColorAttachment_) {
     // TODO: Support color attachments >0.
-    glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    if (numColorAttachments_ == 1) {
+      glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    } else {
+      std::vector<unsigned int> attachments;
+      for (int i = 0; i < numColorAttachments_; i++) {
+        attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+      }
+      glDrawBuffers(numColorAttachments_, attachments.data());
+    }
+    // Always read from attachment 0.
     glReadBuffer(GL_COLOR_ATTACHMENT0);
   } else {
     glDrawBuffer(GL_NONE);

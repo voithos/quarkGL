@@ -42,14 +42,14 @@ enum class BufferType {
   DEPTH_AND_STENCIL,
 };
 
-inline const GLenum bufferTypeToGlAttachmentType(BufferType type) {
+inline const GLenum bufferTypeToGlAttachmentType(BufferType type,
+                                                 int attachmentIndex) {
   switch (type) {
     case BufferType::COLOR:
     case BufferType::COLOR_HDR:
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
-      // TODO: Support color attachments >0.
-      return GL_COLOR_ATTACHMENT0;
+      return GL_COLOR_ATTACHMENT0 + attachmentIndex;
     case BufferType::DEPTH:
       return GL_DEPTH_ATTACHMENT;
     case BufferType::STENCIL:
@@ -154,6 +154,7 @@ class Framebuffer {
   std::vector<Attachment> attachments_;
 
   bool hasColorAttachment_ = false;
+  int numColorAttachments_ = 0;
   bool hasDepthAttachment_ = false;
   bool hasStencilAttachment_ = false;
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
@@ -162,7 +163,7 @@ class Framebuffer {
   void checkFlags(BufferType type);
   void updateFlags(BufferType type);
   // Updates the draw and read buffers based on the current flags.
-  void updateBufferSource();
+  void updateBufferSources();
 };
 
 }  // namespace qrk
