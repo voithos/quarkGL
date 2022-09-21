@@ -102,6 +102,7 @@ cc_library(
     hdrs = ["mesh_primitives.h"],
     include_prefix = "qrk",
     deps = [
+        ":framebuffer",
         ":mesh",
         ":texture",
         ":texture_map",

@@ -216,13 +216,28 @@ constexpr float screenQuadVertices[] = {
 };
 // clang-format on
 
+ScreenQuadMesh::ScreenQuadMesh() { loadMesh(); }
+
 ScreenQuadMesh::ScreenQuadMesh(Texture texture) {
+  loadMesh();
+  setTexture(texture);
+}
+
+void ScreenQuadMesh::loadMesh() {
   constexpr unsigned int quadVertexSizeBytes = 4 * sizeof(float);
-  // TODO: This copies the texture info, meaning it won't see updates.
-  TextureMap textureMap(texture, TextureMapType::DIFFUSE);
   loadMeshData(screenQuadVertices,
                sizeof(screenQuadVertices) / quadVertexSizeBytes,
-               quadVertexSizeBytes, /*indices=*/{}, {textureMap});
+               quadVertexSizeBytes, /*indices=*/{}, /*textureMaps=*/{});
+}
+
+void ScreenQuadMesh::setTexture(Attachment attachment) {
+  setTexture(attachment.asTexture());
+}
+
+void ScreenQuadMesh::setTexture(Texture texture) {
+  // TODO: This copies the texture info, meaning it won't see updates.
+  textureMaps_.clear();
+  textureMaps_.emplace_back(texture, TextureMapType::DIFFUSE);
 }
 
 void ScreenQuadMesh::initializeVertexAttributes() {

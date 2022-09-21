@@ -127,9 +127,7 @@ int main() {
   auto colorAttachment = mainFb.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
   auto bloomAttachment = mainFb.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
   mainFb.attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
-  // TODO: It'd be nice if we could just swap out the textures instead of
-  // creating separate meshes.
-  qrk::ScreenQuadMesh screenQuad(colorAttachment.asTexture());
+  qrk::ScreenQuadMesh screenQuad;
   qrk::ScreenQuadMesh bloomQuad(bloomAttachment.asTexture());
 
   // Create ping-pong buffers for blurring.
@@ -137,9 +135,8 @@ int main() {
   qrk::Framebuffer blurFb2(win.getSize());
   auto blurAttachment1 =
       blurFb1.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
-  qrk::ScreenQuadMesh blurQuad1(blurAttachment1.asTexture());
-  qrk::ScreenQuadMesh blurQuad2(
-      blurFb2.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA).asTexture());
+  auto blurAttachment2 =
+      blurFb2.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
 
   qrk::ScreenQuadShader blurShader(
       qrk::ShaderPath("examples/shaders/bloom_blur.frag"));
@@ -184,17 +181,19 @@ int main() {
     screenShader.updateUniforms();
 
     if (drawOption == 1) {
-      bloomQuad.draw(screenShader);
+      screenQuad.setTexture(bloomAttachment);
+      screenQuad.draw(screenShader);
       return;
     }
 
     // Ping-pong between horizontal and vertical gaussian blurs.
-    // TODO: Extract this to a helper?
+    // TODO: Extract ping-pong to a helper?
     qrk::Framebuffer* pingPongFbs[2] = {&blurFb1, &blurFb2};
-    qrk::ScreenQuadMesh* pingPongMeshes[2] = {&blurQuad1, &blurQuad2};
+    qrk::Attachment* pingPongAttachments[2] = {&blurAttachment1,
+                                               &blurAttachment2};
     bool horizontal = false;
-    auto* pingPongFb = pingPongFbs[horizontal];
-    auto* pingPongMesh = &bloomQuad;
+    qrk::Framebuffer* pingPongFb = pingPongFbs[horizontal];
+    qrk::Attachment* pingPongAttachment = &bloomAttachment;
 
     // 5 horizontal, 5 vertical.
     constexpr int totalIterations = 10;
@@ -202,29 +201,32 @@ int main() {
       pingPongFb->activate();
 
       blurShader.setBool("horizontal", horizontal);
-      pingPongMesh->draw(blurShader);
+      screenQuad.setTexture(*pingPongAttachment);
+      screenQuad.draw(blurShader);
 
       horizontal = !horizontal;
       // For a given 'horizontal' setting, we render _from_ the other mesh
       // (non-horizontal) to the corresponding framebuffer.
       pingPongFb = pingPongFbs[horizontal];
-      pingPongMesh = pingPongMeshes[!horizontal];
+      pingPongAttachment = pingPongAttachments[!horizontal];
 
       pingPongFb->deactivate();
     }
 
-    qrk::ScreenQuadMesh* blurredMesh = pingPongMesh;
+    qrk::Attachment* blurredAttachment = pingPongAttachment;
 
     if (drawOption == 2) {
-      blurredMesh->draw(screenShader);
+      screenQuad.setTexture(*blurredAttachment);
+      screenQuad.draw(screenShader);
       return;
     }
 
     // drawOption == 0
-    qrk::Texture bloomTexture = blurAttachment1.asTexture();
+    qrk::Texture bloomTexture = blurredAttachment->asTexture();
     bloomTexture.bindToUnit(1);
     bloomScreenShader.setBool("useBloom", useBloom);
     bloomScreenShader.setInt("bloomTexture", 1);
+    screenQuad.setTexture(colorAttachment);
     screenQuad.draw(bloomScreenShader);
   });
 

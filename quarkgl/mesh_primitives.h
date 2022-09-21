@@ -1,6 +1,7 @@
 #ifndef QUARKGL_MESH_PRIMITIVES_H_
 #define QUARKGL_MESH_PRIMITIVES_H_
 
+#include <qrk/framebuffer.h>
 #include <qrk/mesh.h>
 #include <qrk/texture.h>
 #include <qrk/texture_map.h>
@@ -47,10 +48,18 @@ class SkyboxMesh : public PrimitiveMesh {
 
 class ScreenQuadMesh : public PrimitiveMesh {
  public:
+  // Creates an unbound screen quad mesh.
+  ScreenQuadMesh();
   // Creates a new screen quad mesh from a texture.
   explicit ScreenQuadMesh(Texture texture);
 
+  // Sets a framebuffer attachment as the texture.
+  void setTexture(Attachment attachment);
+  // Sets the texture. This overrides previously set textures.
+  void setTexture(Texture texture);
+
  protected:
+  void loadMesh();
   void initializeVertexAttributes() override;
 };
 
