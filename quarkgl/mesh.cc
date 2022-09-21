@@ -92,20 +92,20 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
 
       switch (type) {
         case TextureMapType::DIFFUSE:
-          ss << "diffuse[" << diffuseIdx << "]";
+          ss << "diffuseMaps[" << diffuseIdx << "]";
           diffuseIdx++;
           break;
         case TextureMapType::SPECULAR:
-          ss << "specular[" << specularIdx << "]";
+          ss << "specularMaps[" << specularIdx << "]";
           specularIdx++;
           break;
         case TextureMapType::EMISSION:
-          ss << "emission[" << emissionIdx << "]";
+          ss << "emissionMaps[" << emissionIdx << "]";
           emissionIdx++;
           break;
         case TextureMapType::NORMAL:
           // Only a single normal map supported.
-          ss << "normal";
+          ss << "normalMap";
           hasNormalMap = true;
           break;
         case TextureMapType::CUBEMAP:

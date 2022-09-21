@@ -23,13 +23,13 @@ struct QrkAttenuation {
 #endif
 
 struct QrkMaterial {
-  sampler2D diffuse[QRK_MAX_DIFFUSE_TEXTURES];
+  sampler2D diffuseMaps[QRK_MAX_DIFFUSE_TEXTURES];
   int diffuseCount;
-  sampler2D specular[QRK_MAX_SPECULAR_TEXTURES];
+  sampler2D specularMaps[QRK_MAX_SPECULAR_TEXTURES];
   int specularCount;
-  sampler2D emission[QRK_MAX_EMISSION_TEXTURES];
+  sampler2D emissionMaps[QRK_MAX_EMISSION_TEXTURES];
   int emissionCount;
-  sampler2D normal;
+  sampler2D normalMap;
   bool hasNormalMap;
 
   float shininess;
@@ -83,7 +83,7 @@ float qrk_optAlpha(float alpha) { return alpha + (1.0 - sign(alpha)) * 1.0; }
 float qrk_sumDiffuseAlpha(QrkMaterial material, vec2 texCoords) {
   float sum = 0;
   for (int i = 0; i < material.diffuseCount; i++) {
-    sum += qrk_optAlpha(texture(material.diffuse[i], texCoords).a);
+    sum += qrk_optAlpha(texture(material.diffuseMaps[i], texCoords).a);
   }
   return sum;
 }
@@ -92,7 +92,7 @@ float qrk_sumDiffuseAlpha(QrkMaterial material, vec2 texCoords) {
 float qrk_sumSpecularAlpha(QrkMaterial material, vec2 texCoords) {
   float sum = 0;
   for (int i = 0; i < material.specularCount; i++) {
-    sum += qrk_optAlpha(texture(material.specular[i], texCoords).a);
+    sum += qrk_optAlpha(texture(material.specularMaps[i], texCoords).a);
   }
   return sum;
 }
@@ -101,7 +101,7 @@ float qrk_sumSpecularAlpha(QrkMaterial material, vec2 texCoords) {
 float qrk_sumEmissionAlpha(QrkMaterial material, vec2 texCoords) {
   float sum = 0;
   for (int i = 0; i < material.emissionCount; i++) {
-    sum += qrk_optAlpha(texture(material.emission[i], texCoords).a);
+    sum += qrk_optAlpha(texture(material.emissionMaps[i], texCoords).a);
   }
   return sum;
 }
@@ -121,7 +121,7 @@ vec3 qrk_shadeBlinnPhong(QrkMaterial material, vec3 lightAmbient,
   float diffuseAlphaSum = qrk_sumDiffuseAlpha(material, texCoords);
   float diffuseIntensity = max(dot(normal, lightDir), 0.0);
   for (int i = 0; i < material.diffuseCount; i++) {
-    vec4 diffuseMap = texture(material.diffuse[i], texCoords);
+    vec4 diffuseMap = texture(material.diffuseMaps[i], texCoords);
     float alphaRatio = qrk_optAlpha(diffuseMap.a) / diffuseAlphaSum;
 
     // Ambient component. Don't include shadow calculation here, since it
@@ -146,7 +146,7 @@ vec3 qrk_shadeBlinnPhong(QrkMaterial material, vec3 lightAmbient,
     // Specular maps present.
     float specularAlphaSum = qrk_sumSpecularAlpha(material, texCoords);
     for (int i = 0; i < material.specularCount; i++) {
-      vec4 specularMap = texture(material.specular[i], texCoords);
+      vec4 specularMap = texture(material.specularMaps[i], texCoords);
       float alphaRatio = qrk_optAlpha(specularMap.a) / specularAlphaSum;
       result += (lightSpecular *
                  (specularIntensity * vec3(specularMap) * alphaRatio)) *
@@ -240,7 +240,7 @@ vec3 qrk_shadeEmission(QrkMaterial material, vec3 fragPos, vec2 texCoords) {
   // Emission component.
   float emissionAlphaSum = qrk_sumEmissionAlpha(material, texCoords);
   for (int i = 0; i < material.emissionCount; i++) {
-    vec4 emissionMap = texture(material.emission[i], texCoords);
+    vec4 emissionMap = texture(material.emissionMaps[i], texCoords);
     float alphaRatio = qrk_optAlpha(emissionMap.a) / emissionAlphaSum;
     result += vec3(emissionMap) * alphaRatio * attenuation;
   }
@@ -258,7 +258,7 @@ vec3 qrk_shadeEmission(QrkMaterial material, vec3 fragPos, vec2 texCoords) {
 vec3 qrk_getNormal(QrkMaterial material, vec2 texCoords, mat3 TBN,
                    vec3 vertexNormal) {
   if (material.hasNormalMap) {
-    return normalize(TBN * qrk_sampleNormalMap(material.normal, texCoords));
+    return normalize(TBN * qrk_sampleNormalMap(material.normalMap, texCoords));
   } else {
     return normalize(vertexNormal);
   }
