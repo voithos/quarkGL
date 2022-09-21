@@ -30,7 +30,7 @@ struct QrkMaterial {
   sampler2D emission[QRK_MAX_EMISSION_TEXTURES];
   int emissionCount;
   sampler2D normal;
-  int normalCount;
+  bool hasNormalMap;
 
   float shininess;
 
@@ -257,10 +257,10 @@ vec3 qrk_shadeEmission(QrkMaterial material, vec3 fragPos, vec2 texCoords) {
  */
 vec3 qrk_getNormal(QrkMaterial material, vec2 texCoords, mat3 TBN,
                    vec3 vertexNormal) {
-  if (material.normalCount == 0) {
-    return normalize(vertexNormal);
-  } else {
+  if (material.hasNormalMap) {
     return normalize(TBN * qrk_sampleNormalMap(material.normal, texCoords));
+  } else {
+    return normalize(vertexNormal);
   }
 }
 
