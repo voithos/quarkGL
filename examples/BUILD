@@ -154,3 +154,20 @@ cc_binary(
         "@glfw",
     ],
 )
+
+cc_binary(
+    name = "deferred",
+    srcs = ["deferred.cc"],
+    data = [
+        "assets/container2.png",
+        "assets/wood.png",
+        ":shaders",
+    ],
+    linkopts = LINUX_LINKOPTS,
+    deps = [
+        "//quarkgl",
+        "//third_party/glad",
+        "//third_party/glm",
+        "@glfw",
+    ],
+)

@@ -70,7 +70,7 @@ vec3 qrk_shadeAllLights(QrkMaterial material, vec3 fragPos, vec3 normal,
 }
 
 /**
- * Calculate a material's alpha based on its set of diffuse textures.
+ * Calculate a material's final alpha based on its set of diffuse textures.
  */
 float qrk_materialAlpha(QrkMaterial material, vec2 texCoords) {
   float sum = 0.0;

@@ -36,6 +36,7 @@
 - [ ] Blending (alpha transparency) demo
 
 ## Bugs
+- [ ] P0: model loader doesn't honor transforms
 - [ ] P2: light registry doesn't work with >1 shaders.
 - [ ] P2: debug normals are modified based on camera rotation.
 

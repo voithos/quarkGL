@@ -40,8 +40,6 @@ std::unique_ptr<qrk::Model> loadModel() {
   auto helmet = std::make_unique<qrk::Model>(
       "examples/assets/DamagedHelmet/DamagedHelmet.gltf");
 
-  // Translate the model down so it's in the center and scale it down, since
-  // it's too big.
   helmet->setModelTransform(glm::scale(
       glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f)),
                   glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
