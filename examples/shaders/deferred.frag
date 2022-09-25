@@ -32,8 +32,9 @@ void main() {
 
   gAlbedoSpecular.rgb = qrk_sumDiffuseColor(material, fs_in.texCoords);
   // Use a single channel for specularity. This won't support channel-specific
-  // specularity.
-  gAlbedoSpecular.a = qrk_sumSpecularColor(material, fs_in.texCoords).r;
+  // specularity, but in the case where PBR textures are used, will sample the
+  // 'b' metalness channel.
+  gAlbedoSpecular.a = qrk_sumSpecularColor(material, fs_in.texCoords).b;
 
   gEmission = qrk_sumEmissionColor(material, fs_in.texCoords);
 }

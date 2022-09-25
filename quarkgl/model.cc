@@ -178,31 +178,33 @@ std::unique_ptr<ModelMesh> Model::processMesh(aiMesh* mesh,
 
 std::vector<TextureMap> Model::loadMaterialTextureMaps(aiMaterial* material,
                                                        TextureMapType type) {
-  auto aiType = textureMapTypeToAiTextureType(type);
+  std::vector<aiTextureType> aiTypes = textureMapTypeToAiTextureTypes(type);
   std::vector<TextureMap> textureMaps;
 
-  for (unsigned int i = 0; i < material->GetTextureCount(aiType); i++) {
-    aiString texturePath;
-    material->GetTexture(aiType, i, &texturePath);
-    // TODO: Pull the texture loading bits into a separate class.
-    // Assume that the texture path is relative to model directory.
-    std::string fullPath = directory_ + "/" + texturePath.C_Str();
+  for (aiTextureType aiType : aiTypes) {
+    for (unsigned int i = 0; i < material->GetTextureCount(aiType); i++) {
+      aiString texturePath;
+      material->GetTexture(aiType, i, &texturePath);
+      // TODO: Pull the texture loading bits into a separate class.
+      // Assume that the texture path is relative to model directory.
+      std::string fullPath = directory_ + "/" + texturePath.C_Str();
 
-    // Don't re-load a texture if it's already been loaded.
-    auto item = loadedTextureMaps_.find(fullPath);
-    if (item != loadedTextureMaps_.end()) {
-      // Texture has already been loaded.
-      textureMaps.push_back(item->second);
-      continue;
+      // Don't re-load a texture if it's already been loaded.
+      auto item = loadedTextureMaps_.find(fullPath);
+      if (item != loadedTextureMaps_.end()) {
+        // Texture has already been loaded.
+        textureMaps.push_back(item->second);
+        continue;
+      }
+
+      // Assume that diffuse textures are in sRGB.
+      // TODO: Allow for a way to override this if necessary.
+      bool isSRGB = type == TextureMapType::DIFFUSE;
+
+      TextureMap textureMap(Texture::load(fullPath.c_str(), isSRGB), type);
+      textureMaps.push_back(textureMap);
+      loadedTextureMaps_.insert(std::make_pair(fullPath, textureMap));
     }
-
-    // Assume that diffuse textures are in sRGB.
-    // TODO: Allow for a way to override this if necessary.
-    bool isSRGB = type == TextureMapType::DIFFUSE;
-
-    TextureMap textureMap(Texture::load(fullPath.c_str(), isSRGB), type);
-    textureMaps.push_back(textureMap);
-    loadedTextureMaps_.insert(std::make_pair(fullPath, textureMap));
   }
   return textureMaps;
 }

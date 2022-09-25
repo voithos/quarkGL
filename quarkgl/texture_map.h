@@ -33,16 +33,20 @@ inline std::vector<TextureMapType> allTextureTypes() {
   return textureTypes;
 }
 
-inline const aiTextureType textureMapTypeToAiTextureType(TextureMapType type) {
+inline std::vector<aiTextureType> textureMapTypeToAiTextureTypes(
+    TextureMapType type) {
   switch (type) {
     case TextureMapType::DIFFUSE:
-      return aiTextureType_DIFFUSE;
+      return {aiTextureType_DIFFUSE};
     case TextureMapType::SPECULAR:
-      return aiTextureType_SPECULAR;
+      // Use metalness for specularity as well. When this is loaded as a
+      // combined "metalnessRoughnessTexture", shaders should read the blue
+      // channel.
+      return {aiTextureType_SPECULAR, aiTextureType_METALNESS};
     case TextureMapType::EMISSION:
-      return aiTextureType_EMISSIVE;
+      return {aiTextureType_EMISSIVE};
     case TextureMapType::NORMAL:
-      return aiTextureType_NORMALS;
+      return {aiTextureType_NORMALS};
     default:
       throw TextureMapException(
           "ERROR::TEXTURE_MAP::INVALID_TEXTURE_MAP_TYPE\n" +

@@ -22,7 +22,6 @@
 - [ ] P3: Improve blur used for bloom
 - [ ] P3: Update README / documentation
 - [ ] P3: Add a wireframe mode.
-- [ ] P3: Add instancing to model?
 - [ ] P4: Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
 ## Cleanup
@@ -36,9 +35,8 @@
 - [ ] Blending (alpha transparency) demo
 
 ## Bugs
-- [ ] P0: model loader doesn't honor transforms
 - [ ] P2: light registry doesn't work with >1 shaders.
-- [ ] P2: debug normals are modified based on camera rotation.
+- [ ] P2: debug normals are modified based on camera rotation. Maybe just a visual artifact?
 
 ## Done
 - [x] Bug: debug normal disappear in weird ways.
@@ -76,3 +74,5 @@
 - [x] P3: Add support for framebuffers?
 - [x] P2: Add a material class that can maintain diffuse/specular maps, similar to the light class.
 - [x] P1: Add Bloom
+- [x] P0: model loader doesn't honor transforms
+- [x] P3: Add instancing to model?

@@ -45,7 +45,7 @@ int main() {
   // Create the scene.
   std::vector<qrk::Renderable*> meshes;
   auto helmet = std::make_unique<qrk::Model>(
-      "examples/assets/DamagedHelmet/DamagedHelmet.gltf");
+      "examples/assets/SurvivalGuitarBackpack/scene.gltf");
   meshes.push_back(helmet.get());
 
   // clang-format off
@@ -117,9 +117,9 @@ int main() {
     for (auto mesh : meshes) {
       for (auto pos : meshPositions) {
         mesh->setModelTransform(glm::scale(
-            glm::rotate(glm::translate(glm::mat4(), pos), glm::radians(90.0f),
+            glm::rotate(glm::translate(glm::mat4(), pos), glm::radians(0.0f),
                         glm::vec3(1.0f, 0.0f, 0.0f)),
-            glm::vec3(1.0f)));
+            glm::vec3(0.005f)));
         mesh->draw(geometryPassShader);
       }
     }
