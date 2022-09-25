@@ -1,6 +1,32 @@
 #include <qrk/mesh.h>
 
 namespace qrk {
+
+void RenderableNode::drawWithTransform(const glm::mat4& transform,
+                                       Shader& shader,
+                                       TextureRegistry* textureRegistry) {
+  // Combined incoming transform with the node's.
+  const glm::mat4 mat = transform * getModelTransform();
+  for (auto& renderable : renderables_) {
+    renderable->drawWithTransform(mat, shader, textureRegistry);
+  }
+
+  // Render children.
+  for (auto& childNode : childNodes_) {
+    childNode->drawWithTransform(mat, shader, textureRegistry);
+  }
+}
+
+void RenderableNode::visitRenderables(
+    std::function<void(Renderable*)> visitor) {
+  for (auto& renderable : renderables_) {
+    visitor(renderable.get());
+  }
+  for (auto& childNode : childNodes_) {
+    childNode->visitRenderables(visitor);
+  }
+}
+
 void Mesh::loadMeshData(const void* vertexData, unsigned int numVertices,
                         unsigned int vertexSizeBytes,
                         const std::vector<unsigned int>& indices,
@@ -34,8 +60,10 @@ void Mesh::loadInstanceModels(const glm::mat4* models, unsigned int size) {
   vertexArray_.loadInstanceVertexData(&models[0], size * sizeof(glm::mat4));
 }
 
-void Mesh::draw(Shader& shader, TextureRegistry* textureRegistry) {
-  // Note: Model transform handling is done by child classes.
+void Mesh::drawWithTransform(const glm::mat4& transform, Shader& shader,
+                             TextureRegistry* textureRegistry) {
+  // First we set the model transform, combining with the incoming transform.
+  shader.setMat4("model", transform * getModelTransform());
 
   bindTextures(shader, textureRegistry);
 

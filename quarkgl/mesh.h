@@ -22,11 +22,43 @@ class Renderable {
   void setModelTransform(const glm::mat4& model) { model_ = model; }
 
   virtual void draw(Shader& shader,
-                    TextureRegistry* textureRegistry = nullptr) = 0;
+                    TextureRegistry* textureRegistry = nullptr) {
+    glm::mat4 transform(1.0f);
+    return drawWithTransform(transform, shader, textureRegistry);
+  }
+  virtual void drawWithTransform(
+      const glm::mat4& transform, Shader& shader,
+      TextureRegistry* textureRegistry = nullptr) = 0;
 
  protected:
   // The model transform matrix.
   glm::mat4 model_ = glm::mat4(1.0f);
+};
+
+// A node in a tree of Renderables, containing one or more renderables.
+// When rendering, each node's transform is applied to the transform of its
+// Renderables, as well as to its child RenderableNodes.
+class RenderableNode : public Renderable {
+ public:
+  virtual ~RenderableNode() = default;
+  void drawWithTransform(const glm::mat4& transform, Shader& shader,
+                         TextureRegistry* textureRegistry = nullptr) override;
+
+  void addRenderable(std::unique_ptr<Renderable> renderable) {
+    renderables_.push_back(std::move(renderable));
+  }
+
+  void addChildNode(std::unique_ptr<RenderableNode> childNode) {
+    childNodes_.push_back(std::move(childNode));
+  }
+
+  void visitRenderables(std::function<void(Renderable*)> visitor);
+
+ protected:
+  // The set of Renderables making up this node.
+  std::vector<std::unique_ptr<Renderable>> renderables_;
+  // The set of child RenderableNodes.
+  std::vector<std::unique_ptr<RenderableNode>> childNodes_;
 };
 
 // An abstract class that represents a triangle mesh and handles loading and
@@ -37,8 +69,8 @@ class Mesh : public Renderable {
 
   void loadInstanceModels(const std::vector<glm::mat4>& models);
   void loadInstanceModels(const glm::mat4* models, unsigned int size);
-  void draw(Shader& shader,
-            TextureRegistry* textureRegistry = nullptr) override;
+  void drawWithTransform(const glm::mat4& transform, Shader& shader,
+                         TextureRegistry* textureRegistry = nullptr) override;
 
   std::vector<unsigned int> getIndices() { return indices_; }
   std::vector<TextureMap> getTextureMaps() { return textureMaps_; }

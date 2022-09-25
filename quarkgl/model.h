@@ -59,18 +59,18 @@ class Model : public Renderable {
   virtual ~Model() = default;
   void loadInstanceModels(const std::vector<glm::mat4>& models);
   void loadInstanceModels(const glm::mat4* models, unsigned int size);
-  void draw(Shader& shader,
-            TextureRegistry* textureRegistry = nullptr) override;
+  void drawWithTransform(const glm::mat4& transform, Shader& shader,
+                         TextureRegistry* textureRegistry = nullptr) override;
 
  private:
   void loadModel(std::string path);
-  void processNode(aiNode* node, const aiScene* scene);
-  ModelMesh processMesh(aiMesh* mesh, const aiScene* scene);
+  void processNode(RenderableNode& target, aiNode* node, const aiScene* scene);
+  std::unique_ptr<ModelMesh> processMesh(aiMesh* mesh, const aiScene* scene);
   std::vector<TextureMap> loadMaterialTextureMaps(aiMaterial* material,
                                                   TextureMapType type);
 
   unsigned int instanceCount_;
-  std::vector<ModelMesh> meshes_;
+  RenderableNode rootNode_;
   std::string directory_;
   std::unordered_map<std::string, TextureMap> loadedTextureMaps_;
 };

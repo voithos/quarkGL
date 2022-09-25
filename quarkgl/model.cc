@@ -11,7 +11,18 @@ constexpr TextureMapType loaderSupportedTextureMapTypes[] = {
     TextureMapType::EMISSION,
     TextureMapType::NORMAL,
 };
+
+glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& m) {
+  // clang-format off
+  return glm::mat4(
+      m.a1, m.b1, m.c1, m.d1,
+      m.a2, m.b2, m.c2, m.d2,
+      m.a3, m.b3, m.c3, m.d3,
+      m.a4, m.b4, m.c4, m.d4
+  );
+  // clang-format on
 }
+}  // namespace
 
 ModelMesh::ModelMesh(const std::vector<ModelVertex>& vertices,
                      const std::vector<unsigned int>& indices,
@@ -47,24 +58,25 @@ Model::Model(const char* path, unsigned int instanceCount)
 }
 
 void Model::loadInstanceModels(const std::vector<glm::mat4>& models) {
-  for (auto mesh : meshes_) {
-    mesh.loadInstanceModels(models);
-  }
+  rootNode_.visitRenderables([&](Renderable* renderable) {
+    // All renderables in a Model are ModelMeshes.
+    ModelMesh* mesh = static_cast<ModelMesh*>(renderable);
+    mesh->loadInstanceModels(models);
+  });
 }
 
 void Model::loadInstanceModels(const glm::mat4* models, unsigned int size) {
-  for (auto mesh : meshes_) {
-    mesh.loadInstanceModels(models, size);
-  }
+  rootNode_.visitRenderables([&](Renderable* renderable) {
+    // All renderables in a Model are ModelMeshes.
+    ModelMesh* mesh = static_cast<ModelMesh*>(renderable);
+    mesh->loadInstanceModels(models, size);
+  });
 }
 
-void Model::draw(Shader& shader, TextureRegistry* textureRegistry) {
-  // First we set the model transform.
-  shader.setMat4("model", getModelTransform());
-
-  for (auto mesh : meshes_) {
-    mesh.draw(shader, textureRegistry);
-  }
+void Model::drawWithTransform(const glm::mat4& transform, Shader& shader,
+                              TextureRegistry* textureRegistry) {
+  rootNode_.drawWithTransform(transform * getModelTransform(), shader,
+                              textureRegistry);
 }
 
 void Model::loadModel(std::string path) {
@@ -78,23 +90,32 @@ void Model::loadModel(std::string path) {
                                std::string(importer.GetErrorString()));
   }
 
-  processNode(scene->mRootNode, scene);
+  processNode(rootNode_, scene->mRootNode, scene);
 }
 
-void Model::processNode(aiNode* node, const aiScene* scene) {
+void Model::processNode(RenderableNode& target, aiNode* node,
+                        const aiScene* scene) {
+  // Consume the transform.
+  target.setModelTransform(aiMatrix4x4ToGlm(node->mTransformation));
+
   // Process each mesh in the node.
   for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+    // TODO: This might be creating meshes multiple times when they are
+    // referenced by multiple nodes.
     aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-    meshes_.push_back(processMesh(mesh, scene));
+    target.addRenderable(processMesh(mesh, scene));
   }
 
   // Recurse for children. Recursion stops when no children left.
   for (unsigned int i = 0; i < node->mNumChildren; i++) {
-    processNode(node->mChildren[i], scene);
+    auto childTarget = std::make_unique<RenderableNode>();
+    processNode(*childTarget, node->mChildren[i], scene);
+    target.addChildNode(std::move(childTarget));
   }
 }
 
-ModelMesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
+std::unique_ptr<ModelMesh> Model::processMesh(aiMesh* mesh,
+                                              const aiScene* scene) {
   std::vector<ModelVertex> vertices;
   std::vector<unsigned int> indices;
   std::vector<TextureMap> textureMaps;
@@ -151,7 +172,8 @@ ModelMesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     }
   }
 
-  return ModelMesh(vertices, indices, textureMaps, instanceCount_);
+  return std::make_unique<ModelMesh>(vertices, indices, textureMaps,
+                                     instanceCount_);
 }
 
 std::vector<TextureMap> Model::loadMaterialTextureMaps(aiMaterial* material,

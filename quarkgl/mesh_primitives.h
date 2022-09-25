@@ -8,11 +8,7 @@
 
 namespace qrk {
 
-class PrimitiveMesh : public Mesh {
- public:
-  virtual void draw(Shader& shader,
-                    TextureRegistry* textureRegistry = nullptr) override;
-};
+class PrimitiveMesh : public Mesh {};
 
 class PlaneMesh : public PrimitiveMesh {
  public:
