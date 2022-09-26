@@ -127,6 +127,22 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   return saveAttachment(rbo, AttachmentTarget::RENDERBUFFER);
 }
 
+void Framebuffer::blit(Framebuffer& target, GLenum bits) {
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, target.fbo_);
+  glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, bits,
+                    GL_NEAREST);
+  deactivate();
+}
+
+void Framebuffer::blitToDefault(GLenum bits) {
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, bits,
+                    GL_NEAREST);
+  deactivate();
+}
+
 Attachment Framebuffer::saveAttachment(unsigned int id,
                                        AttachmentTarget target) {
   Attachment attachment = {.id = id, .target = target};

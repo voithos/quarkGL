@@ -144,7 +144,11 @@ class Framebuffer {
   Attachment attachTexture(BufferType type, const TextureParams& params);
   Attachment attachRenderbuffer(BufferType type);
 
-  // TODO: Add support for glBlitFramebuffer, when multisampled.
+  // Copies the framebuffer to the target.
+  // TODO: Swap out GLenum for qrk type.
+  void blit(Framebuffer& target, GLenum bits);
+  // Copies the framebuffer to the default framebuffer.
+  void blitToDefault(GLenum type);
 
  private:
   unsigned int fbo_ = 0;
