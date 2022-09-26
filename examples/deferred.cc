@@ -7,6 +7,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <random>
+#include <glm/ext.hpp>
+
+const char* lampShaderSource = R"SHADER(
+#version 460 core
+out vec4 fragColor;
+
+uniform vec3 lightColor;
+
+void main() { fragColor = vec4(lightColor, 1.0); }
+)SHADER";
 
 int main() {
   constexpr int width = 800, height = 600;
@@ -37,15 +48,41 @@ int main() {
   // We explicitly _don't_ add the lightregistry to the geometry pass.
   // geometryPassShader.addUniformSource(lightRegistry);
 
-  // mainShader.setFloat("material.shininess", 32.0f);
-  // mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
-  // mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
-  // mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
+  std::mt19937 gen(42);
+  // Create random lights.
+  std::vector<std::shared_ptr<qrk::PointLight>> lights;
+  constexpr int NUM_LIGHTS = 32;
+  for (int i = 0; i < NUM_LIGHTS; i++) {
+    auto light = std::make_shared<qrk::PointLight>(
+        glm::vec3(((gen() % 100) / 100.0f) * 6.0f - 3.0f,
+                  ((gen() % 100) / 100.0f) * 6.0f - 4.0f,
+                  ((gen() % 100) / 100.0f) * 6.0f - 3.0f));
+
+    light->setAmbient(glm::vec3(0.0f));
+    glm::vec3 lightColor(
+        ((gen() % 100) / 200.0f) + 0.5f,  // between 0.5 and 1.0
+        ((gen() % 100) / 200.0f) + 0.5f,  // between 0.5 and 1.0
+        ((gen() % 100) / 200.0f) + 0.5f   // between 0.5 and 1.0
+    );
+    light->setDiffuse(lightColor);
+    light->setSpecular(lightColor);
+    qrk::Attenuation attenuation = {
+        .constant = 1.0f, .linear = 0.7f, .quadratic = 1.8f};
+    light->setAttenuation(attenuation);
+
+    lightRegistry->addLight(light);
+    lights.push_back(light);
+  }
+
+  qrk::Shader lampShader(qrk::ShaderPath("examples/shaders/model.vert"),
+                         qrk::ShaderInline(lampShaderSource));
+  lampShader.addUniformSource(camera);
+  qrk::CubeMesh lightCube;
 
   // Create the scene.
   std::vector<qrk::Renderable*> meshes;
   auto helmet = std::make_unique<qrk::Model>(
-      "examples/assets/SurvivalGuitarBackpack/scene.gltf");
+      "examples/assets/DamagedHelmet/DamagedHelmet.gltf");
   meshes.push_back(helmet.get());
 
   // clang-format off
@@ -63,6 +100,8 @@ int main() {
   // clang-format on
 
   // Build the G-Buffer.
+  // TODO: Standardize this pattern, and build a TextureSource so that it can
+  // be easily used in a TextureRegistry.
   qrk::Framebuffer gBuffer(win.getSize());
   gBuffer.setClearColor(glm::vec4(0.0f));
   gBuffer.attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
@@ -105,6 +144,16 @@ int main() {
     };
   });
 
+  // Set up the lighting pass.
+  qrk::ScreenQuadShader lightingPassShader(
+      qrk::ShaderPath("examples/shaders/deferred_lighting.frag"));
+  lightingPassShader.addUniformSource(camera);
+  lightingPassShader.addUniformSource(lightRegistry);
+  lightingPassShader.setFloat("shininess", 16.0f);
+  lightingPassShader.setFloat("emissionAttenuation.constant", 1.0f);
+  lightingPassShader.setFloat("emissionAttenuation.linear", 0.09f);
+  lightingPassShader.setFloat("emissionAttenuation.quadratic", 0.032f);
+
   // win.enableFaceCull();
   win.loop([&](float deltaTime) {
     // Step 1: geometry pass. Build the G-Buffer.
@@ -119,7 +168,7 @@ int main() {
         mesh->setModelTransform(glm::scale(
             glm::rotate(glm::translate(glm::mat4(), pos), glm::radians(0.0f),
                         glm::vec3(1.0f, 0.0f, 0.0f)),
-            glm::vec3(0.005f)));
+            glm::vec3(1.0f)));
         mesh->draw(geometryPassShader);
       }
     }
@@ -151,6 +200,35 @@ int main() {
     // Continue.
 
     // Step 2: lighting pass.
+
+    lightingPassShader.updateUniforms();
+    // Bind textures.
+    screenQuad.unsetTexture();
+    positionBuffer.asTexture().bindToUnit(0);
+    normalBuffer.asTexture().bindToUnit(1);
+    albedoSpecularBuffer.asTexture().bindToUnit(2);
+    emissionBuffer.asTexture().bindToUnit(3);
+    // Bind sampler uniforms.
+    lightingPassShader.setInt("gPosition", 0);
+    lightingPassShader.setInt("gNormal", 1);
+    lightingPassShader.setInt("gAlbedoSpecular", 2);
+    lightingPassShader.setInt("gEmission", 3);
+
+    screenQuad.draw(lightingPassShader);
+
+    // Step 3: forward render anything else on top.
+
+    // Before we do so, we have to blit the depth buffer.
+    gBuffer.blitToDefault(GL_DEPTH_BUFFER_BIT);
+
+    // Draw the lights.
+    lampShader.updateUniforms();
+    for (auto& light : lights) {
+      lightCube.setModelTransform(glm::scale(
+          glm::translate(glm::mat4(), light->getPosition()), glm::vec3(0.2f)));
+      lampShader.setVec3("lightColor", light->getDiffuse());
+      lightCube.draw(lampShader);
+    }
   });
 
   return 0;

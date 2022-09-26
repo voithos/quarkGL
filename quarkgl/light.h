@@ -41,6 +41,10 @@ class Light {
   virtual ~Light() = default;
   virtual LightType getLightType() const = 0;
 
+  void setUseViewTransform(bool useViewTransform) {
+    useViewTransform_ = useViewTransform;
+  }
+
   friend LightRegistry;
 
  protected:
@@ -70,6 +74,9 @@ class Light {
   unsigned int lightIdx_;
   std::string uniformName_;
 
+  // Whether the light's position uniforms should be in view space. If false,
+  // the positions are instead in world space.
+  bool useViewTransform_ = true;
   // Start as `true` so that initial uniform values get set.
   bool hasViewDependentChanged_ = true;
   bool hasLightChanged_ = true;
@@ -97,6 +104,10 @@ class LightRegistry : public UniformSource {
   // Applies the view transform to the registered lights. This is automatically
   // called if a view source has been set.
   void applyViewTransform(const glm::mat4& view);
+
+  // Sets whether the registered lights should transform their positions to view
+  // space. If false, positions remain in world space when passed to the shader.
+  void setUseViewTransform(bool useViewTransform);
 
  private:
   unsigned int directionalCount_ = 0;

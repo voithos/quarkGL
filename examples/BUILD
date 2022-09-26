@@ -162,7 +162,9 @@ cc_binary(
         "assets/container2.png",
         "assets/wood.png",
         ":shaders",
-    ],
+    ] + glob([
+        "assets/DamagedHelmet/*",
+    ]),
     linkopts = LINUX_LINKOPTS,
     deps = [
         "//quarkgl",

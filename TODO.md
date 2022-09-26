@@ -1,13 +1,13 @@
 # TODOs
 
 ## Features
-- [ ] P0: Implement deferred shading
 - [ ] P0: Implement SSAO
 - [ ] P0: Implement PBR lighting
 - [ ] P0: Implement tessellation
 - [ ] P1: Implement point light shadow maps: https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
 - [ ] P1: Add parallax mapping
 - [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
+- [ ] P2: Implement Light volumes
 - [ ] P2: Implement CSM
 - [ ] P2: Implement virtual textures. http://holger.dammertz.org/stuff/notes_VirtualTexturing.html
 - [ ] P2: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
@@ -76,3 +76,4 @@
 - [x] P1: Add Bloom
 - [x] P0: model loader doesn't honor transforms
 - [x] P3: Add instancing to model?
+- [x] P0: Implement deferred shading

@@ -53,6 +53,8 @@ class ScreenQuadMesh : public PrimitiveMesh {
   void setTexture(Attachment attachment);
   // Sets the texture. This overrides previously set textures.
   void setTexture(Texture texture);
+  // Unsets the texture.
+  void unsetTexture();
 
  protected:
   void loadMesh();

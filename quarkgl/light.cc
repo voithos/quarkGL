@@ -36,8 +36,15 @@ void LightRegistry::updateUniforms(Shader& shader) {
 }
 
 void LightRegistry::applyViewTransform(const glm::mat4& view) {
+  // TODO: Only do this when we need to.
   for (auto light : lights_) {
     light->applyViewTransform(view);
+  }
+}
+
+void LightRegistry::setUseViewTransform(bool useViewTransform) {
+  for (auto light : lights_) {
+    light->setUseViewTransform(useViewTransform);
   }
 }
 
@@ -52,7 +59,8 @@ void DirectionalLight::updateUniforms(Shader& shader) {
   checkState();
 
   if (hasViewBeenApplied_) {
-    shader.setVec3(uniformName_ + ".direction", viewDirection_);
+    shader.setVec3(uniformName_ + ".direction",
+                   useViewTransform_ ? viewDirection_ : direction_);
   }
   if (hasLightChanged_) {
     shader.setVec3(uniformName_ + ".ambient", ambient_);
@@ -65,6 +73,7 @@ void DirectionalLight::updateUniforms(Shader& shader) {
 }
 
 void DirectionalLight::applyViewTransform(const glm::mat4& view) {
+  // TODO: This should probably be inverse+transpose of the view.
   viewDirection_ = glm::vec3(view * glm::vec4(direction_, 0.0f));
   hasViewBeenApplied_ = true;
 }
@@ -81,7 +90,8 @@ void PointLight::updateUniforms(Shader& shader) {
   checkState();
 
   if (hasViewBeenApplied_) {
-    shader.setVec3(uniformName_ + ".position", viewPosition_);
+    shader.setVec3(uniformName_ + ".position",
+                   useViewTransform_ ? viewPosition_ : position_);
   }
   if (hasLightChanged_) {
     shader.setVec3(uniformName_ + ".ambient", ambient_);
@@ -118,8 +128,10 @@ void SpotLight::updateUniforms(Shader& shader) {
   checkState();
 
   if (hasViewBeenApplied_) {
-    shader.setVec3(uniformName_ + ".position", viewPosition_);
-    shader.setVec3(uniformName_ + ".direction", viewDirection_);
+    shader.setVec3(uniformName_ + ".position",
+                   useViewTransform_ ? viewPosition_ : position_);
+    shader.setVec3(uniformName_ + ".direction",
+                   useViewTransform_ ? viewDirection_ : direction_);
   }
   if (hasLightChanged_) {
     shader.setFloat(uniformName_ + ".innerAngle", innerAngle_);
@@ -139,6 +151,7 @@ void SpotLight::updateUniforms(Shader& shader) {
 
 void SpotLight::applyViewTransform(const glm::mat4& view) {
   viewPosition_ = glm::vec3(view * glm::vec4(position_, 1.0f));
+  // TODO: This should probably be inverse+transpose of the view.
   viewDirection_ = glm::vec3(view * glm::vec4(direction_, 0.0f));
   hasViewBeenApplied_ = true;
 }

@@ -232,6 +232,8 @@ void ScreenQuadMesh::setTexture(Texture texture) {
   textureMaps_.emplace_back(texture, TextureMapType::DIFFUSE);
 }
 
+void ScreenQuadMesh::unsetTexture() { textureMaps_.clear(); }
+
 void ScreenQuadMesh::initializeVertexAttributes() {
   // Screen positions.
   vertexArray_.addVertexAttrib(2, GL_FLOAT);
