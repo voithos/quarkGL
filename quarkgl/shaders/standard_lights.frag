@@ -32,13 +32,13 @@ vec3 qrk_shadeAllDirectionalLights(QrkMaterial material, vec3 fragPos,
 }
 
 /** Calculate shading from all active directional lights using deferred data. */
-vec3 qrk_shadeAllDirectionalLightsDeferred(vec3 albedo, float specular,
+vec3 qrk_shadeAllDirectionalLightsDeferred(vec3 albedo, vec3 specular,
                                            float shininess, vec3 fragPos,
                                            vec3 normal, float shadow) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_directionalLightCount; i++) {
-    result += qrk_shadeDirectionalLightDeferred(qrk_directionalLights[i],
-                                                albedo, specular, shininess,
+    result += qrk_shadeDirectionalLightDeferred(albedo, specular, shininess,
+                                                qrk_directionalLights[i],
                                                 fragPos, normal, shadow);
   }
   return result;
@@ -56,13 +56,13 @@ vec3 qrk_shadeAllPointLights(QrkMaterial material, vec3 fragPos, vec3 normal,
 }
 
 /** Calculate shading from all active point lights using deferred data. */
-vec3 qrk_shadeAllPointLightsDeferred(vec3 albedo, float specular,
+vec3 qrk_shadeAllPointLightsDeferred(vec3 albedo, vec3 specular,
                                      float shininess, vec3 fragPos,
                                      vec3 normal) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_pointLightCount; i++) {
-    result += qrk_shadePointLightDeferred(qrk_pointLights[i], albedo, specular,
-                                          shininess, fragPos, normal);
+    result += qrk_shadePointLightDeferred(albedo, specular, shininess,
+                                          qrk_pointLights[i], fragPos, normal);
   }
   return result;
 }
@@ -79,13 +79,12 @@ vec3 qrk_shadeAllSpotLights(QrkMaterial material, vec3 fragPos, vec3 normal,
 }
 
 /** Calculate shading from all active spot lights using deferred data. */
-vec3 qrk_shadeAllSpotLightsDeferred(vec3 albedo, float specular,
-                                    float shininess, vec3 fragPos,
-                                    vec3 normal) {
+vec3 qrk_shadeAllSpotLightsDeferred(vec3 albedo, vec3 specular, float shininess,
+                                    vec3 fragPos, vec3 normal) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_spotLightCount; i++) {
-    result += qrk_shadeSpotLightDeferred(qrk_spotLights[i], albedo, specular,
-                                         shininess, fragPos, normal);
+    result += qrk_shadeSpotLightDeferred(albedo, specular, shininess,
+                                         qrk_spotLights[i], fragPos, normal);
   }
   return result;
 }
@@ -108,7 +107,7 @@ vec3 qrk_shadeAllLights(QrkMaterial material, vec3 fragPos, vec3 normal,
 
 /** Calculate shading from all light sources, except emission textures, using
  * deferred data. */
-vec3 qrk_shadeAllLightsDeferred(vec3 albedo, float specular, float shininess,
+vec3 qrk_shadeAllLightsDeferred(vec3 albedo, vec3 specular, float shininess,
                                 vec3 fragPos, vec3 normal, float shadow) {
   // vec3 directional = qrk_shadeAllDirectionalLightsDeferred(
   // albedo, specular, shininess, fragPos, normal, shadow);
@@ -119,7 +118,7 @@ vec3 qrk_shadeAllLightsDeferred(vec3 albedo, float specular, float shininess,
   return point;
 }
 
-vec3 qrk_shadeAllLightsDeferred(vec3 albedo, float specular, float shininess,
+vec3 qrk_shadeAllLightsDeferred(vec3 albedo, vec3 specular, float shininess,
                                 vec3 fragPos, vec3 normal) {
   return qrk_shadeAllLightsDeferred(albedo, specular, shininess, fragPos,
                                     normal,

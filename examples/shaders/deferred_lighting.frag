@@ -24,7 +24,7 @@ void main() {
   vec3 fragPos_worldSpace = texture(gPosition, texCoords).rgb;
   vec3 fragNormal_worldSpace = texture(gNormal, texCoords).rgb;
   vec3 fragAlbedo = texture(gAlbedoSpecular, texCoords).rgb;
-  float fragSpecular = texture(gAlbedoSpecular, texCoords).a;
+  vec3 fragSpecular = vec3(texture(gAlbedoSpecular, texCoords).a);
   vec3 fragEmission = texture(gEmission, texCoords).rgb;
 
   vec3 fragPos_viewSpace = vec3(view * vec4(fragPos_worldSpace, 1.0));
