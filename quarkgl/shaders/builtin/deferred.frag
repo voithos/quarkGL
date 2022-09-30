@@ -3,7 +3,7 @@
 #pragma qrk_include < lighting.frag>
 #pragma qrk_include < normals.frag>
 
-// An example fragment shader for deferred rendering, into a G-Buffer.
+// Deferred geometry pass fragment shader.
 
 in VS_OUT {
   vec2 texCoords;

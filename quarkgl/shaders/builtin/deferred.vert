@@ -5,7 +5,7 @@ layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec3 vertexTangent;
 layout(location = 3) in vec2 vertexTexCoords;
 
-// An example world-space vertex shader.
+// Deferred geometry pass vertex shader.
 
 out VS_OUT {
   vec2 texCoords;

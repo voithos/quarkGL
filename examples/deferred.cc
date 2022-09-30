@@ -24,6 +24,7 @@ int main() {
 
   qrk::Window win(width, height, "Deferred rendering", /* fullscreen */ false,
                   /* samples */ 0);
+  // Need to use a zero clear color, or else the G-Buffer won't work properly.
   win.setClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
   win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);
@@ -37,9 +38,7 @@ int main() {
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader geometryPassShader(
-      qrk::ShaderPath("examples/shaders/deferred.vert"),
-      qrk::ShaderPath("examples/shaders/deferred.frag"));
+  qrk::DeferredGeometryPassShader geometryPassShader;
   geometryPassShader.addUniformSource(camera);
 
   // Create light registry and add lights.

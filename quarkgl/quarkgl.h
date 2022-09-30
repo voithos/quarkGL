@@ -7,6 +7,7 @@
 // clang-format on
 
 #include <qrk/camera.h>
+#include <qrk/deferred.h>
 #include <qrk/exceptions.h>
 #include <qrk/framebuffer.h>
 #include <qrk/light.h>

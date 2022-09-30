@@ -7,6 +7,7 @@ cc_library(
     deps = [
         ":camera",
         ":core",
+        ":deferred",
         ":exceptions",
         ":framebuffer",
         ":light",
@@ -56,6 +57,19 @@ cc_library(
         "//third_party/glad",
         "//third_party/glm",
         "@glfw",
+    ],
+)
+
+cc_library(
+    name = "deferred",
+    srcs = ["deferred.cc"],
+    hdrs = ["deferred.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":exceptions",
+        ":framebuffer",
+        ":shader",
+        "//third_party/glm",
     ],
 )
 
