@@ -7,9 +7,9 @@
 
 in VS_OUT {
   vec2 texCoords;
-  vec3 fragPos_worldSpace;
-  vec3 fragNormal_worldSpace;
-  mat3 fragTBN_worldSpace;  // Transforms from tangent frame to world frame.
+  vec3 fragPos_viewSpace;
+  vec3 fragNormal_viewSpace;
+  mat3 fragTBN_viewSpace;  // Transforms from tangent frame to view frame.
 }
 fs_in;
 
@@ -24,11 +24,11 @@ void main() {
   // Fill the G-Buffer.
 
   // Map the fragment position.
-  gPosition = fs_in.fragPos_worldSpace;
+  gPosition = fs_in.fragPos_viewSpace;
   // Lookup normal and map from tangent space to view space. Falls back to
   // vertex normal otherwise.
-  gNormal = qrk_getNormal(material, fs_in.texCoords, fs_in.fragTBN_worldSpace,
-                          fs_in.fragNormal_worldSpace);
+  gNormal = qrk_getNormal(material, fs_in.texCoords, fs_in.fragTBN_viewSpace,
+                          fs_in.fragNormal_viewSpace);
 
   gAlbedoSpecular.rgb = qrk_sumDiffuseColor(material, fs_in.texCoords);
   // Use a single channel for specularity. This won't support channel-specific

@@ -9,9 +9,9 @@ layout(location = 3) in vec2 vertexTexCoords;
 
 out VS_OUT {
   vec2 texCoords;
-  vec3 fragPos_worldSpace;
-  vec3 fragNormal_worldSpace;
-  mat3 fragTBN_worldSpace;  // Transforms from tangent frame to world frame.
+  vec3 fragPos_viewSpace;
+  vec3 fragNormal_viewSpace;
+  mat3 fragTBN_viewSpace;  // Transforms from tangent frame to view frame.
 }
 vs_out;
 
@@ -23,17 +23,16 @@ void main() {
   gl_Position = projection * view * model * vec4(vertexPos, 1.0);
 
   vs_out.texCoords = vertexTexCoords;
-  vs_out.fragPos_worldSpace = vec3(model * vec4(vertexPos, 1.0));
+  vs_out.fragPos_viewSpace = vec3(view * model * vec4(vertexPos, 1.0));
 
-  mat3 modelViewInverseTranspose = mat3(transpose(inverse(model)));
+  mat3 modelViewInverseTranspose = mat3(transpose(inverse(view * model)));
 
   // Propagate vertex normals in case we don't have a normal map.
-  vs_out.fragNormal_worldSpace = modelViewInverseTranspose * vertexNormal;
+  vs_out.fragNormal_viewSpace = modelViewInverseTranspose * vertexNormal;
 
   // Build a tangent space transform matrix.
-  vec3 normal_worldSpace = normalize(modelViewInverseTranspose * vertexNormal);
-  vec3 tangent_worldSpace =
-      normalize(modelViewInverseTranspose * vertexTangent);
-  vs_out.fragTBN_worldSpace =
-      qrk_calculateTBN(normal_worldSpace, tangent_worldSpace);
+  vec3 normal_viewSpace = normalize(modelViewInverseTranspose * vertexNormal);
+  vec3 tangent_viewSpace = normalize(modelViewInverseTranspose * vertexTangent);
+  vs_out.fragTBN_viewSpace =
+      qrk_calculateTBN(normal_viewSpace, tangent_viewSpace);
 }

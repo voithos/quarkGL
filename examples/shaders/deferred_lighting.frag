@@ -16,20 +16,13 @@ uniform sampler2D gEmission;
 uniform float shininess;
 uniform QrkAttenuation emissionAttenuation;
 
-// World -> view space.
-uniform mat4 view;
-
 void main() {
   // Extract G-Buffer.
-  vec3 fragPos_worldSpace = texture(gPosition, texCoords).rgb;
-  vec3 fragNormal_worldSpace = texture(gNormal, texCoords).rgb;
+  vec3 fragPos_viewSpace = texture(gPosition, texCoords).rgb;
+  vec3 fragNormal_viewSpace = texture(gNormal, texCoords).rgb;
   vec3 fragAlbedo = texture(gAlbedoSpecular, texCoords).rgb;
   vec3 fragSpecular = vec3(texture(gAlbedoSpecular, texCoords).a);
   vec3 fragEmission = texture(gEmission, texCoords).rgb;
-
-  vec3 fragPos_viewSpace = vec3(view * vec4(fragPos_worldSpace, 1.0));
-  vec3 fragNormal_viewSpace =
-      vec3(transpose(inverse(view)) * vec4(fragNormal_worldSpace, 0.0));
 
   vec3 color = fragAlbedo * 0.05;  // Hard-coded ambient.
   // Shade with normal lights.
