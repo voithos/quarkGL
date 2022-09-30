@@ -4,6 +4,8 @@
 #include <qrk/exceptions.h>
 #include <qrk/framebuffer.h>
 #include <qrk/shader.h>
+#include <qrk/texture.h>
+#include <qrk/texture_registry.h>
 
 #include <glm/glm.hpp>
 
@@ -16,6 +18,30 @@ class DeferredShadingException : public QuarkException {
 class DeferredGeometryPassShader : public Shader {
  public:
   DeferredGeometryPassShader();
+};
+
+class GBuffer : public Framebuffer, public TextureSource {
+ public:
+  GBuffer(int width, int height);
+  explicit GBuffer(ScreenSize size) : GBuffer(size.width, size.height) {}
+  virtual ~GBuffer() = default;
+
+  Texture getPositionTexture() { return positionBuffer_.asTexture(); }
+  Texture getNormalTexture() { return normalBuffer_.asTexture(); }
+  Texture getAlbedoSpecularTexture() {
+    return albedoSpecularBuffer_.asTexture();
+  }
+  Texture getEmissionTexture() { return emissionBuffer_.asTexture(); }
+
+  unsigned int bindTexture(unsigned int nextTextureUnit,
+                           Shader& shader) override;
+
+ private:
+  Attachment positionBuffer_;
+  Attachment normalBuffer_;
+  // RGB used for albedo, A used for specularity.
+  Attachment albedoSpecularBuffer_;
+  Attachment emissionBuffer_;
 };
 
 }  // namespace qrk

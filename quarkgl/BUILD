@@ -69,6 +69,8 @@ cc_library(
         ":exceptions",
         ":framebuffer",
         ":shader",
+        ":texture",
+        ":texture_registry",
         "//third_party/glm",
     ],
 )

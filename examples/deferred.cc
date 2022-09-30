@@ -24,12 +24,12 @@ int main() {
 
   qrk::Window win(width, height, "Deferred rendering", /* fullscreen */ false,
                   /* samples */ 0);
-  // Need to use a zero clear color, or else the G-Buffer won't work properly.
   win.setClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
   win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);
   win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
 
+  // Create camera.
   auto camera =
       std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 5.0f));
   camera->setSpeed(10.0f);
@@ -37,9 +37,6 @@ int main() {
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
-
-  qrk::DeferredGeometryPassShader geometryPassShader;
-  geometryPassShader.addUniformSource(camera);
 
   // Create light registry and add lights.
   auto lightRegistry = std::make_shared<qrk::LightRegistry>();
@@ -98,20 +95,13 @@ int main() {
   };
   // clang-format on
 
-  // Build the G-Buffer.
-  // TODO: Standardize this pattern, and build a TextureSource so that it can
-  // be easily used in a TextureRegistry.
-  qrk::Framebuffer gBuffer(win.getSize());
-  gBuffer.setClearColor(glm::vec4(0.0f));
-  gBuffer.attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
-  // Position and normal are stored as "HDR" colors for higher precision.
-  // Alpha channels unused.
-  auto positionBuffer = gBuffer.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
-  auto normalBuffer = gBuffer.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
-  // RGB used for albedo, A used for specularity.
-  auto albedoSpecularBuffer =
-      gBuffer.attachTexture(qrk::BufferType::COLOR_ALPHA);
-  auto emissionBuffer = gBuffer.attachTexture(qrk::BufferType::COLOR_ALPHA);
+  // Build the G-Buffer and prepare deferred shading.
+  qrk::DeferredGeometryPassShader geometryPassShader;
+  geometryPassShader.addUniformSource(camera);
+
+  auto gBuffer = std::make_shared<qrk::GBuffer>(win.getSize());
+  auto textureRegistry = std::make_shared<qrk::TextureRegistry>();
+  textureRegistry->addTextureSource(gBuffer);
 
   qrk::ScreenQuadMesh screenQuad;
   qrk::ScreenQuadShader gBufferVisShader(
@@ -146,8 +136,8 @@ int main() {
   // Set up the lighting pass.
   qrk::ScreenQuadShader lightingPassShader(
       qrk::ShaderPath("examples/shaders/deferred_lighting.frag"));
-  lightingPassShader.addUniformSource(camera);
   lightingPassShader.addUniformSource(lightRegistry);
+  lightingPassShader.addUniformSource(textureRegistry);
   lightingPassShader.setFloat("shininess", 16.0f);
   lightingPassShader.setFloat("emissionAttenuation.constant", 1.0f);
   lightingPassShader.setFloat("emissionAttenuation.linear", 0.09f);
@@ -156,8 +146,8 @@ int main() {
   // win.enableFaceCull();
   win.loop([&](float deltaTime) {
     // Step 1: geometry pass. Build the G-Buffer.
-    gBuffer.activate();
-    gBuffer.clear();
+    gBuffer->activate();
+    gBuffer->clear();
 
     geometryPassShader.updateUniforms();
 
@@ -172,24 +162,24 @@ int main() {
       }
     }
 
-    gBuffer.deactivate();
+    gBuffer->deactivate();
 
     win.setViewport();
 
     if (gBufferVis > 0) {
       switch (gBufferVis) {
         case 1:
-          screenQuad.setTexture(positionBuffer);
+          screenQuad.setTexture(gBuffer->getPositionTexture());
           break;
         case 2:
-          screenQuad.setTexture(normalBuffer);
+          screenQuad.setTexture(gBuffer->getNormalTexture());
           break;
         case 3:
         case 4:
-          screenQuad.setTexture(albedoSpecularBuffer);
+          screenQuad.setTexture(gBuffer->getAlbedoSpecularTexture());
           break;
         case 5:
-          screenQuad.setTexture(emissionBuffer);
+          screenQuad.setTexture(gBuffer->getEmissionTexture());
           break;
       };
       gBufferVisShader.setInt("gBufferVis", gBufferVis);
@@ -203,22 +193,12 @@ int main() {
     lightingPassShader.updateUniforms();
     // Bind textures.
     screenQuad.unsetTexture();
-    positionBuffer.asTexture().bindToUnit(0);
-    normalBuffer.asTexture().bindToUnit(1);
-    albedoSpecularBuffer.asTexture().bindToUnit(2);
-    emissionBuffer.asTexture().bindToUnit(3);
-    // Bind sampler uniforms.
-    lightingPassShader.setInt("gPosition", 0);
-    lightingPassShader.setInt("gNormal", 1);
-    lightingPassShader.setInt("gAlbedoSpecular", 2);
-    lightingPassShader.setInt("gEmission", 3);
-
-    screenQuad.draw(lightingPassShader);
+    screenQuad.draw(lightingPassShader, textureRegistry.get());
 
     // Step 3: forward render anything else on top.
 
     // Before we do so, we have to blit the depth buffer.
-    gBuffer.blitToDefault(GL_DEPTH_BUFFER_BIT);
+    gBuffer->blitToDefault(GL_DEPTH_BUFFER_BIT);
 
     // Draw the lights.
     lampShader.updateUniforms();
