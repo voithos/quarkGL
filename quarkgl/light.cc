@@ -48,10 +48,9 @@ void LightRegistry::setUseViewTransform(bool useViewTransform) {
   }
 }
 
-DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec3 ambient,
-                                   glm::vec3 diffuse, glm::vec3 specular)
+DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec3 diffuse,
+                                   glm::vec3 specular)
     : direction_(glm::normalize(direction)),
-      ambient_(ambient),
       diffuse_(diffuse),
       specular_(specular) {}
 
@@ -63,7 +62,6 @@ void DirectionalLight::updateUniforms(Shader& shader) {
                    useViewTransform_ ? viewDirection_ : direction_);
   }
   if (hasLightChanged_) {
-    shader.setVec3(uniformName_ + ".ambient", ambient_);
     shader.setVec3(uniformName_ + ".diffuse", diffuse_);
     shader.setVec3(uniformName_ + ".specular", specular_);
   }
@@ -78,10 +76,9 @@ void DirectionalLight::applyViewTransform(const glm::mat4& view) {
   hasViewBeenApplied_ = true;
 }
 
-PointLight::PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse,
+PointLight::PointLight(glm::vec3 position, glm::vec3 diffuse,
                        glm::vec3 specular, Attenuation attenuation)
     : position_(position),
-      ambient_(ambient),
       diffuse_(diffuse),
       specular_(specular),
       attenuation_(attenuation) {}
@@ -94,7 +91,6 @@ void PointLight::updateUniforms(Shader& shader) {
                    useViewTransform_ ? viewPosition_ : position_);
   }
   if (hasLightChanged_) {
-    shader.setVec3(uniformName_ + ".ambient", ambient_);
     shader.setVec3(uniformName_ + ".diffuse", diffuse_);
     shader.setVec3(uniformName_ + ".specular", specular_);
     shader.setFloat(uniformName_ + ".attenuation.constant",
@@ -113,13 +109,12 @@ void PointLight::applyViewTransform(const glm::mat4& view) {
 }
 
 SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, float innerAngle,
-                     float outerAngle, glm::vec3 ambient, glm::vec3 diffuse,
-                     glm::vec3 specular, Attenuation attenuation)
+                     float outerAngle, glm::vec3 diffuse, glm::vec3 specular,
+                     Attenuation attenuation)
     : position_(position),
       direction_(direction),
       innerAngle_(innerAngle),
       outerAngle_(outerAngle),
-      ambient_(ambient),
       diffuse_(diffuse),
       specular_(specular),
       attenuation_(attenuation) {}
@@ -136,7 +131,6 @@ void SpotLight::updateUniforms(Shader& shader) {
   if (hasLightChanged_) {
     shader.setFloat(uniformName_ + ".innerAngle", innerAngle_);
     shader.setFloat(uniformName_ + ".outerAngle", outerAngle_);
-    shader.setVec3(uniformName_ + ".ambient", ambient_);
     shader.setVec3(uniformName_ + ".diffuse", diffuse_);
     shader.setVec3(uniformName_ + ".specular", specular_);
     shader.setFloat(uniformName_ + ".attenuation.constant",

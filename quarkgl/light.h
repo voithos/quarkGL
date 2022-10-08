@@ -21,7 +21,6 @@ struct Attenuation {
 };
 
 constexpr Attenuation DEFAULT_ATTENUATION = {1.0f, 0.09f, 0.032f};
-constexpr glm::vec3 DEFAULT_AMBIENT = glm::vec3(0.1f, 0.1f, 0.1f);
 constexpr glm::vec3 DEFAULT_DIFFUSE = glm::vec3(0.5f, 0.5f, 0.5f);
 constexpr glm::vec3 DEFAULT_SPECULAR = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -121,7 +120,6 @@ class LightRegistry : public UniformSource {
 class DirectionalLight : public Light {
  public:
   DirectionalLight(glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f),
-                   glm::vec3 ambient = DEFAULT_AMBIENT,
                    glm::vec3 diffuse = DEFAULT_DIFFUSE,
                    glm::vec3 specular = DEFAULT_SPECULAR);
 
@@ -131,11 +129,6 @@ class DirectionalLight : public Light {
   void setDirection(glm::vec3 direction) {
     direction_ = direction;
     hasViewDependentChanged_ = true;
-  }
-  glm::vec3 getAmbient() const { return ambient_; }
-  void setAmbient(glm::vec3 ambient) {
-    ambient_ = ambient;
-    hasLightChanged_ = true;
   }
   glm::vec3 getDiffuse() const { return diffuse_; }
   void setDiffuse(glm::vec3 diffuse) {
@@ -159,7 +152,6 @@ class DirectionalLight : public Light {
   glm::vec3 direction_;
   glm::vec3 viewDirection_;
 
-  glm::vec3 ambient_;
   glm::vec3 diffuse_;
   glm::vec3 specular_;
 };
@@ -167,7 +159,6 @@ class DirectionalLight : public Light {
 class PointLight : public Light {
  public:
   PointLight(glm::vec3 position = glm::vec3(0.0f),
-             glm::vec3 ambient = DEFAULT_AMBIENT,
              glm::vec3 diffuse = DEFAULT_DIFFUSE,
              glm::vec3 specular = DEFAULT_SPECULAR,
              Attenuation attenuation = DEFAULT_ATTENUATION);
@@ -178,11 +169,6 @@ class PointLight : public Light {
   void setPosition(glm::vec3 position) {
     position_ = position;
     hasViewDependentChanged_ = true;
-  }
-  glm::vec3 getAmbient() const { return ambient_; }
-  void setAmbient(glm::vec3 ambient) {
-    ambient_ = ambient;
-    hasLightChanged_ = true;
   }
   glm::vec3 getDiffuse() const { return diffuse_; }
   void setDiffuse(glm::vec3 diffuse) {
@@ -211,7 +197,6 @@ class PointLight : public Light {
   glm::vec3 position_;
   glm::vec3 viewPosition_;
 
-  glm::vec3 ambient_;
   glm::vec3 diffuse_;
   glm::vec3 specular_;
 
@@ -224,7 +209,6 @@ class SpotLight : public Light {
             glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f),
             float innerAngle = DEFAULT_INNER_ANGLE,
             float outerAngle = DEFAULT_OUTER_ANGLE,
-            glm::vec3 ambient = DEFAULT_AMBIENT,
             glm::vec3 diffuse = DEFAULT_DIFFUSE,
             glm::vec3 specular = DEFAULT_SPECULAR,
             Attenuation attenuation = DEFAULT_ATTENUATION);
@@ -240,11 +224,6 @@ class SpotLight : public Light {
   void setDirection(glm::vec3 direction) {
     direction_ = direction;
     hasViewDependentChanged_ = true;
-  }
-  glm::vec3 getAmbient() const { return ambient_; }
-  void setAmbient(glm::vec3 ambient) {
-    ambient_ = ambient;
-    hasLightChanged_ = true;
   }
   glm::vec3 getDiffuse() const { return diffuse_; }
   void setDiffuse(glm::vec3 diffuse) {
@@ -278,7 +257,6 @@ class SpotLight : public Light {
   float innerAngle_;
   float outerAngle_;
 
-  glm::vec3 ambient_;
   glm::vec3 diffuse_;
   glm::vec3 specular_;
 

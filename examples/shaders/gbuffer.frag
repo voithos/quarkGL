@@ -13,7 +13,6 @@ void main() {
 
   if (gBufferVis == 1) {
     // Positions.
-    // TODO: How do we visualize this?
     fragColor = vec4(color.rgb, 1.0);
   } else if (gBufferVis == 2) {
     // Normals.

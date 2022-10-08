@@ -13,6 +13,7 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpecular;
 uniform sampler2D gEmission;
 
+uniform vec3 ambient;
 uniform float shininess;
 uniform QrkAttenuation emissionAttenuation;
 
@@ -24,10 +25,10 @@ void main() {
   vec3 fragSpecular = vec3(texture(gAlbedoSpecular, texCoords).a);
   vec3 fragEmission = texture(gEmission, texCoords).rgb;
 
-  vec3 color = fragAlbedo * 0.05;  // Hard-coded ambient.
   // Shade with normal lights.
-  color += qrk_shadeAllLightsDeferred(fragAlbedo, fragSpecular, shininess,
-                                      fragPos_viewSpace, fragNormal_viewSpace);
+  vec3 color =
+      qrk_shadeAllLightsDeferred(fragAlbedo, fragSpecular, ambient, shininess,
+                                 fragPos_viewSpace, fragNormal_viewSpace);
 
   // Add emissions.
   color += qrk_shadeEmissionDeferred(fragEmission, fragPos_viewSpace,

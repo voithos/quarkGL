@@ -40,29 +40,29 @@ int main() {
   mainShader.addUniformSource(lightRegistry);
 
   std::vector<std::shared_ptr<qrk::PointLight>> lights;
-  glm::vec3 ambient(0.0f);
   lights.push_back(std::make_shared<qrk::PointLight>(
-      /*position=*/glm::vec3(0.0f, 0.5f, 1.5f), ambient,
+      /*position=*/glm::vec3(0.0f, 0.5f, 1.5f),
       /*diffuse=*/glm::vec3(5.0f)));
   lights.push_back(std::make_shared<qrk::PointLight>(
-      /*position=*/glm::vec3(-4.0f, 0.5f, -3.0f), ambient,
+      /*position=*/glm::vec3(-4.0f, 0.5f, -3.0f),
       /*diffuse=*/glm::vec3(10.0f, 0.0f, 0.0f)));
   lights.push_back(std::make_shared<qrk::PointLight>(
-      /*position=*/glm::vec3(3.0f, 0.5f, 1.0f), ambient,
+      /*position=*/glm::vec3(3.0f, 0.5f, 1.0f),
       /*diffuse=*/glm::vec3(0.0f, 0.0f, 15.0f)));
   lights.push_back(std::make_shared<qrk::PointLight>(
-      /*position=*/glm::vec3(-0.8f, 2.4f, -1.0f), ambient,
+      /*position=*/glm::vec3(-0.8f, 2.4f, -1.0f),
       /*diffuse=*/glm::vec3(0.0f, 5.0f, 0.0f)));
 
   qrk::Attenuation attenuation = {
       .constant = 0.0f, .linear = 0.0f, .quadratic = 1.0f};
   for (auto& light : lights) {
-    light->setAmbient(glm::vec3(0.0f));
     light->setSpecular(glm::vec3(0.0f));
     light->setAttenuation(attenuation);
     lightRegistry->addLight(light);
   }
 
+  // TODO: Pull this out into a material class.
+  mainShader.setVec3("material.ambient", glm::vec3(0.0f));
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);

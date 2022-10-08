@@ -57,6 +57,8 @@ int main() {
   lightCube.setModelTransform(glm::scale(
       glm::translate(glm::mat4(), pointLight->getPosition()), glm::vec3(0.2f)));
 
+  // TODO: Pull this out into a material class.
+  mainShader.setVec3("material.ambient", glm::vec3(0.1f));
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);

@@ -39,6 +39,8 @@ int main() {
   directionalLight->setSpecular(glm::vec3(0.3f));
   lightRegistry->addLight(directionalLight);
 
+  // TODO: Pull this out into a material class.
+  mainShader.setVec3("material.ambient", glm::vec3(0.1f));
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);

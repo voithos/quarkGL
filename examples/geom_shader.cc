@@ -17,7 +17,7 @@ void main() { fragColor = vec4(1.0); }
 
 int main() {
   qrk::Window win(800, 600, "Geometry shader");
-  win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+  win.setClearColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
   win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);
   win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
@@ -32,6 +32,8 @@ int main() {
                          qrk::ShaderPath("examples/shaders/phong.frag"),
                          qrk::ShaderPath("examples/shaders/explode.geom"));
 
+  // TODO: Pull this out into a material class.
+  mainShader.setVec3("material.ambient", glm::vec3(0.1f));
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);

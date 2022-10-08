@@ -39,11 +39,6 @@ std::unique_ptr<qrk::Model> loadModel() {
   // Default to the gltf DamagedHelmet.
   auto helmet = std::make_unique<qrk::Model>(
       "examples/assets/DamagedHelmet/DamagedHelmet.gltf");
-
-  helmet->setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f)),
-                  glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-      glm::vec3(1.0f)));
   return helmet;
 }
 
@@ -69,6 +64,8 @@ int main(int argc, char** argv) {
                          qrk::ShaderPath("examples/shaders/model_render.frag"));
   mainShader.addUniformSource(camera);
 
+  // TODO: Pull this out into a material class.
+  mainShader.setVec3("material.ambient", glm::vec3(0.1f));
   mainShader.setFloat("material.shininess", 32.0f);
   mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
   mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);

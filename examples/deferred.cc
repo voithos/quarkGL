@@ -54,7 +54,6 @@ int main() {
                   ((gen() % 100) / 100.0f) * 6.0f - 4.0f,
                   ((gen() % 100) / 100.0f) * 6.0f - 3.0f));
 
-    light->setAmbient(glm::vec3(0.0f));
     glm::vec3 lightColor(
         ((gen() % 100) / 200.0f) + 0.5f,  // between 0.5 and 1.0
         ((gen() % 100) / 200.0f) + 0.5f,  // between 0.5 and 1.0
@@ -138,6 +137,7 @@ int main() {
       qrk::ShaderPath("examples/shaders/deferred_lighting.frag"));
   lightingPassShader.addUniformSource(lightRegistry);
   lightingPassShader.addUniformSource(textureRegistry);
+  lightingPassShader.setVec3("ambient", glm::vec3(0.05f));
   lightingPassShader.setFloat("shininess", 16.0f);
   lightingPassShader.setFloat("emissionAttenuation.constant", 1.0f);
   lightingPassShader.setFloat("emissionAttenuation.linear", 0.09f);
