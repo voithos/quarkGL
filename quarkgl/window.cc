@@ -188,6 +188,8 @@ void Window::processInput(float deltaTime) {
 }
 
 void Window::keyCallback(int key, int scancode, int action, int mods) {
+  if (keyInputPaused_) return;
+
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     if (escBehavior_ == EscBehavior::TOGGLE_MOUSE_CAPTURE) {
       auto inputMode = glfwGetInputMode(window_, GLFW_CURSOR);
@@ -224,18 +226,24 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
 }
 
 void Window::scrollCallback(double xoffset, double yoffset) {
+  if (mouseInputPaused_) return;
+
   if (boundCameraControls_) {
     boundCameraControls_->scroll(*boundCamera_, xoffset, yoffset);
   }
 }
 
 void Window::mouseMoveCallback(double xpos, double ypos) {
+  if (mouseInputPaused_) return;
+
   if (boundCameraControls_) {
     boundCameraControls_->mouseMove(*boundCamera_, xpos, ypos);
   }
 }
 
 void Window::mouseButtonCallback(int button, int action, int mods) {
+  if (mouseInputPaused_) return;
+
   if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
     if (mouseButtonBehavior_ == MouseButtonBehavior::CAPTURE_MOUSE) {
       enableMouseCapture();

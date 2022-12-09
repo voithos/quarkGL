@@ -152,6 +152,9 @@ class Window : public UniformSource {
   void enableMouseButtonInput();
   void disableMouseButtonInput();
 
+  void setKeyInputPaused(bool isPaused) { keyInputPaused_ = isPaused; }
+  void setMouseInputPaused(bool isPaused) { mouseInputPaused_ = isPaused; }
+
   void enableMouseCapture();
   void disableMouseCapture();
 
@@ -191,6 +194,8 @@ class Window : public UniformSource {
   bool scrollInputEnabled_ = false;
   bool mouseMoveInputEnabled_ = false;
   bool mouseButtonInputEnabled_ = false;
+  bool keyInputPaused_ = false;
+  bool mouseInputPaused_ = false;
   std::vector<std::tuple<int, std::function<void(int)>>> keyPressHandlers_;
   std::vector<std::tuple<int, std::function<void(int)>>> mouseButtonHandlers_;
 

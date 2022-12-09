@@ -162,6 +162,9 @@ int main(int argc, char** argv) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    win.setMouseInputPaused(io.WantCaptureMouse);
+    win.setKeyInputPaused(io.WantCaptureKeyboard);
+
     ImGui::ShowDemoWindow(nullptr);
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
