@@ -11,6 +11,9 @@
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
 #include "absl/flags/usage.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 ABSL_FLAG(std::string, model, "", "Path to a model file");
 
@@ -53,6 +56,13 @@ int main(int argc, char** argv) {
   win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);
   win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
+
+  // Setup Dear ImGui.
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO();
+  ImGui_ImplGlfw_InitForOpenGL(win.getGlfwRef(), /*install_callbacks=*/true);
+  ImGui_ImplOpenGL3_Init("#version 460 core");
 
   auto camera =
       std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
@@ -146,7 +156,21 @@ int main(int argc, char** argv) {
     // Draw skybox.
     skyboxShader.updateUniforms();
     skybox.draw(skyboxShader);
+
+    // ImGui logic.
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::ShowDemoWindow(nullptr);
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   });
+
+  // Cleanup.
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
 
   return 0;
 }

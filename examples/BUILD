@@ -20,6 +20,7 @@ cc_binary(
         "//quarkgl",
         "//third_party/glad",
         "//third_party/glm",
+        "//third_party/imgui",
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/flags:parse",
         "@com_google_absl//absl/flags:usage",
