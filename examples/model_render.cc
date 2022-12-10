@@ -31,8 +31,13 @@ out vec4 fragColor;
 void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
 )SHADER";
 
+struct ModelRenderOptions {
+  bool useVertexNormals = false;
+  bool drawNormals = false;
+};
+
 /** Loads a model based on command line flag, or a default. */
-std::unique_ptr<qrk::Model> loadModel() {
+std::unique_ptr<qrk::Model> loadModelOrDefault() {
   std::string modelPath = absl::GetFlag(FLAGS_model);
 
   if (!modelPath.empty()) {
@@ -50,7 +55,7 @@ int main(int argc, char** argv) {
       "quarkGL model viewer. Usage:\n  model_render --model path/to/model.obj");
   absl::ParseCommandLine(argc, argv);
 
-  qrk::Window win(800, 600, "Model render", /* fullscreen */ false,
+  qrk::Window win(1920, 1080, "Model Render", /* fullscreen */ false,
                   /* samples */ 4);
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   win.enableMouseCapture();
@@ -125,25 +130,39 @@ int main(int argc, char** argv) {
       glm::translate(glm::mat4(), pointLight->getPosition()), glm::vec3(0.2f)));
 
   // Load model.
-  std::unique_ptr<qrk::Model> model = loadModel();
+  std::unique_ptr<qrk::Model> model = loadModelOrDefault();
 
-  // TODO: Extract this out into a struct for the model viewer.
-  bool useVertexNormals = false;
-  win.addKeyPressHandler(
-      GLFW_KEY_N, [&](int mods) { useVertexNormals = !useVertexNormals; });
-  bool drawNormals = false;
-  win.addKeyPressHandler(GLFW_KEY_1,
-                         [&](int mods) { drawNormals = !drawNormals; });
+  // Prepare opts for usage.
+  ModelRenderOptions opts;
 
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
+    // ImGui logic.
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    win.setMouseInputPaused(io.WantCaptureMouse);
+    win.setKeyInputPaused(io.WantCaptureKeyboard);
+
+    // == Begin ImGUI UI. ==
+    ImGui::Begin("Model Render");
+
+    ImGui::Checkbox("Vertex normals", &opts.useVertexNormals);
+    ImGui::Checkbox("Draw vertex normals", &opts.drawNormals);
+
+    ImGui::End();
+
+    ImGui::Render();
+    // == End ImGUI UI. ==
+
     // Draw main models.
     // TODO: Set up environment mapping with the skybox.
     mainShader.updateUniforms();
-    mainShader.setBool("useVertexNormals", useVertexNormals);
+    mainShader.setBool("useVertexNormals", opts.useVertexNormals);
     model->draw(mainShader);
 
-    if (drawNormals) {
+    if (opts.drawNormals) {
       // Draw the normals.
       normalShader.updateUniforms();
       model->draw(normalShader);
@@ -157,16 +176,7 @@ int main(int argc, char** argv) {
     skyboxShader.updateUniforms();
     skybox.draw(skyboxShader);
 
-    // ImGui logic.
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    win.setMouseInputPaused(io.WantCaptureMouse);
-    win.setKeyInputPaused(io.WantCaptureKeyboard);
-
-    ImGui::ShowDemoWindow(nullptr);
-    ImGui::Render();
+    // Finally, draw ImGui data.
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   });
 
