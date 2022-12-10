@@ -196,6 +196,7 @@ class Window : public UniformSource {
   bool mouseButtonInputEnabled_ = false;
   bool keyInputPaused_ = false;
   bool mouseInputPaused_ = false;
+  bool mouseCaptured_ = false;
   std::vector<std::tuple<int, std::function<void(int)>>> keyPressHandlers_;
   std::vector<std::tuple<int, std::function<void(int)>>> mouseButtonHandlers_;
 

@@ -1,5 +1,7 @@
 #include <qrk/camera.h>
 
+#include <iostream>
+
 namespace qrk {
 
 Camera::Camera(glm::vec3 position, glm::vec3 worldUp, float yaw, float pitch,
@@ -94,25 +96,25 @@ void Camera::zoom(float offset) {
   fov_ = glm::clamp(fov_ - offset, MIN_FOV, MAX_FOV);
 }
 
-void FlyCameraControls::resizeWindow(int width, int height) {
-  width_ = width;
-  height_ = height;
-  if (!initialized_) {
-    lastX_ = width_ / 2.0f;
-    lastY_ = height_ / 2.0f;
-    initialized_ = true;
-  }
-}
+void FlyCameraControls::resizeWindow(int width, int height) {}
 
-void FlyCameraControls::scroll(Camera& camera, double xoffset, double yoffset) {
+void FlyCameraControls::scroll(Camera& camera, double xoffset, double yoffset,
+                               bool mouseCaptured) {
+  // Always respond to scroll.
   camera.zoom(yoffset);
 }
 
-void FlyCameraControls::mouseMove(Camera& camera, double xpos, double ypos) {
-  if (initialMouse_) {
+void FlyCameraControls::mouseMove(Camera& camera, double xpos, double ypos,
+                                  bool mouseCaptured) {
+  // Only move when dragging, or when the mouse is captured.
+  if (!(dragging_ || mouseCaptured)) {
+    return;
+  }
+
+  if (!initialized_) {
     lastX_ = xpos;
     lastY_ = ypos;
-    initialMouse_ = false;
+    initialized_ = true;
   }
   float xoffset = xpos - lastX_;
   // Reversed since y-coordinates range from bottom to top.
@@ -121,6 +123,16 @@ void FlyCameraControls::mouseMove(Camera& camera, double xpos, double ypos) {
   lastY_ = ypos;
 
   camera.rotate(xoffset, yoffset);
+}
+
+void FlyCameraControls::mouseButton(Camera& camera, int button, int action,
+                                    int mods, bool mouseCaptured) {
+  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    dragging_ = true;
+    initialized_ = false;
+  } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+    dragging_ = false;
+  }
 }
 
 void FlyCameraControls::processInput(GLFWwindow* window, Camera& camera,

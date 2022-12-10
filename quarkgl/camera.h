@@ -105,8 +105,12 @@ class Camera : public UniformSource, public ViewSource {
 class CameraControls {
  public:
   virtual void resizeWindow(int width, int height) = 0;
-  virtual void scroll(Camera& camera, double xoffset, double yoffset) = 0;
-  virtual void mouseMove(Camera& camera, double xpos, double ypos) = 0;
+  virtual void scroll(Camera& camera, double xoffset, double yoffset,
+                      bool mouseCaptured) = 0;
+  virtual void mouseMove(Camera& camera, double xpos, double ypos,
+                         bool mouseCaptured) = 0;
+  virtual void mouseButton(Camera& camera, int button, int action, int mods,
+                           bool mouseCaptured) = 0;
   virtual void processInput(GLFWwindow* window, Camera& camera,
                             float deltaTime) = 0;
 };
@@ -115,19 +119,21 @@ class CameraControls {
 class FlyCameraControls : public CameraControls {
  public:
   virtual ~FlyCameraControls() = default;
-  void resizeWindow(int width, int height);
-  void scroll(Camera& camera, double xoffset, double yoffset);
-  void mouseMove(Camera& camera, double xpos, double ypos);
-  void processInput(GLFWwindow* window, Camera& camera, float deltaTime);
+  void resizeWindow(int width, int height) override;
+  void scroll(Camera& camera, double xoffset, double yoffset,
+              bool mouseCaptured) override;
+  void mouseMove(Camera& camera, double xpos, double ypos,
+                 bool mouseCaptured) override;
+  void mouseButton(Camera& camera, int button, int action, int mods,
+                   bool mouseCaptured) override;
+  void processInput(GLFWwindow* window, Camera& camera,
+                    float deltaTime) override;
 
  private:
-  bool initialized_ = false;
-  int width_;
-  int height_;
-
   float lastX_;
   float lastY_;
-  bool initialMouse_ = true;
+  bool initialized_ = false;
+  bool dragging_ = false;
 };
 
 }  // namespace qrk

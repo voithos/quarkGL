@@ -229,7 +229,8 @@ void Window::scrollCallback(double xoffset, double yoffset) {
   if (mouseInputPaused_) return;
 
   if (boundCameraControls_) {
-    boundCameraControls_->scroll(*boundCamera_, xoffset, yoffset);
+    boundCameraControls_->scroll(*boundCamera_, xoffset, yoffset,
+                                 mouseCaptured_);
   }
 }
 
@@ -237,7 +238,7 @@ void Window::mouseMoveCallback(double xpos, double ypos) {
   if (mouseInputPaused_) return;
 
   if (boundCameraControls_) {
-    boundCameraControls_->mouseMove(*boundCamera_, xpos, ypos);
+    boundCameraControls_->mouseMove(*boundCamera_, xpos, ypos, mouseCaptured_);
   }
 }
 
@@ -262,6 +263,11 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
       }
     }
   }
+
+  if (boundCameraControls_) {
+    boundCameraControls_->mouseButton(*boundCamera_, button, action, mods,
+                                      mouseCaptured_);
+  }
 }
 
 void Window::addKeyPressHandler(int glfwKey, std::function<void(int)> handler) {
@@ -274,10 +280,12 @@ void Window::addMouseButtonHandler(int glfwMouseButton,
 
 void Window::enableMouseCapture() {
   glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  mouseCaptured_ = true;
 }
 
 void Window::disableMouseCapture() {
   glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+  mouseCaptured_ = false;
 }
 
 void Window::bindCamera(std::shared_ptr<Camera> camera) {
