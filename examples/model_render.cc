@@ -34,7 +34,46 @@ void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
 struct ModelRenderOptions {
   bool useVertexNormals = false;
   bool drawNormals = false;
+  bool captureMouse = true;
 };
+
+// Helper to display a little (?) mark which shows a tooltip when hovered.
+static void helpMarker(const char* desc) {
+  ImGui::TextDisabled("(?)");
+  if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
+    ImGui::BeginTooltip();
+    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+    ImGui::TextUnformatted(desc);
+    ImGui::PopTextWrapPos();
+    ImGui::EndTooltip();
+  }
+}
+
+// Called during game loop.
+void renderImGuiUI(ModelRenderOptions& opts) {
+  // ImGui::ShowDemoWindow();
+
+  ImGui::Begin("Model Render");
+
+  if (ImGui::CollapsingHeader("Rendering")) {
+    ImGui::Checkbox("Vertex normals", &opts.useVertexNormals);
+    ImGui::SameLine();
+    helpMarker(
+        "Whether to use vertex normals for rendering. If false, a normal map "
+        "will be used if available.");
+  }
+
+  if (ImGui::CollapsingHeader("Interaction")) {
+    ImGui::Checkbox("Capture mouse", &opts.captureMouse);
+  }
+
+  if (ImGui::CollapsingHeader("Debug")) {
+    ImGui::Checkbox("Draw vertex normals", &opts.drawNormals);
+  }
+
+  ImGui::End();
+  ImGui::Render();
+}
 
 /** Loads a model based on command line flag, or a default. */
 std::unique_ptr<qrk::Model> loadModelOrDefault() {
@@ -145,17 +184,14 @@ int main(int argc, char** argv) {
     win.setMouseInputPaused(io.WantCaptureMouse);
     win.setKeyInputPaused(io.WantCaptureKeyboard);
 
-    // == Begin ImGUI UI. ==
-    ImGui::Begin("Model Render");
+    renderImGuiUI(opts);
 
-    ImGui::Checkbox("Vertex normals", &opts.useVertexNormals);
-    ImGui::Checkbox("Draw vertex normals", &opts.drawNormals);
+    // Post-process options. Some option values are used later during rendering.
+    win.setMouseButtonBehavior(opts.captureMouse
+                                   ? qrk::MouseButtonBehavior::CAPTURE_MOUSE
+                                   : qrk::MouseButtonBehavior::NONE);
 
-    ImGui::End();
-
-    ImGui::Render();
-    // == End ImGUI UI. ==
-
+    // == Main render path ==
     // Draw main models.
     // TODO: Set up environment mapping with the skybox.
     mainShader.updateUniforms();
@@ -175,6 +211,8 @@ int main(int argc, char** argv) {
     // Draw skybox.
     skyboxShader.updateUniforms();
     skybox.draw(skyboxShader);
+
+    // == End render path ==
 
     // Finally, draw ImGui data.
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

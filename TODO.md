@@ -1,9 +1,18 @@
 # TODOs
 
 ## Features
+- [ ] P0: Orbit controls
+- [ ] P0: Model render features
+  - [ ] Auto spin controls
+  - [ ] Camera mode
+  - [ ] Ambient color
+  - [ ] Light color / position / etc
+  - [ ] Various algorithm params?
+  - [ ] Load different model after the fact via UI
 - [ ] P0: Implement SSAO
 - [ ] P0: Implement PBR lighting
 - [ ] P0: Implement tessellation
+- [ ] P0: Update README / documentation
 - [ ] P1: Implement point light shadow maps: https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
 - [ ] P1: Add parallax mapping
 - [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
@@ -16,12 +25,11 @@
 - [ ] P2: Implement frustum culling. https://learnopengl.com/Guest-Articles/2021/Scene/Frustum-Culling
 - [ ] P2: Consider supporting uniform buffer objects. https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
 - [ ] P2: Go through some of the shader effects from https://lettier.github.io/3d-game-shaders-for-beginners/index.html
-- [ ] P2: Add dynamic UI support, a la https://github.com/ocornut/imgui
 - [ ] P2: Add automatic exposure: https://bruop.github.io/exposure/
 - [ ] P3: Implement IBL (image based lighting)
+- [ ] P3: Area lights https://learnopengl.com/Guest-Articles/2022/Area-Lights
 - [ ] P3: Tons of shadow map improvements described here: https://docs.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps
 - [ ] P3: Physically based bloom: https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom
-- [ ] P3: Update README / documentation
 - [ ] P3: Add a wireframe mode.
 - [ ] P4: Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
@@ -78,3 +86,4 @@
 - [x] P0: model loader doesn't honor transforms
 - [x] P3: Add instancing to model?
 - [x] P0: Implement deferred shading
+- [x] P2: Add dynamic UI support, a la https://github.com/ocornut/imgui
