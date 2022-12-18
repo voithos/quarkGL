@@ -1,7 +1,6 @@
 # TODOs
 
 ## Features
-- [ ] P0: Orbit controls
 - [ ] P0: Model render features
   - [ ] Auto spin controls
   - [ ] Camera mode
@@ -87,3 +86,4 @@
 - [x] P3: Add instancing to model?
 - [x] P0: Implement deferred shading
 - [x] P2: Add dynamic UI support, a la https://github.com/ocornut/imgui
+- [x] P0: Orbit controls

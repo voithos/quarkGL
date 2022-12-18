@@ -53,11 +53,21 @@ class Camera : public UniformSource, public ViewSource {
   void lookAt(glm::vec3 center);
 
   glm::vec3 getPosition() const { return position_; }
-  glm::vec3 getFront() const { return front_; }
+  void setPosition(glm::vec3 position) { position_ = position; }
+  float getYaw() const { return yaw_; }
+  void setYaw(float yaw) {
+    yaw_ = yaw;
+    updateCameraVectors();
+  }
+  float getPitch() const { return pitch_; }
+  void setPitch(float pitch) {
+    pitch_ = pitch;
+    updateCameraVectors();
+  }
   float getFov() const { return fov_; }
+  void setFov(float fov) { fov_ = fov; }
 
-  // TODO: Allow programmatic position modification.
-  // TODO: Add the rest of the getters/setters for fields.
+  // TODO: Move speed / sensitivity to CameraControls
   float getSpeed() const { return speed_; }
   void setSpeed(float speed) { speed_ = speed; }
   float getAspectRatio() const { return aspectRatio_; }
@@ -90,6 +100,8 @@ class Camera : public UniformSource, public ViewSource {
   glm::vec3 right_;
   glm::vec3 worldUp_;
 
+  // The **clockwise** angle that the camera is facing, measured from the
+  // positive X axis.
   float yaw_;
   float pitch_;
   float speed_;
@@ -99,6 +111,11 @@ class Camera : public UniformSource, public ViewSource {
   float aspectRatio_;
   float near_;
   float far_;
+};
+
+struct MouseDelta {
+  float xoffset;
+  float yoffset;
 };
 
 // Interface for camera controllers.
@@ -113,6 +130,19 @@ class CameraControls {
                            bool mouseCaptured) = 0;
   virtual void processInput(GLFWwindow* window, Camera& camera,
                             float deltaTime) = 0;
+
+  // Base helpers; call these from subclasses.
+  void handleDragStartEnd(int button, int action);
+  MouseDelta calculateMouseDelta(double xpos, double ypos);
+
+ protected:
+  // Whether input updates should use the last mouse positions to calculate
+  // delta, or to start from the current positions.
+  bool initialized_ = false;
+  // Whether a mouse is being click+dragged.
+  bool dragging_ = false;
+  float lastMouseX_;
+  float lastMouseY_;
 };
 
 // Camera controls that implement a fly mode, similar to DCC tools.
@@ -128,12 +158,44 @@ class FlyCameraControls : public CameraControls {
                    bool mouseCaptured) override;
   void processInput(GLFWwindow* window, Camera& camera,
                     float deltaTime) override;
+};
+
+// Camera controls that implement an orbit mode at a focal point.
+class OrbitCameraControls : public CameraControls {
+ public:
+  OrbitCameraControls(Camera& camera, glm::vec3 center = glm::vec3(0.0f));
+  virtual ~OrbitCameraControls() = default;
+  void resizeWindow(int width, int height) override;
+  void scroll(Camera& camera, double xoffset, double yoffset,
+              bool mouseCaptured) override;
+  void mouseMove(Camera& camera, double xpos, double ypos,
+                 bool mouseCaptured) override;
+  void mouseButton(Camera& camera, int button, int action, int mods,
+                   bool mouseCaptured) override;
+  void processInput(GLFWwindow* window, Camera& camera,
+                    float deltaTime) override;
+
+  glm::vec3 getCenter() const { return center_; }
+  void setCenter(glm::vec3 center) { center_ = center; }
+
+  // Updates the camera position and orientation to match the current orbit
+  // position.
+  void updateCamera(Camera& camera);
 
  private:
-  float lastX_;
-  float lastY_;
-  bool initialized_ = false;
-  bool dragging_ = false;
+  static constexpr float MIN_RADIUS = 0.1f;
+  static constexpr float MAX_RADIUS = 100.0f;
+  // The center point that we're orbiting around.
+  glm::vec3 center_;
+  // The distance from the center.
+  float radius_;
+  // The **clockwise** angle in degrees that the camera is rotated about the
+  // center.
+  float azimuth_;
+  // The angle in degrees that the camera is tilted up or down.
+  float altitude_;
+  // TODO: Sensitivity should be set on the base class.
+  float sensitivity_ = 0.1f;
 };
 
 }  // namespace qrk

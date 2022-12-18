@@ -4,6 +4,10 @@
 
 namespace qrk {
 
+namespace {
+constexpr float POLAR_CAP = 90.0f - 0.1f;
+}
+
 Camera::Camera(glm::vec3 position, glm::vec3 worldUp, float yaw, float pitch,
                float speed, float sensitivity, float fov, float aspectRatio,
                float near, float far)
@@ -86,7 +90,7 @@ void Camera::rotate(float xoffset, float yoffset, bool constrainPitch) {
   pitch_ += yoffset;
 
   if (constrainPitch) {
-    pitch_ = glm::clamp(pitch_, -89.0f, 89.0f);
+    pitch_ = glm::clamp(pitch_, -POLAR_CAP, POLAR_CAP);
   }
 
   updateCameraVectors();
@@ -94,6 +98,29 @@ void Camera::rotate(float xoffset, float yoffset, bool constrainPitch) {
 
 void Camera::zoom(float offset) {
   fov_ = glm::clamp(fov_ - offset, MIN_FOV, MAX_FOV);
+}
+
+void CameraControls::handleDragStartEnd(int button, int action) {
+  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    dragging_ = true;
+    initialized_ = false;
+  } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+    dragging_ = false;
+  }
+}
+
+MouseDelta CameraControls::calculateMouseDelta(double xpos, double ypos) {
+  if (!initialized_) {
+    lastMouseX_ = xpos;
+    lastMouseY_ = ypos;
+    initialized_ = true;
+  }
+  float xoffset = xpos - lastMouseX_;
+  // Reversed since y-coordinates range from bottom to top.
+  float yoffset = lastMouseY_ - ypos;
+  lastMouseX_ = xpos;
+  lastMouseY_ = ypos;
+  return MouseDelta{xoffset, yoffset};
 }
 
 void FlyCameraControls::resizeWindow(int width, int height) {}
@@ -111,28 +138,14 @@ void FlyCameraControls::mouseMove(Camera& camera, double xpos, double ypos,
     return;
   }
 
-  if (!initialized_) {
-    lastX_ = xpos;
-    lastY_ = ypos;
-    initialized_ = true;
-  }
-  float xoffset = xpos - lastX_;
-  // Reversed since y-coordinates range from bottom to top.
-  float yoffset = lastY_ - ypos;
-  lastX_ = xpos;
-  lastY_ = ypos;
+  MouseDelta delta = calculateMouseDelta(xpos, ypos);
 
-  camera.rotate(xoffset, yoffset);
+  camera.rotate(delta.xoffset, delta.yoffset);
 }
 
 void FlyCameraControls::mouseButton(Camera& camera, int button, int action,
                                     int mods, bool mouseCaptured) {
-  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-    dragging_ = true;
-    initialized_ = false;
-  } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-    dragging_ = false;
-  }
+  handleDragStartEnd(button, action);
 }
 
 void FlyCameraControls::processInput(GLFWwindow* window, Camera& camera,
@@ -155,6 +168,68 @@ void FlyCameraControls::processInput(GLFWwindow* window, Camera& camera,
   if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
     camera.move(qrk::CameraDirection::DOWN, deltaTime);
   }
+}
+
+OrbitCameraControls::OrbitCameraControls(Camera& camera, glm::vec3 center)
+    : center_(center) {
+  glm::vec3 dir = camera.getPosition() - center;
+  radius_ = glm::clamp(glm::length(dir), MIN_RADIUS, MAX_RADIUS);
+  glm::vec3 normdir = glm::normalize(dir);
+  // TODO: Fix this, atan2 args are backwards.
+  azimuth_ = glm::mod<float>(glm::degrees(atan2(normdir.x, normdir.z)) * -1.0f,
+                             360.0f) +
+             90.0f;
+  altitude_ =
+      glm::clamp<float>(glm::degrees(asin(normdir.y)), -POLAR_CAP, POLAR_CAP);
+
+  updateCamera(camera);
+}
+
+void OrbitCameraControls::resizeWindow(int width, int height) {}
+
+void OrbitCameraControls::scroll(Camera& camera, double xoffset, double yoffset,
+                                 bool mouseCaptured) {
+  radius_ =
+      glm::clamp(radius_ - static_cast<float>(yoffset), MIN_RADIUS, MAX_RADIUS);
+  updateCamera(camera);
+}
+
+void OrbitCameraControls::mouseMove(Camera& camera, double xpos, double ypos,
+                                    bool mouseCaptured) {
+  // Only move when dragging, or when the mouse is captured.
+  if (!(dragging_ || mouseCaptured)) {
+    return;
+  }
+
+  MouseDelta delta = calculateMouseDelta(xpos, ypos);
+
+  // Constrain azimuth to be 0-360 to avoid floating point error.
+  azimuth_ = glm::mod(azimuth_ + delta.xoffset * sensitivity_, 360.0f);
+  altitude_ = glm::clamp(altitude_ - delta.yoffset * sensitivity_, -POLAR_CAP,
+                         POLAR_CAP);
+
+  updateCamera(camera);
+}
+
+void OrbitCameraControls::mouseButton(Camera& camera, int button, int action,
+                                      int mods, bool mouseCaptured) {
+  handleDragStartEnd(button, action);
+}
+
+void OrbitCameraControls::processInput(GLFWwindow* window, Camera& camera,
+                                       float deltaTime) {}
+
+void OrbitCameraControls::updateCamera(Camera& camera) {
+  // Compute camera position.
+  glm::vec3 cameraPosition;
+  cameraPosition.x = center_.x + radius_ * cos(glm::radians(altitude_)) *
+                                     cos(glm::radians(azimuth_));
+  cameraPosition.y = center_.y + radius_ * sin(glm::radians(altitude_));
+  cameraPosition.z = center_.z + radius_ * cos(glm::radians(altitude_)) *
+                                     sin(glm::radians(azimuth_));
+
+  camera.setPosition(cameraPosition);
+  camera.lookAt(center_);
 }
 
 }  // namespace qrk

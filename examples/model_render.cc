@@ -34,7 +34,7 @@ void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
 struct ModelRenderOptions {
   bool useVertexNormals = false;
   bool drawNormals = false;
-  bool captureMouse = true;
+  bool captureMouse = false;
 };
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
@@ -97,9 +97,7 @@ int main(int argc, char** argv) {
   qrk::Window win(1920, 1080, "Model Render", /* fullscreen */ false,
                   /* samples */ 4);
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-  win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);
-  win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
 
   // Setup Dear ImGui.
   IMGUI_CHECKVERSION();
@@ -110,7 +108,7 @@ int main(int argc, char** argv) {
 
   auto camera =
       std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
-  auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
+  auto cameraControls = std::make_shared<qrk::OrbitCameraControls>(*camera);
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
