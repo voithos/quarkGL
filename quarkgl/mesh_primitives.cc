@@ -1,5 +1,7 @@
 #include <qrk/mesh_primitives.h>
 
+#include <iostream>
+
 namespace qrk {
 
 // clang-format off
@@ -122,7 +124,96 @@ void CubeMesh::loadMeshAndTextures(const std::vector<TextureMap>& textureMaps) {
   loadMeshData(cubeVertices, sizeof(cubeVertices) / cubeVertexSizeBytes,
                cubeVertexSizeBytes, /*indices=*/{}, textureMaps);
 }
+
 void CubeMesh::initializeVertexAttributes() {
+  // Positions.
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
+  // Normals.
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
+  // Tangents.
+  vertexArray_.addVertexAttrib(3, GL_FLOAT);
+  // Texture coordinates.
+  vertexArray_.addVertexAttrib(2, GL_FLOAT);
+
+  vertexArray_.finalizeVertexAttribs();
+}
+
+// clang-format off
+constexpr float roomVertices[] = {
+    // positions           // normals            // tangents           // texture coords
+
+    // back
+    -0.5f, -0.5f, -0.5f,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
+
+    // front
+    -0.5f, -0.5f,  0.5f,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   0.0f, 1.0f,
+
+    // left
+    -0.5f,  0.5f,  0.5f,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   1.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   1.0f, 0.0f,
+
+    // right
+     0.5f,  0.5f,  0.5f,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   1.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   0.0f, 1.0f,
+
+    // bottom
+    -0.5f, -0.5f, -0.5f,   0.0f,  1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,   0.0f,  1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,   0.0f,  1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,   0.0f,  1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,   0.0f,  1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f,  1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, 1.0f,
+
+    // top
+    -0.5f,  0.5f, -0.5f,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, 1.0f
+};
+// clang-format on
+
+RoomMesh::RoomMesh(std::string texturePath) {
+  std::vector<TextureMap> textureMaps;
+  if (!texturePath.empty()) {
+    TextureMap textureMap(Texture::load(texturePath.c_str()),
+                          TextureMapType::DIFFUSE);
+    textureMaps.push_back(textureMap);
+  }
+  loadMeshAndTextures(textureMaps);
+}
+
+RoomMesh::RoomMesh(const std::vector<TextureMap>& textureMaps) {
+  loadMeshAndTextures(textureMaps);
+}
+
+void RoomMesh::loadMeshAndTextures(const std::vector<TextureMap>& textureMaps) {
+  std::cout << "HI THERE" << std::endl;
+  constexpr unsigned int roomVertexSizeBytes = 11 * sizeof(float);
+  loadMeshData(roomVertices, sizeof(roomVertices) / roomVertexSizeBytes,
+               roomVertexSizeBytes, /*indices=*/{}, textureMaps);
+}
+
+void RoomMesh::initializeVertexAttributes() {
   // Positions.
   vertexArray_.addVertexAttrib(3, GL_FLOAT);
   // Normals.

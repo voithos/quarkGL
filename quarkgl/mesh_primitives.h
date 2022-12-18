@@ -30,6 +30,17 @@ class CubeMesh : public PrimitiveMesh {
   void initializeVertexAttributes() override;
 };
 
+// Like CubeMesh, but with normals pointing inward.
+class RoomMesh : public PrimitiveMesh {
+ public:
+  explicit RoomMesh(std::string texturePath = "");
+  explicit RoomMesh(const std::vector<TextureMap>& textureMaps);
+
+ protected:
+  void loadMeshAndTextures(const std::vector<TextureMap>& textureMaps);
+  void initializeVertexAttributes() override;
+};
+
 class SkyboxMesh : public PrimitiveMesh {
  public:
   // Creates a new skybox mesh from a set of 6 textures for the faces. Textures
