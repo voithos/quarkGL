@@ -3,11 +3,15 @@
 ## Features
 - [ ] P0: Model render features
   - [ ] Auto spin controls
-  - [ ] Camera mode
+  - [x] Camera mode
   - [ ] Ambient color
   - [ ] Light color / position / etc
   - [ ] Various algorithm params?
-  - [ ] Load different model after the fact via UI
+  - [ ] Replace model via file upload
+  - [ ] Switch to deferred?
+  - [ ] Add bloom
+  - [ ] Add shadow mapping
+  - [ ] Add SSAO
 - [ ] P0: Implement SSAO
 - [ ] P0: Implement PBR lighting
 - [ ] P0: Implement tessellation
@@ -21,6 +25,7 @@
 - [ ] P2: Implement virtual textures. http://holger.dammertz.org/stuff/notes_VirtualTexturing.html
 - [ ] P2: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 - [ ] P2: Add a scene graph. https://learnopengl.com/Guest-Articles/2021/Scene/Scene-Graph
+- [ ] P2: Expose scene graph in model_render UI
 - [ ] P2: Implement frustum culling. https://learnopengl.com/Guest-Articles/2021/Scene/Frustum-Culling
 - [ ] P2: Consider supporting uniform buffer objects. https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
 - [ ] P2: Go through some of the shader effects from https://lettier.github.io/3d-game-shaders-for-beginners/index.html

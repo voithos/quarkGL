@@ -31,9 +31,16 @@ out vec4 fragColor;
 void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
 )SHADER";
 
+enum class CameraControlType {
+  FLY = 0,
+  ORBIT,
+};
+
+// Options for the model render UI. The defaults here are used at startup.
 struct ModelRenderOptions {
   bool useVertexNormals = false;
   bool drawNormals = false;
+  CameraControlType cameraControlType = CameraControlType::ORBIT;
   bool captureMouse = false;
 };
 
@@ -63,7 +70,15 @@ void renderImGuiUI(ModelRenderOptions& opts) {
         "will be used if available.");
   }
 
-  if (ImGui::CollapsingHeader("Interaction")) {
+  if (ImGui::CollapsingHeader("Camera")) {
+    ImGui::RadioButton("Fly controls",
+                       reinterpret_cast<int*>(&opts.cameraControlType),
+                       static_cast<int>(CameraControlType::FLY));
+    ImGui::SameLine();
+    ImGui::RadioButton("Orbit controls",
+                       reinterpret_cast<int*>(&opts.cameraControlType),
+                       static_cast<int>(CameraControlType::ORBIT));
+
     ImGui::Checkbox("Capture mouse", &opts.captureMouse);
   }
 
@@ -108,7 +123,8 @@ int main(int argc, char** argv) {
 
   auto camera =
       std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
-  auto cameraControls = std::make_shared<qrk::OrbitCameraControls>(*camera);
+  std::shared_ptr<qrk::CameraControls> cameraControls =
+      std::make_shared<qrk::OrbitCameraControls>(*camera);
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
@@ -182,12 +198,24 @@ int main(int argc, char** argv) {
     win.setMouseInputPaused(io.WantCaptureMouse);
     win.setKeyInputPaused(io.WantCaptureKeyboard);
 
+    ModelRenderOptions prevOpts = opts;
     renderImGuiUI(opts);
 
     // Post-process options. Some option values are used later during rendering.
     win.setMouseButtonBehavior(opts.captureMouse
                                    ? qrk::MouseButtonBehavior::CAPTURE_MOUSE
                                    : qrk::MouseButtonBehavior::NONE);
+    if (opts.cameraControlType != prevOpts.cameraControlType) {
+      switch (opts.cameraControlType) {
+        case CameraControlType::FLY:
+          cameraControls = std::make_shared<qrk::FlyCameraControls>();
+          break;
+        case CameraControlType::ORBIT:
+          cameraControls = std::make_shared<qrk::OrbitCameraControls>(*camera);
+          break;
+      }
+      win.bindCameraControls(cameraControls);
+    }
 
     // == Main render path ==
     // Draw main models.
