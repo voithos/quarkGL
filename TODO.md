@@ -38,6 +38,7 @@
 - [ ] P4: Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
 ## Cleanup
+- [ ] P1: Add `#pragma once` for shaders
 - [ ] P2: Add a logging system, and log e.g. invalid glGetUniformLocation() calls
 - [ ] P2: Remove some duplication from light class impl
 - [ ] P3: Add a mechanism to set #define's in the shader

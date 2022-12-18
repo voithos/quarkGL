@@ -160,11 +160,28 @@ cc_binary(
     name = "deferred",
     srcs = ["deferred.cc"],
     data = [
-        "assets/container2.png",
-        "assets/wood.png",
         ":shaders",
     ] + glob([
         "assets/DamagedHelmet/*",
+    ]),
+    linkopts = LINUX_LINKOPTS,
+    deps = [
+        "//quarkgl",
+        "//third_party/glad",
+        "//third_party/glm",
+        "@glfw",
+    ],
+)
+
+cc_binary(
+    name = "ssao",
+    srcs = ["ssao.cc"],
+    data = [
+        "assets/brickwall.jpg",
+        "assets/brickwall_normal.jpg",
+        ":shaders",
+    ] + glob([
+        "assets/SurvivalGuitarBackpack/**",
     ]),
     linkopts = LINUX_LINKOPTS,
     deps = [
