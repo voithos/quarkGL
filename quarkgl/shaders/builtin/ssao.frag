@@ -55,6 +55,7 @@ void main() {
     samplePos_clipSpace = samplePos_clipSpace * 0.5 + 0.5;
 
     // Finally we look up the sample depth.
+    // TODO: What value does this have for texels that weren't drawn to?
     float sampleDepth = texture(gPosition, samplePos_clipSpace.xy).z;
 
     // Since we sampled via screen space, it's possible that the depth we found

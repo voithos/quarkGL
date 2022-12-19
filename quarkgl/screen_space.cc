@@ -7,7 +7,7 @@
 namespace qrk {
 
 SsaoShader::SsaoShader()
-    : Shader(ShaderPath("quarkgl/shaders/builtin/ssao.vert"),
+    : Shader(ShaderPath("quarkgl/shaders/builtin/screen_quad.vert"),
              ShaderPath("quarkgl/shaders/builtin/ssao.frag")) {}
 
 SsaoKernel::SsaoKernel(float radius, float bias, int kernelSize,
@@ -89,10 +89,7 @@ unsigned int SsaoKernel::bindTexture(unsigned int nextTextureUnit,
 SsaoBuffer::SsaoBuffer(int width, int height) : Framebuffer(width, height) {
   // Make sure we're clearing properly.
   setClearColor(glm::vec4(0.0f));
-  // Create and attach the SSAO buffer.
-  // Don't need to read from depth, so we attach as a renderbuffer.
-  // TODO: Is this needed?
-  attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
+  // Create and attach the SSAO buffer. Don't need a depth buffer.
   ssaoBuffer_ = attachTexture(qrk::BufferType::GRAYSCALE);
 }
 
@@ -103,6 +100,18 @@ unsigned int SsaoBuffer::bindTexture(unsigned int nextTextureUnit,
   shader.setInt("qrk_ssao", nextTextureUnit);
 
   return nextTextureUnit + 1;
+}
+
+SsaoBlurShader::SsaoBlurShader()
+    : Shader(ShaderPath("quarkgl/shaders/builtin/screen_quad.vert"),
+             ShaderPath("quarkgl/shaders/builtin/ssao_blur.frag")) {}
+
+void SsaoBlurShader::configureWith(SsaoKernel& kernel, SsaoBuffer& buffer) {
+  setInt("qrk_ssaoNoiseTextureSideLength", kernel.getNoiseTextureSideLength());
+
+  // The blur shader only needs a single texture, so we just bind it directly.
+  buffer.getSsaoTexture().bindToUnit(0);
+  setInt("qrk_ssao", 0);
 }
 
 }  // namespace qrk

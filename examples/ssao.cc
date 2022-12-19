@@ -44,21 +44,20 @@ int main() {
   // We explicitly _don't_ add the lightregistry to the geometry pass.
   // geometryPassShader.addUniformSource(lightRegistry);
 
-  std::mt19937 gen(42);
   // Create lights.
   std::vector<std::shared_ptr<qrk::PointLight>> lights;
   auto light = std::make_shared<qrk::PointLight>(glm::vec3(0.0f, 5.0f, 0.0f));
-  light->setDiffuse(glm::vec3(1.0f));
+  light->setDiffuse(glm::vec3(0.3f));
   light->setSpecular(light->getDiffuse());
   qrk::Attenuation attenuation = {
-      .constant = 1.0f, .linear = 0.07f, .quadratic = 0.08f};
+      .constant = 1.0f, .linear = 0.09f, .quadratic = 0.032f};
   light->setAttenuation(attenuation);
   lightRegistry->addLight(light);
   lights.push_back(light);
 
   auto directionalLight =
       std::make_shared<qrk::DirectionalLight>(glm::vec3(-0.2f, -1.0f, -0.3f));
-  directionalLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
+  directionalLight->setSpecular(glm::vec3(0.1f, 0.1f, 0.1f));
   lightRegistry->addLight(directionalLight);
 
   qrk::Shader lampShader(qrk::ShaderPath("examples/shaders/model.vert"),
@@ -95,18 +94,21 @@ int main() {
   ssaoPassTextures->addTextureSource(ssaoKernel);
   ssaoShader.addUniformSource(ssaoPassTextures);
 
+  qrk::SsaoBlurShader ssaoBlurShader;
+  auto ssaoBlurredBuffer = std::make_shared<qrk::SsaoBuffer>(win.getSize());
+
   auto lightingPassTextures = std::make_shared<qrk::TextureRegistry>();
   lightingPassTextures->addTextureSource(gBuffer);
-  lightingPassTextures->addTextureSource(ssaoBuffer);
+  lightingPassTextures->addTextureSource(ssaoBlurredBuffer);
 
   qrk::ScreenQuadMesh screenQuad;
 
   // Set up the lighting pass.
   qrk::ScreenQuadShader lightingPassShader(
-      qrk::ShaderPath("examples/shaders/deferred_lighting.frag"));
+      qrk::ShaderPath("examples/shaders/deferred_lighting_ssao.frag"));
   lightingPassShader.addUniformSource(lightRegistry);
   lightingPassShader.addUniformSource(lightingPassTextures);
-  lightingPassShader.setVec3("ambient", glm::vec3(0.05f));
+  lightingPassShader.setVec3("ambient", glm::vec3(0.5f));
   lightingPassShader.setFloat("shininess", 16.0f);
   lightingPassShader.setFloat("emissionAttenuation.constant", 1.0f);
   lightingPassShader.setFloat("emissionAttenuation.linear", 0.09f);
@@ -117,6 +119,8 @@ int main() {
   bool drawOcclusionMap = false;
   win.addKeyPressHandler(
       GLFW_KEY_1, [&](int mods) { drawOcclusionMap = !drawOcclusionMap; });
+  bool useSsao = true;
+  win.addKeyPressHandler(GLFW_KEY_2, [&](int mods) { useSsao = !useSsao; });
 
   // win.enableFaceCull();
   win.loop([&](float deltaTime) {
@@ -127,10 +131,10 @@ int main() {
     geometryPassShader.updateUniforms();
 
     // Draw meshes.
-    backpack.setModelTransform(
-        glm::scale(glm::rotate(glm::translate(glm::mat4(), glm::vec3(0)),
-                               glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-                   glm::vec3(0.007f)));
+    backpack.setModelTransform(glm::scale(
+        glm::rotate(glm::translate(glm::mat4(), glm::vec3(0, -2.2f, 0)),
+                    glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        glm::vec3(0.007f)));
     backpack.draw(geometryPassShader);
     room.setModelTransform(glm::scale(
         glm::rotate(glm::translate(glm::mat4(), glm::vec3(0, 5.0f, 0)),
@@ -151,22 +155,33 @@ int main() {
 
     ssaoBuffer->deactivate();
 
-    win.setViewport();
+    // Step 3: SSAO blur.
+    ssaoBlurredBuffer->activate();
+    ssaoBlurredBuffer->clear();
+
+    ssaoBlurShader.configureWith(*ssaoKernel, *ssaoBuffer);
+    screenQuad.unsetTexture();
+    screenQuad.draw(ssaoBlurShader);
+
+    ssaoBlurredBuffer->deactivate();
 
     if (drawOcclusionMap) {
-      screenQuad.setTexture(ssaoBuffer->getSsaoTexture());
+      win.setViewport();
+      screenQuad.setTexture(ssaoBlurredBuffer->getSsaoTexture());
       screenQuad.draw(screenShader);
       return;
     }
 
-    // Step 2: lighting pass.
+    // Step 4: lighting pass.
+    win.setViewport();
 
     lightingPassShader.updateUniforms();
+    lightingPassShader.setBool("useSsao", useSsao);
     // Bind textures.
     screenQuad.unsetTexture();
     screenQuad.draw(lightingPassShader, lightingPassTextures.get());
 
-    // Step 3: forward render anything else on top.
+    // Step 5: forward render anything else on top.
 
     // Before we do so, we have to blit the depth buffer.
     gBuffer->blitToDefault(GL_DEPTH_BUFFER_BIT);
