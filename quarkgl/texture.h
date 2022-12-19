@@ -68,6 +68,11 @@ class Texture {
   static Texture create(int width, int height, GLenum internalFormat);
   static Texture create(int width, int height, GLenum internalFormat,
                         const TextureParams& params);
+  static Texture createFromData(int width, int height, GLenum internalFormat,
+                                const std::vector<glm::vec3>& data);
+  static Texture createFromData(int width, int height, GLenum internalFormat,
+                                const std::vector<glm::vec3>& data,
+                                const TextureParams& params);
 
   // Binds the texture to the given texture unit.
   // Unit should be a number starting from 0, not the actual texture unit's
@@ -87,6 +92,7 @@ class Texture {
   GLenum getInternalFormat() const { return internalFormat_; }
 
  private:
+  // TODO: Texture lifetimes aren't managed currently, so they aren't unloaded.
   unsigned int id_;
   std::string path_;
   int width_;

@@ -9,6 +9,10 @@
 
 namespace qrk {
 
+static inline float lerp(float a, float b, float weight) {
+  return a + weight * (b - a);
+}
+
 static inline std::string ltrim(std::string s) {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(),
                                   [](int ch) { return !std::isspace(ch); }));

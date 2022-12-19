@@ -1,7 +1,5 @@
 #include <qrk/mesh_primitives.h>
 
-#include <iostream>
-
 namespace qrk {
 
 // clang-format off
@@ -207,7 +205,6 @@ RoomMesh::RoomMesh(const std::vector<TextureMap>& textureMaps) {
 }
 
 void RoomMesh::loadMeshAndTextures(const std::vector<TextureMap>& textureMaps) {
-  std::cout << "HI THERE" << std::endl;
   constexpr unsigned int roomVertexSizeBytes = 11 * sizeof(float);
   loadMeshData(roomVertices, sizeof(roomVertices) / roomVertexSizeBytes,
                roomVertexSizeBytes, /*indices=*/{}, textureMaps);

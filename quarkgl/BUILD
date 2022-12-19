@@ -15,6 +15,7 @@ cc_library(
         ":mesh_primitives",
         ":model",
         ":screen",
+        ":screen_space",
         ":shader",
         ":shader_compiler",
         ":shader_defs",
@@ -194,9 +195,33 @@ cc_library(
 )
 
 cc_library(
+    name = "random",
+    srcs = ["random.cc"],
+    hdrs = ["random.h"],
+    include_prefix = "qrk",
+)
+
+cc_library(
     name = "screen",
     hdrs = ["screen.h"],
     include_prefix = "qrk",
+)
+
+cc_library(
+    name = "screen_space",
+    srcs = ["screen_space.cc"],
+    hdrs = ["screen_space.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":exceptions",
+        ":framebuffer",
+        ":random",
+        ":shader",
+        ":texture",
+        ":texture_registry",
+        ":utils",
+        "//third_party/glm",
+    ],
 )
 
 cc_library(

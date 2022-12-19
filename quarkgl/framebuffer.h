@@ -37,6 +37,7 @@ enum class BufferType {
   COLOR_HDR,
   COLOR_ALPHA,
   COLOR_HDR_ALPHA,
+  GRAYSCALE,
   DEPTH,
   STENCIL,
   DEPTH_AND_STENCIL,
@@ -49,6 +50,7 @@ inline const GLenum bufferTypeToGlAttachmentType(BufferType type,
     case BufferType::COLOR_HDR:
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
+    case BufferType::GRAYSCALE:
       return GL_COLOR_ATTACHMENT0 + attachmentIndex;
     case BufferType::DEPTH:
       return GL_DEPTH_ATTACHMENT;
@@ -71,6 +73,8 @@ inline const GLenum bufferTypeToGlInternalFormat(BufferType type) {
       return GL_RGBA;
     case BufferType::COLOR_HDR_ALPHA:
       return GL_RGBA16F;
+    case BufferType::GRAYSCALE:
+      return GL_RED;
     case BufferType::DEPTH:
       return GL_DEPTH_COMPONENT32F;
     case BufferType::STENCIL:
@@ -90,6 +94,8 @@ inline const GLenum bufferTypeToGlFormat(BufferType type) {
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
       return GL_RGBA;
+    case BufferType::GRAYSCALE:
+      return GL_RED;
     case BufferType::DEPTH:
       return GL_DEPTH_COMPONENT;
     case BufferType::STENCIL:
@@ -101,6 +107,7 @@ inline const GLenum bufferTypeToGlFormat(BufferType type) {
                              std::to_string(static_cast<int>(type)));
 }
 
+// TODO: This shouldn't be named "Internal".
 inline const GLenum bufferTypeToGlInternalDataType(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
@@ -109,6 +116,8 @@ inline const GLenum bufferTypeToGlInternalDataType(BufferType type) {
     case BufferType::COLOR_HDR:
     case BufferType::COLOR_HDR_ALPHA:
       return GL_FLOAT;
+    case BufferType::GRAYSCALE:
+      return GL_UNSIGNED_BYTE;
     case BufferType::DEPTH:
       return GL_FLOAT;
     case BufferType::STENCIL:

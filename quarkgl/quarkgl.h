@@ -14,7 +14,9 @@
 #include <qrk/mesh.h>
 #include <qrk/mesh_primitives.h>
 #include <qrk/model.h>
+#include <qrk/random.h>
 #include <qrk/screen.h>
+#include <qrk/screen_space.h>
 #include <qrk/shader.h>
 #include <qrk/shader_compiler.h>
 #include <qrk/shader_defs.h>

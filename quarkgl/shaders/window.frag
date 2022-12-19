@@ -1,6 +1,8 @@
 #ifndef QUARKGL_WINDOW_FRAG_
 #define QUARKGL_WINDOW_FRAG_
 
+// TODO: This file should be .glsl
+
 uniform float qrk_deltaTime;
 // TODO: Replace these uniforms with a vec2.
 uniform int qrk_windowWidth;

@@ -103,13 +103,14 @@ int main() {
     win.setViewport();
     if (drawShadowMap) {
       screenQuad.draw(screenShader);
-    } else {
-      mainShader.updateUniforms();
-      plane.draw(mainShader, textureRegistry.get());
-      box1.draw(mainShader, textureRegistry.get());
-      box2.draw(mainShader, textureRegistry.get());
-      box3.draw(mainShader, textureRegistry.get());
+      return;
     }
+
+    mainShader.updateUniforms();
+    plane.draw(mainShader, textureRegistry.get());
+    box1.draw(mainShader, textureRegistry.get());
+    box2.draw(mainShader, textureRegistry.get());
+    box3.draw(mainShader, textureRegistry.get());
   });
 
   return 0;

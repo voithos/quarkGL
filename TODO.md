@@ -14,8 +14,8 @@
   - [ ] Add SSAO
 - [ ] P0: Implement SSAO
 - [ ] P0: Implement PBR lighting
-- [ ] P0: Implement tessellation
 - [ ] P0: Update README / documentation
+- [ ] P1: Implement tessellation
 - [ ] P1: Implement point light shadow maps: https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
 - [ ] P1: Add parallax mapping
 - [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps

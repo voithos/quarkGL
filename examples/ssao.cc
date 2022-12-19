@@ -81,23 +81,42 @@ int main() {
   geometryPassShader.addUniformSource(camera);
 
   auto gBuffer = std::make_shared<qrk::GBuffer>(win.getSize());
-  auto textureRegistry = std::make_shared<qrk::TextureRegistry>();
-  textureRegistry->addTextureSource(gBuffer);
+
+  // Build SSAO buffers.
+  qrk::SsaoShader ssaoShader;
+  ssaoShader.addUniformSource(camera);
+
+  auto ssaoKernel = std::make_shared<qrk::SsaoKernel>();
+  ssaoShader.addUniformSource(ssaoKernel);
+  auto ssaoBuffer = std::make_shared<qrk::SsaoBuffer>(win.getSize());
+
+  auto ssaoPassTextures = std::make_shared<qrk::TextureRegistry>();
+  ssaoPassTextures->addTextureSource(gBuffer);
+  ssaoPassTextures->addTextureSource(ssaoKernel);
+  ssaoShader.addUniformSource(ssaoPassTextures);
+
+  auto lightingPassTextures = std::make_shared<qrk::TextureRegistry>();
+  lightingPassTextures->addTextureSource(gBuffer);
+  lightingPassTextures->addTextureSource(ssaoBuffer);
 
   qrk::ScreenQuadMesh screenQuad;
-  qrk::ScreenQuadShader gBufferVisShader(
-      qrk::ShaderPath("examples/shaders/gbuffer.frag"));
 
   // Set up the lighting pass.
   qrk::ScreenQuadShader lightingPassShader(
       qrk::ShaderPath("examples/shaders/deferred_lighting.frag"));
   lightingPassShader.addUniformSource(lightRegistry);
-  lightingPassShader.addUniformSource(textureRegistry);
+  lightingPassShader.addUniformSource(lightingPassTextures);
   lightingPassShader.setVec3("ambient", glm::vec3(0.05f));
   lightingPassShader.setFloat("shininess", 16.0f);
   lightingPassShader.setFloat("emissionAttenuation.constant", 1.0f);
   lightingPassShader.setFloat("emissionAttenuation.linear", 0.09f);
   lightingPassShader.setFloat("emissionAttenuation.quadratic", 0.032f);
+
+  qrk::ScreenQuadShader screenShader;
+
+  bool drawOcclusionMap = false;
+  win.addKeyPressHandler(
+      GLFW_KEY_1, [&](int mods) { drawOcclusionMap = !drawOcclusionMap; });
 
   // win.enableFaceCull();
   win.loop([&](float deltaTime) {
@@ -121,14 +140,31 @@ int main() {
 
     gBuffer->deactivate();
 
+    // Step 2: SSAO.
+    ssaoBuffer->activate();
+    ssaoBuffer->clear();
+
+    ssaoShader.updateUniforms();
+
+    screenQuad.unsetTexture();
+    screenQuad.draw(ssaoShader, ssaoPassTextures.get());
+
+    ssaoBuffer->deactivate();
+
     win.setViewport();
+
+    if (drawOcclusionMap) {
+      screenQuad.setTexture(ssaoBuffer->getSsaoTexture());
+      screenQuad.draw(screenShader);
+      return;
+    }
 
     // Step 2: lighting pass.
 
     lightingPassShader.updateUniforms();
     // Bind textures.
     screenQuad.unsetTexture();
-    screenQuad.draw(lightingPassShader, textureRegistry.get());
+    screenQuad.draw(lightingPassShader, lightingPassTextures.get());
 
     // Step 3: forward render anything else on top.
 

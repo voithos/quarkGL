@@ -158,6 +158,28 @@ Texture Texture::create(int width, int height, GLenum internalFormat,
   return texture;
 }
 
+Texture Texture::createFromData(int width, int height, GLenum internalFormat,
+                                const std::vector<glm::vec3>& data) {
+  TextureParams params = {.filtering = TextureFiltering::BILINEAR,
+                          .wrapMode = TextureWrapMode::CLAMP_TO_EDGE};
+  return createFromData(width, height, internalFormat, data, params);
+}
+
+Texture Texture::createFromData(int width, int height, GLenum internalFormat,
+                                const std::vector<glm::vec3>& data,
+                                const TextureParams& params) {
+  if (data.size() != (width * height)) {
+    throw TextureException("ERROR::TEXTURE::INVALID_DATA_SIZE");
+  }
+
+  Texture texture = Texture::create(width, height, internalFormat, params);
+  // Upload the data.
+  glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, texture.internalFormat_,
+               texture.width_, texture.height_, 0,
+               /* tex data format */ GL_RGB, GL_FLOAT, data.data());
+  return texture;
+}
+
 void Texture::bindToUnit(unsigned int textureUnit, TextureBindType bindType) {
   // TODO: Take into account GL_MAX_TEXTURE_UNITS here.
   glActiveTexture(GL_TEXTURE0 + textureUnit);
