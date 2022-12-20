@@ -26,7 +26,7 @@ void main() {
 
   // Shade with normal lights.
   vec3 result = qrk_shadeAllLights(material, fs_in.fragPos, normal,
-                                   fs_in.texCoords, shadow);
+                                   fs_in.texCoords, shadow, /*ao=*/1);
 
   // Add emissions.
   result += qrk_shadeEmission(material, fs_in.fragPos, fs_in.texCoords);
