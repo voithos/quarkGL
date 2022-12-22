@@ -48,7 +48,7 @@ class ShadowCamera : public UniformSource {
 class ShadowMap : public Framebuffer, public TextureSource {
  public:
   explicit ShadowMap(int width = 1024, int height = 1024);
-  explicit ShadowMap(ScreenSize size) : ShadowMap(size.width, size.height) {}
+  explicit ShadowMap(ImageSize size) : ShadowMap(size.width, size.height) {}
   virtual ~ShadowMap() = default;
 
   Texture getDepthTexture() { return depthAttachment_.asTexture(); }

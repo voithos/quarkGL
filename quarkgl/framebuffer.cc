@@ -9,6 +9,9 @@ Texture Attachment::asTexture() {
   }
   Texture texture;
   texture.id_ = id;
+  texture.width_ = width;
+  texture.height_ = height;
+  texture.numMips_ = numMips;
   return texture;
 }
 
@@ -26,8 +29,8 @@ void Framebuffer::activate() {
 
 void Framebuffer::deactivate() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-ScreenSize Framebuffer::getSize() {
-  ScreenSize size = {.width = width_, .height = height_};
+ImageSize Framebuffer::getSize() {
+  ImageSize size = {.width = width_, .height = height_};
   return size;
 }
 
@@ -52,16 +55,17 @@ Attachment Framebuffer::attachTexture(BufferType type,
   glBindTexture(textureTarget, texture);
 
   GLenum internalFormat = bufferTypeToGlInternalFormat(type);
-  GLenum format = bufferTypeToGlFormat(type);
-  GLenum dataType = bufferTypeToGlInternalDataType(type);
 
+  int numMips = 1;
+  if (params.generateMips == MipGeneration::ALWAYS) {
+    numMips = calculateNumMips(width_, height_);
+  }
   if (samples_) {
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples_, internalFormat,
-                            width_, height_,
-                            /*fixedsamplelocations=*/GL_TRUE);
+    glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples_,
+                              internalFormat, width_, height_,
+                              /*fixedsamplelocations=*/GL_TRUE);
   } else {
-    glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, internalFormat, width_,
-                 height_, 0, format, dataType, nullptr);
+    glTexStorage2D(GL_TEXTURE_2D, numMips, internalFormat, width_, height_);
   }
 
   Texture::applyParams(params);
@@ -73,7 +77,7 @@ Attachment Framebuffer::attachTexture(BufferType type,
                          /* mipmap level */ 0);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    throw FramebufferException("ERROR::FRAMEBUFFER::INCOMPLETE");
+    throw FramebufferException("ERROR::FRAMEBUFFER::TEXTURE::INCOMPLETE");
   }
 
   updateFlags(type);
@@ -82,7 +86,7 @@ Attachment Framebuffer::attachTexture(BufferType type,
   glBindTexture(textureTarget, 0);
   deactivate();
 
-  return saveAttachment(texture, AttachmentTarget::TEXTURE);
+  return saveAttachment(texture, numMips, AttachmentTarget::TEXTURE);
 }
 
 Attachment Framebuffer::attachRenderbuffer(BufferType type) {
@@ -115,7 +119,7 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
                             rbo);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    throw FramebufferException("ERROR::FRAMEBUFFER::INCOMPLETE");
+    throw FramebufferException("ERROR::FRAMEBUFFER::RENDERBUFFER::INCOMPLETE");
   }
 
   updateFlags(type);
@@ -124,7 +128,7 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
   deactivate();
 
-  return saveAttachment(rbo, AttachmentTarget::RENDERBUFFER);
+  return saveAttachment(rbo, /*numMips=*/1, AttachmentTarget::RENDERBUFFER);
 }
 
 void Framebuffer::blit(Framebuffer& target, GLenum bits) {
@@ -143,9 +147,13 @@ void Framebuffer::blitToDefault(GLenum bits) {
   deactivate();
 }
 
-Attachment Framebuffer::saveAttachment(unsigned int id,
+Attachment Framebuffer::saveAttachment(unsigned int id, int numMips,
                                        AttachmentTarget target) {
-  Attachment attachment = {.id = id, .target = target};
+  Attachment attachment = {.id = id,
+                           .width = width_,
+                           .height = height_,
+                           .numMips = numMips,
+                           .target = target};
   attachments_.push_back(attachment);
   return attachment;
 }

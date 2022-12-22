@@ -58,13 +58,13 @@ void Window::activate() { glfwMakeContextCurrent(window_); }
 void Window::updateUniforms(Shader& shader) {
   shader.setFloat("qrk_deltaTime", deltaTime_);
 
-  ScreenSize size = getSize();
+  ImageSize size = getSize();
   shader.setInt("qrk_windowWidth", size.width);
   shader.setInt("qrk_windowHeight", size.height);
 }
 
-ScreenSize Window::getSize() const {
-  ScreenSize size;
+ImageSize Window::getSize() const {
+  ImageSize size;
   glfwGetWindowSize(window_, &size.width, &size.height);
   return size;
 }
@@ -301,7 +301,7 @@ void Window::bindCameraControls(
         "Camera must be bound before camera controls.");
   }
   boundCameraControls_ = cameraControls;
-  ScreenSize size = getSize();
+  ImageSize size = getSize();
   boundCameraControls_->resizeWindow(size.width, size.height);
 }
 

@@ -24,11 +24,14 @@ class Attachment {
  public:
   // TODO: Make these private.
   unsigned int id;
+  int width;
+  int height;
+  int numMips;
   AttachmentTarget target;
 
   Texture asTexture();
 
-  // TODO: Include width/height.
+  // TODO: Replace with Texture?
 };
 
 enum class BufferType {
@@ -66,15 +69,15 @@ inline const GLenum bufferTypeToGlAttachmentType(BufferType type,
 inline const GLenum bufferTypeToGlInternalFormat(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
-      return GL_RGB;
+      return GL_RGB8;
     case BufferType::COLOR_HDR:
       return GL_RGB16F;
     case BufferType::COLOR_ALPHA:
-      return GL_RGBA;
+      return GL_RGBA8;
     case BufferType::COLOR_HDR_ALPHA:
       return GL_RGBA16F;
     case BufferType::GRAYSCALE:
-      return GL_RED;
+      return GL_R8;
     case BufferType::DEPTH:
       return GL_DEPTH_COMPONENT32F;
     case BufferType::STENCIL:
@@ -133,7 +136,7 @@ inline const GLenum bufferTypeToGlInternalDataType(BufferType type) {
 class Framebuffer {
  public:
   Framebuffer(int width, int height, int samples = 0);
-  explicit Framebuffer(ScreenSize size, int samples = 0)
+  explicit Framebuffer(ImageSize size, int samples = 0)
       : Framebuffer(size.width, size.height, samples) {}
   virtual ~Framebuffer();
 
@@ -147,7 +150,7 @@ class Framebuffer {
   void setClearColor(glm::vec4 color) { clearColor_ = color; }
   void clear();
 
-  ScreenSize getSize();
+  ImageSize getSize();
 
   Attachment attachTexture(BufferType type);
   Attachment attachTexture(BufferType type, const TextureParams& params);
@@ -172,7 +175,8 @@ class Framebuffer {
   bool hasStencilAttachment_ = false;
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
-  Attachment saveAttachment(unsigned int id, AttachmentTarget target);
+  Attachment saveAttachment(unsigned int id, int numMips,
+                            AttachmentTarget target);
   void checkFlags(BufferType type);
   void updateFlags(BufferType type);
   // Updates the draw and read buffers based on the current flags.

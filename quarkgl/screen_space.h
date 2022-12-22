@@ -56,7 +56,7 @@ class SsaoKernel : public UniformSource, public TextureSource {
 class SsaoBuffer : public Framebuffer, public TextureSource {
  public:
   SsaoBuffer(int width, int height);
-  explicit SsaoBuffer(ScreenSize size) : SsaoBuffer(size.width, size.height) {}
+  explicit SsaoBuffer(ImageSize size) : SsaoBuffer(size.width, size.height) {}
   virtual ~SsaoBuffer() = default;
 
   Texture getSsaoTexture() { return ssaoBuffer_.asTexture(); }

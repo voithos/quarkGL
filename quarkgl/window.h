@@ -58,7 +58,7 @@ class Window : public UniformSource {
   void activate();
 
   void setViewport() {
-    ScreenSize size = getSize();
+    ImageSize size = getSize();
     glViewport(0, 0, size.width, size.height);
   }
 
@@ -121,7 +121,7 @@ class Window : public UniformSource {
 
   void updateUniforms(Shader& shader);
 
-  ScreenSize getSize() const;
+  ImageSize getSize() const;
   void setSize(int width, int height);
   void enableResizeUpdates();
   void disableResizeUpdates();

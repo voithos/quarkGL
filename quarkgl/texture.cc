@@ -36,13 +36,13 @@ Texture Texture::load(const char* path, bool isSRGB,
 
   GLenum dataFormat;
   if (texture.numChannels_ == 1) {
-    texture.internalFormat_ = GL_RED;
+    texture.internalFormat_ = GL_R8;
     dataFormat = GL_RED;
   } else if (texture.numChannels_ == 3) {
-    texture.internalFormat_ = isSRGB ? GL_SRGB : GL_RGB;
+    texture.internalFormat_ = isSRGB ? GL_SRGB8 : GL_RGB8;
     dataFormat = GL_RGB;
   } else if (texture.numChannels_ == 4) {
-    texture.internalFormat_ = isSRGB ? GL_SRGB_ALPHA : GL_RGBA;
+    texture.internalFormat_ = isSRGB ? GL_SRGB8_ALPHA8 : GL_RGBA8;
     dataFormat = GL_RGBA;
   } else {
     stbi_image_free(data);
@@ -56,10 +56,16 @@ Texture Texture::load(const char* path, bool isSRGB,
   glGenTextures(1, &texture.id_);
   glBindTexture(GL_TEXTURE_2D, texture.id_);
 
+  // TODO: Replace with glTexStorage2D
   glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, texture.internalFormat_,
                texture.width_, texture.height_, 0,
                /* tex data format */ dataFormat, GL_UNSIGNED_BYTE, data);
-  glGenerateMipmap(GL_TEXTURE_2D);
+  if (params.generateMips >= MipGeneration::ON_LOAD) {
+    glGenerateMipmap(GL_TEXTURE_2D);
+    texture.numMips_ = calculateNumMips(texture.width_, texture.height_);
+  } else {
+    texture.numMips_ = 1;
+  }
 
   // Set texture-wrapping/filtering options.
   applyParams(params);
@@ -77,6 +83,7 @@ Texture Texture::loadCubemap(std::vector<std::string> faces) {
   }
 
   Texture texture;
+  texture.numMips_ = 1;
   texture.internalFormat_ = GL_RGB;  // Cubemaps must be RGB.
 
   glGenTextures(1, &texture.id_);
@@ -118,6 +125,7 @@ Texture Texture::loadCubemap(std::vector<std::string> faces) {
     }
 
     // Load into the next cube map texture position.
+    // TODO: Replace with glTexStorage2D
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, /*level=*/0,
                  texture.internalFormat_, width, height, /*border=*/0,
                  /*format=*/GL_RGB, /*type=*/GL_UNSIGNED_BYTE, data);
@@ -147,21 +155,19 @@ Texture Texture::create(int width, int height, GLenum internalFormat,
   texture.width_ = width;
   texture.height_ = height;
   texture.numChannels_ = 0;  // Default.
+  texture.numMips_ = 1;
+  if (params.generateMips == MipGeneration::ALWAYS) {
+    texture.numMips_ = calculateNumMips(texture.width_, texture.height_);
+  }
   texture.internalFormat_ = internalFormat;
 
   glGenTextures(1, &texture.id_);
   glBindTexture(GL_TEXTURE_2D, texture.id_);
 
-  glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, texture.internalFormat_,
-               texture.width_, texture.height_, 0,
-               /* tex data format */ GL_RGBA, GL_FLOAT, /*data=*/nullptr);
+  glTexStorage2D(GL_TEXTURE_2D, texture.numMips_, texture.internalFormat_,
+                 texture.width_, texture.height_);
 
-  // Set texture-wrapping/filtering options. We disable mipmapping since this
-  // is a custom texture.
-  // TODO: Theoretically there may be use cases for this?
-  if (params.filtering >= TextureFiltering::TRILINEAR) {
-    throw TextureException("ERROR::TEXTURE::INVALID_PARAMS");
-  }
+  // Set texture-wrapping/filtering options.
   applyParams(params);
 
   return texture;
@@ -183,9 +189,9 @@ Texture Texture::createFromData(int width, int height, GLenum internalFormat,
 
   Texture texture = Texture::create(width, height, internalFormat, params);
   // Upload the data.
-  glTexImage2D(GL_TEXTURE_2D, /* mipmap level */ 0, texture.internalFormat_,
-               texture.width_, texture.height_, 0,
-               /* tex data format */ GL_RGB, GL_FLOAT, data.data());
+  glTexSubImage2D(GL_TEXTURE_2D, /*level=*/0, /*xoffset=*/0,
+                  /*yoffset=*/0, texture.width_, texture.height_,
+                  /*format=*/GL_RGB, GL_FLOAT, data.data());
   return texture;
 }
 

@@ -72,7 +72,7 @@ class Camera : public UniformSource, public ViewSource {
   void setSpeed(float speed) { speed_ = speed; }
   float getAspectRatio() const { return aspectRatio_; }
   void setAspectRatio(float aspectRatio) { aspectRatio_ = aspectRatio; }
-  void setAspectRatio(ScreenSize size) {
+  void setAspectRatio(ImageSize size) {
     aspectRatio_ = size.width / static_cast<float>(size.height);
   }
 

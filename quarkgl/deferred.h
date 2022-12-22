@@ -23,7 +23,7 @@ class DeferredGeometryPassShader : public Shader {
 class GBuffer : public Framebuffer, public TextureSource {
  public:
   GBuffer(int width, int height);
-  explicit GBuffer(ScreenSize size) : GBuffer(size.width, size.height) {}
+  explicit GBuffer(ImageSize size) : GBuffer(size.width, size.height) {}
   virtual ~GBuffer() = default;
 
   Texture getPositionTexture() { return positionBuffer_.asTexture(); }

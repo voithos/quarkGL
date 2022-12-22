@@ -3,7 +3,7 @@
 
 namespace qrk {
 
-struct ScreenSize {
+struct ImageSize {
   int width;
   int height;
 };

@@ -42,6 +42,15 @@ enum class TextureWrapMode {
   // TODO: Add the others?
 };
 
+enum class MipGeneration {
+  // Never generates or reserves mipmaps.
+  NEVER = 0,
+  // Generates mipmaps when loading, but not when creating empty textures.
+  ON_LOAD,
+  // Always attempts to generate mipmaps when possible.
+  ALWAYS,
+};
+
 struct TextureParams {
   // OpenGL texture coordinates start at the bottom-right of the image, so we
   // flip vertically by default.
@@ -49,6 +58,7 @@ struct TextureParams {
   TextureFiltering filtering = TextureFiltering::NEAREST;
   TextureWrapMode wrapMode = TextureWrapMode::REPEAT;
   glm::vec4 borderColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+  MipGeneration generateMips = MipGeneration::ON_LOAD;
 };
 
 // Returns the number of mips for an image of a given width/height.
@@ -97,6 +107,7 @@ class Texture {
   int getWidth() const { return width_; }
   int getHeight() const { return height_; }
   int getNumChannels() const { return numChannels_; }
+  int getNumMips() const { return numMips_; }
   // TODO: Remove GLenum from this API (use a custom enum).
   GLenum getInternalFormat() const { return internalFormat_; }
 
@@ -107,6 +118,7 @@ class Texture {
   int width_;
   int height_;
   int numChannels_;
+  int numMips_;
   GLenum internalFormat_;
 
   // Applies the given params to the currently-active texture. Assumes the
