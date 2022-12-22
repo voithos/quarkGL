@@ -133,6 +133,7 @@ cc_library(
     include_prefix = "qrk",
     deps = [
         ":exceptions",
+        ":screen",
         "//third_party/glad",
         "//third_party/glm",
         "//third_party/stb_image",

@@ -6,6 +6,15 @@
 
 namespace qrk {
 
+int calculateNumMips(int width, int height) {
+  return 1 + static_cast<int>(std::floor(std::log2(std::max(width, height))));
+}
+
+ImageSize calculateNextMip(const ImageSize& mipSize) {
+  return ImageSize{.width = std::max(mipSize.width / 2, 1),
+                   .height = std::max(mipSize.height / 2, 1)};
+}
+
 Texture Texture::load(const char* path, bool isSRGB) {
   TextureParams params = {.filtering = TextureFiltering::ANISOTROPIC,
                           .wrapMode = TextureWrapMode::REPEAT};

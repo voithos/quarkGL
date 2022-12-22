@@ -2,6 +2,7 @@
 #define QUARKGL_TEXTURE_H_
 
 #include <qrk/exceptions.h>
+#include <qrk/screen.h>
 
 #include <glm/glm.hpp>
 #include <string>
@@ -50,6 +51,12 @@ struct TextureParams {
   glm::vec4 borderColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 };
 
+// Returns the number of mips for an image of a given width/height.
+int calculateNumMips(int width, int height);
+
+// Returns the next mip size given an initial size.
+ImageSize calculateNextMip(const ImageSize& mipSize);
+
 class Texture {
  public:
   // Loads a texture from a given path.
@@ -68,6 +75,8 @@ class Texture {
   static Texture create(int width, int height, GLenum internalFormat);
   static Texture create(int width, int height, GLenum internalFormat,
                         const TextureParams& params);
+  // Creates a custom texture based on the given input data.
+  // TODO: Change this to take an unsigned char ptr?
   static Texture createFromData(int width, int height, GLenum internalFormat,
                                 const std::vector<glm::vec3>& data);
   static Texture createFromData(int width, int height, GLenum internalFormat,
