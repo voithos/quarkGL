@@ -16,7 +16,7 @@ inline bool operator==(const ImageSize& lhs, const ImageSize& rhs) {
 inline bool operator!=(const ImageSize& lhs, const ImageSize& rhs) {
   return !operator==(lhs, rhs);
 }
-std::ostream& operator<<(std::ostream& os, const ImageSize& size) {
+inline std::ostream& operator<<(std::ostream& os, const ImageSize& size) {
   return os << "(" << size.width << ", " << size.height << ")";
 }
 
