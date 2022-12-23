@@ -64,7 +64,6 @@ out vec4 fragColor;
 
 uniform sampler2D screenTexture;
 
-// TODO: Allow other post_processing methods from command line.
 void main() {
   if (qrk_isWindowLeftHalf()) {
     if (qrk_isWindowTopHalf()) {

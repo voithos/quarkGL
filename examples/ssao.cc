@@ -104,7 +104,7 @@ int main() {
   qrk::ScreenQuadMesh screenQuad;
 
   // Set up the lighting pass.
-  qrk::ScreenQuadShader lightingPassShader(
+  qrk::ScreenShader lightingPassShader(
       qrk::ShaderPath("examples/shaders/deferred_lighting_ssao.frag"));
   lightingPassShader.addUniformSource(lightRegistry);
   lightingPassShader.addUniformSource(lightingPassTextures);
@@ -114,7 +114,7 @@ int main() {
   lightingPassShader.setFloat("emissionAttenuation.linear", 0.09f);
   lightingPassShader.setFloat("emissionAttenuation.quadratic", 0.032f);
 
-  qrk::ScreenQuadShader screenShader;
+  qrk::ScreenShader screenShader;
 
   bool drawOcclusionMap = false;
   win.addKeyPressHandler(

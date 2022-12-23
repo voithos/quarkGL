@@ -138,11 +138,10 @@ int main() {
   auto blurAttachment2 =
       blurFb2.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
 
-  qrk::ScreenQuadShader blurShader(
+  qrk::ScreenShader blurShader(
       qrk::ShaderPath("examples/shaders/bloom_blur.frag"));
-  qrk::ScreenQuadShader screenShader(
-      qrk::ShaderPath("examples/shaders/hdr.frag"));
-  qrk::ScreenQuadShader bloomScreenShader(
+  qrk::ScreenShader screenShader(qrk::ShaderPath("examples/shaders/hdr.frag"));
+  qrk::ScreenShader bloomScreenShader(
       qrk::ShaderPath("examples/shaders/bloom_screen.frag"));
 
   bool useBloom = true;

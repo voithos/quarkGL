@@ -20,7 +20,7 @@ int main() {
       qrk::ShaderPath("examples/shaders/compute.comp"));
   qrk::Texture computeTexture = qrk::Texture::create(width, height, GL_RGBA32F);
   qrk::ScreenQuadMesh screenQuad(computeTexture);
-  qrk::ScreenQuadShader screenShader;
+  qrk::ScreenShader screenShader;
 
   // Disable vsync to test speed.
   win.disableVsync();

@@ -110,8 +110,7 @@ inline const GLenum bufferTypeToGlFormat(BufferType type) {
                              std::to_string(static_cast<int>(type)));
 }
 
-// TODO: This shouldn't be named "Internal".
-inline const GLenum bufferTypeToGlInternalDataType(BufferType type) {
+inline const GLenum bufferTypeToGlDataType(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
     case BufferType::COLOR_ALPHA:

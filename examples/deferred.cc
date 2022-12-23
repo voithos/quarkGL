@@ -103,7 +103,7 @@ int main() {
   textureRegistry->addTextureSource(gBuffer);
 
   qrk::ScreenQuadMesh screenQuad;
-  qrk::ScreenQuadShader gBufferVisShader(
+  qrk::ScreenShader gBufferVisShader(
       qrk::ShaderPath("examples/shaders/gbuffer.frag"));
 
   int gBufferVis = 0;
@@ -133,7 +133,7 @@ int main() {
   });
 
   // Set up the lighting pass.
-  qrk::ScreenQuadShader lightingPassShader(
+  qrk::ScreenShader lightingPassShader(
       qrk::ShaderPath("examples/shaders/deferred_lighting.frag"));
   lightingPassShader.addUniformSource(lightRegistry);
   lightingPassShader.addUniformSource(textureRegistry);

@@ -68,8 +68,7 @@ int main() {
   auto colorAttachment = fb.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
   fb.attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
   qrk::ScreenQuadMesh screenQuad(colorAttachment.asTexture());
-  qrk::ScreenQuadShader screenShader(
-      qrk::ShaderPath("examples/shaders/hdr.frag"));
+  qrk::ScreenShader screenShader(qrk::ShaderPath("examples/shaders/hdr.frag"));
 
   // Setup the tunnel.
   qrk::CubeMesh tunnel("examples/assets/wood.png");

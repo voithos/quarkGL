@@ -33,11 +33,11 @@ void SkyboxShader::setMat4(const char* name, const glm::mat4& matrix) {
   Shader::setMat4(name, matrix);
 }
 
-ScreenQuadShader::ScreenQuadShader()
+ScreenShader::ScreenShader()
     : Shader(ShaderPath("quarkgl/shaders/builtin/screen_quad.vert"),
              ShaderPath("quarkgl/shaders/builtin/screen_quad.frag")) {}
 
-ScreenQuadShader::ScreenQuadShader(const ShaderSource& fragmentSource)
+ScreenShader::ScreenShader(const ShaderSource& fragmentSource)
     : Shader(ShaderPath("quarkgl/shaders/builtin/screen_quad.vert"),
              fragmentSource) {}
 

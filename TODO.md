@@ -15,6 +15,7 @@
 - [ ] P0: Physically based bloom: https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom
 - [ ] P0: Implement PBR lighting
 - [ ] P0: Update README / documentation
+- [ ] P1: Implement material system
 - [ ] P1: Implement tessellation
 - [ ] P1: Implement point light shadow maps: https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
 - [ ] P1: Add parallax mapping
@@ -85,7 +86,7 @@
 - [x] P0: Add normal mapping
 - [x] P1: Add HDR
 - [x] P3: Add support for framebuffers?
-- [x] P2: Add a material class that can maintain diffuse/specular maps, similar to the light class.
+- [x] P2: Add a texturemap class that can maintain diffuse/specular maps, similar to the light class.
 - [x] P1: Add Bloom
 - [x] P0: model loader doesn't honor transforms
 - [x] P3: Add instancing to model?

@@ -61,7 +61,7 @@ int main() {
 
   // Debug drawing shader.
   qrk::ScreenQuadMesh screenQuad(shadowMap->getDepthTexture());
-  qrk::ScreenQuadShader screenShader;
+  qrk::ScreenShader screenShader;
 
   // Setup objects.
   // TODO: Because we don't adjust UVs, this ends up looking goofy.

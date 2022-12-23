@@ -19,11 +19,10 @@ class SkyboxShader : public Shader {
   virtual void setMat4(const char* name, const glm::mat4& matrix) override;
 };
 
-// TODO: Rename to ScreenShader.
-class ScreenQuadShader : public Shader {
+class ScreenShader : public Shader {
  public:
-  ScreenQuadShader();
-  explicit ScreenQuadShader(const ShaderSource& fragmentSource);
+  ScreenShader();
+  explicit ScreenShader(const ShaderSource& fragmentSource);
 };
 
 class ShadowMapShader : public Shader {
