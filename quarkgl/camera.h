@@ -70,6 +70,11 @@ class Camera : public UniformSource, public ViewSource {
     aspectRatio_ = size.width / static_cast<float>(size.height);
   }
 
+  float getNearPlane() const { return near_; }
+  void setNearPlane(float near) { near_ = near; }
+  float getFarPlane() const { return far_; }
+  void setFarPlane(float far) { far_ = far; }
+
   glm::mat4 getViewTransform() const override;
   glm::mat4 getProjectionTransform() const;
 
