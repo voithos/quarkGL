@@ -42,9 +42,9 @@ static inline std::string resolvePath(std::string const& path) {
 }
 
 template <class BidirIt, class Traits, class CharT, class UnaryFunction>
-std::basic_string<CharT> regex_replace(
-    BidirIt first, BidirIt last, const std::basic_regex<CharT, Traits>& re,
-    UnaryFunction f) {
+std::basic_string<CharT> regexReplace(BidirIt first, BidirIt last,
+                                      const std::basic_regex<CharT, Traits>& re,
+                                      UnaryFunction f) {
   std::basic_string<CharT> s;
 
   typename std::match_results<BidirIt>::difference_type positionOfLastMatch = 0;
@@ -77,10 +77,10 @@ std::basic_string<CharT> regex_replace(
 }
 
 template <class Traits, class CharT, class UnaryFunction>
-std::string regex_replace(const std::string& s,
-                          const std::basic_regex<CharT, Traits>& re,
-                          UnaryFunction f) {
-  return regex_replace(s.cbegin(), s.cend(), re, f);
+std::string regexReplace(const std::string& s,
+                         const std::basic_regex<CharT, Traits>& re,
+                         UnaryFunction f) {
+  return regexReplace(s.cbegin(), s.cend(), re, f);
 }
 }  // namespace qrk
 

@@ -129,7 +129,7 @@ std::string ShaderLoader::preprocessShader(std::string const& shaderPath,
 
   std::regex includePattern(
       R"(((^|\r?\n)\s*)#pragma\s+qrk_include\s+(".*"|<.*>)(?=\r?\n|$))");
-  std::string processedCode = regex_replace(
+  std::string processedCode = regexReplace(
       shaderCode, includePattern, [this, shaderPath](const std::smatch& m) {
         std::string whitespace = m[1];
         // Extract the path.

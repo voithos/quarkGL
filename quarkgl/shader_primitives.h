@@ -9,6 +9,7 @@ namespace qrk {
 
 // A builtin shader for skyboxes. Should be used at the end of a frame to render
 // the skybox behind all other geometry.
+// TODO: Move this to a skybox header.
 class SkyboxShader : public Shader {
  public:
   SkyboxShader();
@@ -25,6 +26,7 @@ class ScreenShader : public Shader {
   explicit ScreenShader(const ShaderSource& fragmentSource);
 };
 
+// TODO: Move this to the shadows header.
 class ShadowMapShader : public Shader {
  public:
   ShadowMapShader();

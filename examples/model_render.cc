@@ -85,7 +85,7 @@ static bool floatSlider(const char* desc, float* value, float min, float max,
 
 // Called during game loop.
 void renderImGuiUI(ModelRenderOptions& opts) {
-  ImGui::ShowDemoWindow();
+  // ImGui::ShowDemoWindow();
 
   ImGui::Begin("Model Render");
 
