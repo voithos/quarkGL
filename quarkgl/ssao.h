@@ -1,5 +1,5 @@
-#ifndef QUARKGL_SCREEN_SPACE_H_
-#define QUARKGL_SCREEN_SPACE_H_
+#ifndef QUARKGL_SSAO_H_
+#define QUARKGL_SSAO_H_
 
 #include <qrk/exceptions.h>
 #include <qrk/framebuffer.h>
@@ -13,7 +13,7 @@
 
 namespace qrk {
 
-class ScreenSpaceException : public QuarkException {
+class SsaoException : public QuarkException {
   using QuarkException::QuarkException;
 };
 

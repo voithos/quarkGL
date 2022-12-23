@@ -16,13 +16,13 @@
 #include <qrk/model.h>
 #include <qrk/random.h>
 #include <qrk/screen.h>
-#include <qrk/screen_space.h>
 #include <qrk/shader.h>
 #include <qrk/shader_compiler.h>
 #include <qrk/shader_defs.h>
 #include <qrk/shader_loader.h>
 #include <qrk/shader_primitives.h>
 #include <qrk/shadows.h>
+#include <qrk/ssao.h>
 #include <qrk/texture.h>
 #include <qrk/texture_map.h>
 #include <qrk/texture_registry.h>

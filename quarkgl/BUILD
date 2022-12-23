@@ -15,13 +15,13 @@ cc_library(
         ":mesh_primitives",
         ":model",
         ":screen",
-        ":screen_space",
         ":shader",
         ":shader_compiler",
         ":shader_defs",
         ":shader_loader",
         ":shader_primitives",
         ":shadows",
+        ":ssao",
         ":texture",
         ":texture_map",
         ":texture_registry",
@@ -219,9 +219,9 @@ cc_library(
 )
 
 cc_library(
-    name = "screen_space",
-    srcs = ["screen_space.cc"],
-    hdrs = ["screen_space.h"],
+    name = "ssao",
+    srcs = ["ssao.cc"],
+    hdrs = ["ssao.h"],
     include_prefix = "qrk",
     deps = [
         ":exceptions",

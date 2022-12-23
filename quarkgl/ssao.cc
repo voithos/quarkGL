@@ -1,4 +1,4 @@
-#include <qrk/screen_space.h>
+#include <qrk/ssao.h>
 #include <qrk/utils.h>
 
 #include <glm/gtx/norm.hpp>
