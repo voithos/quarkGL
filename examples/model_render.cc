@@ -38,10 +38,20 @@ enum class CameraControlType {
 
 // Options for the model render UI. The defaults here are used at startup.
 struct ModelRenderOptions {
+  // Rendering.
   bool useVertexNormals = false;
-  bool drawNormals = false;
+
+  // Camera.
   CameraControlType cameraControlType = CameraControlType::ORBIT;
+  float speed = 0;
+  float sensitivity = 0;
+  float fov = 0;
+  float near = 0;
+  float far = 0;
   bool captureMouse = false;
+
+  // Debug.
+  bool drawNormals = false;
 };
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
@@ -56,9 +66,26 @@ static void helpMarker(const char* desc) {
   }
 }
 
+enum class Scale {
+  LINEAR = 0,
+  LOG,
+};
+
+// Helper for a float slider value.
+static bool floatSlider(const char* desc, float* value, float min, float max,
+                        const char* fmt = nullptr,
+                        Scale scale = Scale::LINEAR) {
+  ImGuiSliderFlags flags = ImGuiSliderFlags_None;
+  if (scale == Scale::LOG) {
+    flags = ImGuiSliderFlags_Logarithmic;
+  }
+  return ImGui::SliderScalar(desc, ImGuiDataType_Float, value, &min, &max, fmt,
+                             flags);
+}
+
 // Called during game loop.
 void renderImGuiUI(ModelRenderOptions& opts) {
-  // ImGui::ShowDemoWindow();
+  ImGui::ShowDemoWindow();
 
   ImGui::Begin("Model Render");
 
@@ -78,6 +105,23 @@ void renderImGuiUI(ModelRenderOptions& opts) {
     ImGui::RadioButton("Orbit controls",
                        reinterpret_cast<int*>(&opts.cameraControlType),
                        static_cast<int>(CameraControlType::ORBIT));
+
+    floatSlider("Speed", &opts.speed, 0.1, 50.0);
+    floatSlider("Sensitivity", &opts.sensitivity, 0.01, 1.0, nullptr,
+                Scale::LOG);
+    floatSlider("FoV", &opts.fov, qrk::MIN_FOV, qrk::MAX_FOV, "%.1f°");
+    if (floatSlider("Near plane", &opts.near, 0.01, 1000.0, nullptr,
+                    Scale::LOG)) {
+      if (opts.near > opts.far) {
+        opts.far = opts.near;
+      }
+    }
+    if (floatSlider("Far plane", &opts.far, 0.01, 1000.0, nullptr,
+                    Scale::LOG)) {
+      if (opts.far < opts.near) {
+        opts.near = opts.far;
+      }
+    }
 
     ImGui::Checkbox("Capture mouse", &opts.captureMouse);
   }
@@ -199,23 +243,43 @@ int main(int argc, char** argv) {
     win.setKeyInputPaused(io.WantCaptureKeyboard);
 
     ModelRenderOptions prevOpts = opts;
+
+    // Initialize with certain current options.
+    opts.speed = cameraControls->getSpeed();
+    opts.sensitivity = cameraControls->getSensitivity();
+    opts.fov = camera->getFov();
+    opts.near = camera->getNearPlane();
+    opts.far = camera->getFarPlane();
+
+    // Render UI.
     renderImGuiUI(opts);
 
     // Post-process options. Some option values are used later during rendering.
+    cameraControls->setSpeed(opts.speed);
+    cameraControls->setSensitivity(opts.sensitivity);
+    camera->setFov(opts.fov);
+    camera->setNearPlane(opts.near);
+    camera->setFarPlane(opts.far);
+
+    if (opts.cameraControlType != prevOpts.cameraControlType) {
+      std::shared_ptr<qrk::CameraControls> newControls;
+      switch (opts.cameraControlType) {
+        case CameraControlType::FLY:
+          newControls = std::make_shared<qrk::FlyCameraControls>();
+          break;
+        case CameraControlType::ORBIT:
+          newControls = std::make_shared<qrk::OrbitCameraControls>(*camera);
+          break;
+      }
+      newControls->setSpeed(cameraControls->getSpeed());
+      newControls->setSensitivity(cameraControls->getSensitivity());
+      cameraControls = newControls;
+      win.bindCameraControls(cameraControls);
+    }
+
     win.setMouseButtonBehavior(opts.captureMouse
                                    ? qrk::MouseButtonBehavior::CAPTURE_MOUSE
                                    : qrk::MouseButtonBehavior::NONE);
-    if (opts.cameraControlType != prevOpts.cameraControlType) {
-      switch (opts.cameraControlType) {
-        case CameraControlType::FLY:
-          cameraControls = std::make_shared<qrk::FlyCameraControls>();
-          break;
-        case CameraControlType::ORBIT:
-          cameraControls = std::make_shared<qrk::OrbitCameraControls>(*camera);
-          break;
-      }
-      win.bindCameraControls(cameraControls);
-    }
 
     // == Main render path ==
     // Draw main models.

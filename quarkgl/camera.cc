@@ -121,7 +121,7 @@ void FlyCameraControls::resizeWindow(int width, int height) {}
 void FlyCameraControls::scroll(Camera& camera, double xoffset, double yoffset,
                                bool mouseCaptured) {
   // Always respond to scroll.
-  camera.zoom(yoffset);
+  camera.zoom(yoffset * sensitivity_);
 }
 
 void FlyCameraControls::mouseMove(Camera& camera, double xpos, double ypos,
@@ -183,8 +183,8 @@ void OrbitCameraControls::resizeWindow(int width, int height) {}
 
 void OrbitCameraControls::scroll(Camera& camera, double xoffset, double yoffset,
                                  bool mouseCaptured) {
-  radius_ =
-      glm::clamp(radius_ - static_cast<float>(yoffset), MIN_RADIUS, MAX_RADIUS);
+  radius_ = glm::clamp(radius_ - static_cast<float>(yoffset * sensitivity_),
+                       MIN_RADIUS, MAX_RADIUS);
   updateCamera(camera);
 }
 
