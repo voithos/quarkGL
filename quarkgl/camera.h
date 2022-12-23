@@ -29,15 +29,13 @@ enum class CameraDirection {
 
 constexpr float DEFAULT_YAW = 270.0f;
 constexpr float DEFAULT_PITCH = 0.0f;
-constexpr float DEFAULT_SPEED = 2.5f;
-constexpr float DEFAULT_SENSITIVITY = 0.1f;
 constexpr float DEFAULT_FOV = 45.0f;
 constexpr float DEFAULT_NEAR = 0.1f;
 constexpr float DEFAULT_FAR = 100.0f;
 constexpr float DEFAULT_ASPECT_RATIO = 4.0f / 3.0f;
 
 constexpr float MIN_FOV = 1.0f;
-constexpr float MAX_FOV = 90.0f;
+constexpr float MAX_FOV = 135.0f;
 
 class Camera : public UniformSource, public ViewSource {
  public:
@@ -45,7 +43,6 @@ class Camera : public UniformSource, public ViewSource {
   Camera(glm::vec3 position = glm::vec3(0.0f),
          glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f),
          float yaw = DEFAULT_YAW, float pitch = DEFAULT_PITCH,
-         float speed = DEFAULT_SPEED, float sensitivity = DEFAULT_SENSITIVITY,
          float fov = DEFAULT_FOV, float aspectRatio = DEFAULT_ASPECT_RATIO,
          float near = DEFAULT_NEAR, float far = DEFAULT_FAR);
   virtual ~Camera() = default;
@@ -67,9 +64,6 @@ class Camera : public UniformSource, public ViewSource {
   float getFov() const { return fov_; }
   void setFov(float fov) { fov_ = fov; }
 
-  // TODO: Move speed / sensitivity to CameraControls
-  float getSpeed() const { return speed_; }
-  void setSpeed(float speed) { speed_ = speed; }
   float getAspectRatio() const { return aspectRatio_; }
   void setAspectRatio(float aspectRatio) { aspectRatio_ = aspectRatio; }
   void setAspectRatio(ImageSize size) {
@@ -81,15 +75,14 @@ class Camera : public UniformSource, public ViewSource {
 
   void updateUniforms(Shader& shader) override;
 
-  // TODO: Move the following methods to FlyCameraControl?
-
-  // Moves the camera in the given direction based on the current speed.
-  void move(CameraDirection direction, float deltaTime);
-  // Rotates the camera based on the current sensitivity. If constrainPitch is
+  // Moves the camera in the given direction by the given amount.
+  void move(CameraDirection direction, float velocity);
+  // Rotates the camera by the given yaw and pitch offsets. If constrainPitch is
   // true, pitch is clamped when near the up and down directions.
-  void rotate(float xoffset, float yoffset, bool constrainPitch = true);
-  // Changes the zoom level of the FoV by the given offset.
-  void zoom(float offset);
+  void rotate(float yawOffset, float pitchOffset, bool constrainPitch = true);
+  // Changes the zoom level of the FoV by the given offset. Alternative to
+  // setFov().
+  void zoom(float fovOffset);
 
  private:
   void updateCameraVectors();
@@ -104,8 +97,6 @@ class Camera : public UniformSource, public ViewSource {
   // positive X axis.
   float yaw_;
   float pitch_;
-  float speed_;
-  float sensitivity_;
   float fov_;
 
   float aspectRatio_;
@@ -135,7 +126,15 @@ class CameraControls {
   void handleDragStartEnd(int button, int action);
   MouseDelta calculateMouseDelta(double xpos, double ypos);
 
+  float getSpeed() const { return speed_; }
+  void setSpeed(float speed) { speed_ = speed; }
+  float getSensitivity() const { return sensitivity_; }
+  void setSensitivity(float sensitivity) { sensitivity_ = sensitivity; }
+
  protected:
+  static constexpr float DEFAULT_SPEED = 5.0f;
+  static constexpr float DEFAULT_SENSITIVITY = 0.1f;
+
   // Whether input updates should use the last mouse positions to calculate
   // delta, or to start from the current positions.
   bool initialized_ = false;
@@ -143,6 +142,11 @@ class CameraControls {
   bool dragging_ = false;
   float lastMouseX_;
   float lastMouseY_;
+
+  // General setting for camera movement speed.
+  float speed_ = DEFAULT_SPEED;
+  // General setting for camera sensitivity.
+  float sensitivity_ = DEFAULT_SENSITIVITY;
 };
 
 // Camera controls that implement a fly mode, similar to DCC tools.
@@ -194,8 +198,6 @@ class OrbitCameraControls : public CameraControls {
   float azimuth_;
   // The angle in degrees that the camera is tilted up or down.
   float altitude_;
-  // TODO: Sensitivity should be set on the base class.
-  float sensitivity_ = 0.1f;
 };
 
 }  // namespace qrk

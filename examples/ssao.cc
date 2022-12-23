@@ -32,9 +32,9 @@ int main() {
   // Create camera.
   auto camera =
       std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 5.0f));
-  camera->setSpeed(10.0f);
   camera->lookAt(glm::vec3(0.0f, 0.0f, -1.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
+  cameraControls->setSpeed(10.0f);
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 

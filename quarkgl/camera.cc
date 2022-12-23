@@ -9,14 +9,11 @@ constexpr float POLAR_CAP = 90.0f - 0.1f;
 }
 
 Camera::Camera(glm::vec3 position, glm::vec3 worldUp, float yaw, float pitch,
-               float speed, float sensitivity, float fov, float aspectRatio,
-               float near, float far)
+               float fov, float aspectRatio, float near, float far)
     : position_(position),
       worldUp_(worldUp),
       yaw_(yaw),
       pitch_(pitch),
-      speed_(speed),
-      sensitivity_(sensitivity),
       fov_(fov),
       aspectRatio_(aspectRatio),
       near_(near),
@@ -57,8 +54,7 @@ void Camera::updateUniforms(Shader& shader) {
   shader.setMat4("projection", getProjectionTransform());
 }
 
-void Camera::move(CameraDirection direction, float deltaTime) {
-  float velocity = speed_ * deltaTime;
+void Camera::move(CameraDirection direction, float velocity) {
   switch (direction) {
     case CameraDirection::FORWARD:
       position_ += front_ * velocity;
@@ -81,13 +77,10 @@ void Camera::move(CameraDirection direction, float deltaTime) {
   }
 }
 
-void Camera::rotate(float xoffset, float yoffset, bool constrainPitch) {
-  xoffset *= sensitivity_;
-  yoffset *= sensitivity_;
-
+void Camera::rotate(float yawOffset, float pitchOffset, bool constrainPitch) {
   // Constrain yaw to be 0-360 to avoid floating point error.
-  yaw_ = glm::mod(yaw_ + xoffset, 360.0f);
-  pitch_ += yoffset;
+  yaw_ = glm::mod(yaw_ + yawOffset, 360.0f);
+  pitch_ += pitchOffset;
 
   if (constrainPitch) {
     pitch_ = glm::clamp(pitch_, -POLAR_CAP, POLAR_CAP);
@@ -140,7 +133,7 @@ void FlyCameraControls::mouseMove(Camera& camera, double xpos, double ypos,
 
   MouseDelta delta = calculateMouseDelta(xpos, ypos);
 
-  camera.rotate(delta.xoffset, delta.yoffset);
+  camera.rotate(delta.xoffset * sensitivity_, delta.yoffset * sensitivity_);
 }
 
 void FlyCameraControls::mouseButton(Camera& camera, int button, int action,
@@ -150,23 +143,24 @@ void FlyCameraControls::mouseButton(Camera& camera, int button, int action,
 
 void FlyCameraControls::processInput(GLFWwindow* window, Camera& camera,
                                      float deltaTime) {
+  float velocity = speed_ * deltaTime;
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::FORWARD, deltaTime);
+    camera.move(qrk::CameraDirection::FORWARD, velocity);
   }
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::LEFT, deltaTime);
+    camera.move(qrk::CameraDirection::LEFT, velocity);
   }
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::BACKWARD, deltaTime);
+    camera.move(qrk::CameraDirection::BACKWARD, velocity);
   }
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::RIGHT, deltaTime);
+    camera.move(qrk::CameraDirection::RIGHT, velocity);
   }
   if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::UP, deltaTime);
+    camera.move(qrk::CameraDirection::UP, velocity);
   }
   if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-    camera.move(qrk::CameraDirection::DOWN, deltaTime);
+    camera.move(qrk::CameraDirection::DOWN, velocity);
   }
 }
 
