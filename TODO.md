@@ -12,7 +12,7 @@
   - [ ] Add bloom
   - [ ] Add shadow mapping
   - [ ] Add SSAO
-- [ ] P0: Implement SSAO
+- [ ] P0: Physically based bloom: https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom
 - [ ] P0: Implement PBR lighting
 - [ ] P0: Update README / documentation
 - [ ] P1: Implement tessellation
@@ -33,7 +33,6 @@
 - [ ] P3: Implement IBL (image based lighting)
 - [ ] P3: Area lights https://learnopengl.com/Guest-Articles/2022/Area-Lights
 - [ ] P3: Tons of shadow map improvements described here: https://docs.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps
-- [ ] P3: Physically based bloom: https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom
 - [ ] P3: Add a wireframe mode.
 - [ ] P4: Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
@@ -93,3 +92,4 @@
 - [x] P0: Implement deferred shading
 - [x] P2: Add dynamic UI support, a la https://github.com/ocornut/imgui
 - [x] P0: Orbit controls
+- [x] P0: Implement SSAO

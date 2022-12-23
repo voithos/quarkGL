@@ -140,6 +140,16 @@ cc_library(
     ],
 )
 
+cc_test(
+    name = "texture_test",
+    size = "small",
+    srcs = ["texture_test.cc"],
+    deps = [
+        ":texture",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "texture_map",
     hdrs = ["texture_map.h"],

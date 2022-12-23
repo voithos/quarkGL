@@ -15,6 +15,17 @@ ImageSize calculateNextMip(const ImageSize& mipSize) {
                    .height = std::max(mipSize.height / 2, 1)};
 }
 
+ImageSize calculateMipLevel(int mip0Width, int mip0Height, int level) {
+  ImageSize size = {mip0Width, mip0Height};
+  if (level == 0) {
+    return size;
+  }
+  for (int mip = 0; mip < level; ++mip) {
+    size = calculateNextMip(size);
+  }
+  return size;
+}
+
 Texture Texture::load(const char* path, bool isSRGB) {
   TextureParams params = {.filtering = TextureFiltering::ANISOTROPIC,
                           .wrapMode = TextureWrapMode::REPEAT};

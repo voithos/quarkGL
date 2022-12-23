@@ -67,6 +67,9 @@ int calculateNumMips(int width, int height);
 // Returns the next mip size given an initial size.
 ImageSize calculateNextMip(const ImageSize& mipSize);
 
+// Returns the calculated size for a mip level.
+ImageSize calculateMipLevel(int mip0Width, int mip0Height, int level);
+
 class Texture {
  public:
   // Loads a texture from a given path.
