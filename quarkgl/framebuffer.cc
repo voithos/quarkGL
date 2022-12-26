@@ -22,9 +22,25 @@ Framebuffer::Framebuffer(int width, int height, int samples)
 
 Framebuffer::~Framebuffer() { glDeleteFramebuffers(1, &fbo_); }
 
-void Framebuffer::activate() {
+void Framebuffer::activate(int mipLevel) {
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
-  glViewport(0, 0, width_, height_);
+
+  // Activate the specified mip level (usually 0).
+  for (Attachment& attachment : attachments_) {
+    GLenum attachmentType = bufferTypeToGlAttachmentType(
+        attachment.type, attachment.colorAttachmentIndex);
+    if (attachment.target == AttachmentTarget::TEXTURE) {
+      glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, GL_TEXTURE_2D,
+                             attachment.id, mipLevel);
+    } else if (mipLevel != 0) {
+      // Non-0 mips are only allowed for textures.
+      throw FramebufferException(
+          "ERROR::FRAMEBUFFER::MIP_ACTIVATED_FOR_NON_TEXTURE");
+    }
+  }
+
+  ImageSize mipSize = calculateMipLevel(width_, height_, mipLevel);
+  glViewport(0, 0, mipSize.width, mipSize.height);
 }
 
 void Framebuffer::deactivate() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
@@ -71,8 +87,9 @@ Attachment Framebuffer::attachTexture(BufferType type,
   Texture::applyParams(params);
 
   // Attach the texture to the framebuffer.
+  int colorAttachmentIndex = numColorAttachments_;
   GLenum attachmentType =
-      bufferTypeToGlAttachmentType(type, numColorAttachments_);
+      bufferTypeToGlAttachmentType(type, colorAttachmentIndex);
   glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, textureTarget, texture,
                          /* mipmap level */ 0);
 
@@ -86,7 +103,8 @@ Attachment Framebuffer::attachTexture(BufferType type,
   glBindTexture(textureTarget, 0);
   deactivate();
 
-  return saveAttachment(texture, numMips, AttachmentTarget::TEXTURE, type);
+  return saveAttachment(texture, numMips, AttachmentTarget::TEXTURE, type,
+                        colorAttachmentIndex);
 }
 
 Attachment Framebuffer::attachRenderbuffer(BufferType type) {
@@ -113,8 +131,9 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   }
 
   // Attach the renderbuffer to the framebuffer.
+  int colorAttachmentIndex = numColorAttachments_;
   GLenum attachmentType =
-      bufferTypeToGlAttachmentType(type, numColorAttachments_);
+      bufferTypeToGlAttachmentType(type, colorAttachmentIndex);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachmentType, GL_RENDERBUFFER,
                             rbo);
 
@@ -129,7 +148,7 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   deactivate();
 
   return saveAttachment(rbo, /*numMips=*/1, AttachmentTarget::RENDERBUFFER,
-                        type);
+                        type, colorAttachmentIndex);
 }
 
 Attachment Framebuffer::getTexture(BufferType type) {
@@ -157,14 +176,15 @@ void Framebuffer::blitToDefault(GLenum bits) {
 }
 
 Attachment Framebuffer::saveAttachment(unsigned int id, int numMips,
-                                       AttachmentTarget target,
-                                       BufferType type) {
+                                       AttachmentTarget target, BufferType type,
+                                       int colorAttachmentIndex) {
   Attachment attachment = {.id = id,
                            .width = width_,
                            .height = height_,
                            .numMips = numMips,
                            .target = target,
-                           .type = type};
+                           .type = type,
+                           .colorAttachmentIndex = colorAttachmentIndex};
   attachments_.push_back(attachment);
   return attachment;
 }

@@ -41,6 +41,8 @@ class Attachment {
   int numMips;
   AttachmentTarget target;
   BufferType type;
+  // Attachment index. Only applies for color buffers.
+  int colorAttachmentIndex;
 
   Texture asTexture();
 
@@ -140,8 +142,9 @@ class Framebuffer {
       : Framebuffer(size.width, size.height, samples) {}
   virtual ~Framebuffer();
 
-  // Activates the current framebuffer.
-  void activate();
+  // Activates the current framebuffer. Optionally specify a mipmap level to
+  // activate.
+  void activate(int mipLevel = 0);
   // Deactivates the current framebuffer (and activates the default screen
   // framebuffer).
   void deactivate();
@@ -181,7 +184,8 @@ class Framebuffer {
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
   Attachment saveAttachment(unsigned int id, int numMips,
-                            AttachmentTarget target, BufferType type);
+                            AttachmentTarget target, BufferType type,
+                            int colorAttachmentIndex);
   Attachment getAttachment(AttachmentTarget target, BufferType type);
   void checkFlags(BufferType type);
   void updateFlags(BufferType type);
