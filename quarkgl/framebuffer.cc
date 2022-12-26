@@ -86,7 +86,7 @@ Attachment Framebuffer::attachTexture(BufferType type,
   glBindTexture(textureTarget, 0);
   deactivate();
 
-  return saveAttachment(texture, numMips, AttachmentTarget::TEXTURE);
+  return saveAttachment(texture, numMips, AttachmentTarget::TEXTURE, type);
 }
 
 Attachment Framebuffer::attachRenderbuffer(BufferType type) {
@@ -128,7 +128,16 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
   deactivate();
 
-  return saveAttachment(rbo, /*numMips=*/1, AttachmentTarget::RENDERBUFFER);
+  return saveAttachment(rbo, /*numMips=*/1, AttachmentTarget::RENDERBUFFER,
+                        type);
+}
+
+Attachment Framebuffer::getTexture(BufferType type) {
+  return getAttachment(AttachmentTarget::TEXTURE, type);
+}
+
+Attachment Framebuffer::getRenderbuffer(BufferType type) {
+  return getAttachment(AttachmentTarget::RENDERBUFFER, type);
 }
 
 void Framebuffer::blit(Framebuffer& target, GLenum bits) {
@@ -148,14 +157,26 @@ void Framebuffer::blitToDefault(GLenum bits) {
 }
 
 Attachment Framebuffer::saveAttachment(unsigned int id, int numMips,
-                                       AttachmentTarget target) {
+                                       AttachmentTarget target,
+                                       BufferType type) {
   Attachment attachment = {.id = id,
                            .width = width_,
                            .height = height_,
                            .numMips = numMips,
-                           .target = target};
+                           .target = target,
+                           .type = type};
   attachments_.push_back(attachment);
   return attachment;
+}
+
+Attachment Framebuffer::getAttachment(AttachmentTarget target,
+                                      BufferType type) {
+  for (Attachment& attachment : attachments_) {
+    if (attachment.target == target && attachment.type == type) {
+      return attachment;
+    }
+  }
+  throw FramebufferException("ERROR::FRAMEBUFFER::ATTACHMENT_NOT_FOUND");
 }
 
 void Framebuffer::checkFlags(BufferType type) {

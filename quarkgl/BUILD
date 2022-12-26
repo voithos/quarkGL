@@ -5,6 +5,7 @@ cc_library(
     hdrs = ["quarkgl.h"],
     include_prefix = "qrk",
     deps = [
+        ":blur",
         ":camera",
         ":core",
         ":deferred",
@@ -41,6 +42,20 @@ cc_library(
     deps = [
         "//third_party/glad",
         "@glfw",
+    ],
+)
+
+cc_library(
+    name = "blur",
+    srcs = ["blur.cc"],
+    hdrs = ["blur.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":core",
+        ":exceptions",
+        ":mesh_primitives",
+        ":shader",
+        ":shader_primitives",
     ],
 )
 

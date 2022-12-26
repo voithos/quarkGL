@@ -20,20 +20,6 @@ enum class AttachmentTarget {
   RENDERBUFFER,
 };
 
-class Attachment {
- public:
-  // TODO: Make these private.
-  unsigned int id;
-  int width;
-  int height;
-  int numMips;
-  AttachmentTarget target;
-
-  Texture asTexture();
-
-  // TODO: Replace with Texture?
-};
-
 enum class BufferType {
   COLOR = 0,
   // HDR color attachment, allowing color values to exceed 1.0
@@ -44,6 +30,21 @@ enum class BufferType {
   DEPTH,
   STENCIL,
   DEPTH_AND_STENCIL,
+};
+
+class Attachment {
+ public:
+  // TODO: Make these private.
+  unsigned int id;
+  int width;
+  int height;
+  int numMips;
+  AttachmentTarget target;
+  BufferType type;
+
+  Texture asTexture();
+
+  // TODO: Replace with Texture?
 };
 
 inline const GLenum bufferTypeToGlAttachmentType(BufferType type,
@@ -155,6 +156,11 @@ class Framebuffer {
   Attachment attachTexture(BufferType type, const TextureParams& params);
   Attachment attachRenderbuffer(BufferType type);
 
+  // Returns the first texture attachment of the given type.
+  Attachment getTexture(BufferType type);
+  // Returns the first renderbuffer attachment of the given type.
+  Attachment getRenderbuffer(BufferType type);
+
   // Copies the framebuffer to the target.
   // TODO: Swap out GLenum for qrk type.
   void blit(Framebuffer& target, GLenum bits);
@@ -175,7 +181,8 @@ class Framebuffer {
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
   Attachment saveAttachment(unsigned int id, int numMips,
-                            AttachmentTarget target);
+                            AttachmentTarget target, BufferType type);
+  Attachment getAttachment(AttachmentTarget target, BufferType type);
   void checkFlags(BufferType type);
   void updateFlags(BufferType type);
   // Updates the draw and read buffers based on the current flags.

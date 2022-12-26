@@ -131,15 +131,9 @@ int main() {
   qrk::ScreenQuadMesh bloomQuad(bloomAttachment.asTexture());
 
   // Create ping-pong buffers for blurring.
-  qrk::Framebuffer blurFb1(win.getSize());
-  qrk::Framebuffer blurFb2(win.getSize());
-  auto blurAttachment1 =
-      blurFb1.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
-  auto blurAttachment2 =
-      blurFb2.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
+  qrk::PingPongBuffer blurBuffer(win.getSize());
 
-  qrk::ScreenShader blurShader(
-      qrk::ShaderPath("examples/shaders/bloom_blur.frag"));
+  qrk::GaussianBlurShader blurShader;
   qrk::ScreenShader screenShader(qrk::ShaderPath("examples/shaders/hdr.frag"));
   qrk::ScreenShader bloomScreenShader(
       qrk::ShaderPath("examples/shaders/bloom_screen.frag"));
@@ -186,42 +180,21 @@ int main() {
     }
 
     // Ping-pong between horizontal and vertical gaussian blurs.
-    // TODO: Extract ping-pong to a helper?
-    qrk::Framebuffer* pingPongFbs[2] = {&blurFb1, &blurFb2};
-    qrk::Attachment* pingPongAttachments[2] = {&blurAttachment1,
-                                               &blurAttachment2};
-    bool horizontal = false;
-    qrk::Framebuffer* pingPongFb = pingPongFbs[horizontal];
-    qrk::Attachment* pingPongAttachment = &bloomAttachment;
-
     // 5 horizontal, 5 vertical.
-    constexpr int totalIterations = 10;
-    for (int i = 0; i < totalIterations; i++) {
-      pingPongFb->activate();
+    blurBuffer.multipassDraw(
+        bloomAttachment.asTexture(), blurShader, /*passes=*/5,
+        [&] { blurShader.setHorizontal(!blurShader.getHorizontal()); });
 
-      blurShader.setBool("horizontal", horizontal);
-      screenQuad.setTexture(*pingPongAttachment);
-      screenQuad.draw(blurShader);
-
-      horizontal = !horizontal;
-      // For a given 'horizontal' setting, we render _from_ the other mesh
-      // (non-horizontal) to the corresponding framebuffer.
-      pingPongFb = pingPongFbs[horizontal];
-      pingPongAttachment = pingPongAttachments[!horizontal];
-
-      pingPongFb->deactivate();
-    }
-
-    qrk::Attachment* blurredAttachment = pingPongAttachment;
+    qrk::Texture blurredTexture = blurBuffer.getOutput();
 
     if (drawOption == 2) {
-      screenQuad.setTexture(*blurredAttachment);
+      screenQuad.setTexture(blurredTexture);
       screenQuad.draw(screenShader);
       return;
     }
 
     // drawOption == 0
-    qrk::Texture bloomTexture = blurredAttachment->asTexture();
+    qrk::Texture bloomTexture = blurredTexture;
     bloomTexture.bindToUnit(1);
     bloomScreenShader.setBool("useBloom", useBloom);
     bloomScreenShader.setInt("bloomTexture", 1);
