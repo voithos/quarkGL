@@ -107,11 +107,12 @@ class Window : public UniformSource {
   }
 
   // TODO: Consider extracting blending logic.
-  void enableBlending() {
+  void enableAlphaBlending() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
   }
-  void disableBlending() { glDisable(GL_BLEND); }
+  void disableAlphaBlending() { glDisable(GL_BLEND); }
 
   void enableFaceCull() { glEnable(GL_CULL_FACE); }
   void disableFaceCull() { glDisable(GL_CULL_FACE); }

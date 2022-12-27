@@ -8,12 +8,18 @@ out vec4 fragColor;
 uniform sampler2D screenTexture;
 uniform sampler2D bloomTexture;
 uniform bool useBloom;
+uniform bool interpolateBloom;
+uniform float bloomStrength;
 
 void main() {
-  // Additive blending.
   vec3 color = texture(screenTexture, texCoords).rgb;
   if (useBloom) {
-    color += texture(bloomTexture, texCoords).rgb;
+    vec3 bloomColor = texture(bloomTexture, texCoords).rgb;
+    if (interpolateBloom) {
+      color = mix(color, bloomColor, bloomStrength);
+    } else {
+      color += bloomColor;
+    }
   }
 
   color = qrk_toneMapAcesApprox(color);

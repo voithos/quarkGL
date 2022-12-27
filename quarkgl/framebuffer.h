@@ -170,6 +170,20 @@ class Framebuffer {
   // Copies the framebuffer to the default framebuffer.
   void blitToDefault(GLenum type);
 
+  void enableAlphaBlending() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
+  }
+  void disableAlphaBlending() { glDisable(GL_BLEND); }
+
+  void enableAdditiveBlending() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    glBlendEquation(GL_FUNC_ADD);
+  }
+  void disableAdditiveBlending() { glDisable(GL_BLEND); }
+
  private:
   unsigned int fbo_ = 0;
   int width_;

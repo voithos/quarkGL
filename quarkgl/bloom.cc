@@ -43,4 +43,16 @@ void BloomDownsampleShader::configureWith(BloomBuffer& buffer) {
   setInt("qrk_bloomMipChain", 0);
 }
 
+BloomUpsampleShader::BloomUpsampleShader()
+    : ScreenShader(ShaderPath("quarkgl/shaders/builtin/bloom_upsample.frag")) {
+  setFilterRadius(filterRadius_);
+}
+
+void BloomUpsampleShader::configureWith(BloomBuffer& buffer) {
+  // The bloom shader only needs a single texture, so we just bind it
+  // directly.
+  buffer.getBloomMipChainTexture().bindToUnit(0);
+  setInt("qrk_bloomMipChain", 0);
+}
+
 }  // namespace qrk

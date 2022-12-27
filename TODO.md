@@ -12,7 +12,6 @@
   - [ ] Add bloom
   - [ ] Add shadow mapping
   - [ ] Add SSAO
-- [ ] P0: Physically based bloom: https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom
 - [ ] P0: Implement PBR lighting
 - [ ] P0: Update README / documentation
 - [ ] P1: Implement material system
@@ -94,3 +93,4 @@
 - [x] P2: Add dynamic UI support, a la https://github.com/ocornut/imgui
 - [x] P0: Orbit controls
 - [x] P0: Implement SSAO
+- [x] P0: Physically based bloom: https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom

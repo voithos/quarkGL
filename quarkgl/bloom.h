@@ -44,6 +44,23 @@ class BloomDownsampleShader : public ScreenShader {
   void configureWith(BloomBuffer& buffer);
 };
 
+class BloomUpsampleShader : public ScreenShader {
+ public:
+  BloomUpsampleShader();
+
+  void configureWith(BloomBuffer& buffer);
+  // Sets the radius, in UV coordinates, for the upscaling kernel.
+  void setFilterRadius(float filterRadius) {
+    filterRadius_ = filterRadius;
+    setFloat("qrk_filterRadius", filterRadius_);
+  }
+  float getFilterRadius() { return filterRadius_; }
+
+ private:
+  static constexpr float DEFAULT_FILTER_RADIUS = 0.005f;
+  float filterRadius_ = DEFAULT_FILTER_RADIUS;
+};
+
 }  // namespace qrk
 
 #endif

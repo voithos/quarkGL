@@ -140,6 +140,7 @@ int main() {
   std::cout << "Number of mip levels for resampling: " << numResampleMips
             << std::endl;
   qrk::BloomDownsampleShader bloomDownsampleShader;
+  qrk::BloomUpsampleShader bloomUpsampleShader;
 
   qrk::ScreenShader screenShader(qrk::ShaderPath("examples/shaders/hdr.frag"));
   screenShader.setBool("useHdr", false);
@@ -156,7 +157,7 @@ int main() {
   });
 
   int drawOptionResampleBloom = 0;
-  const int NUM_DRAW_OPTIONS_RESAMPLE_BLOOM = numResampleMips;
+  const int NUM_DRAW_OPTIONS_RESAMPLE_BLOOM = numResampleMips + 1;
   win.addKeyPressHandler(GLFW_KEY_3, [&](int mods) {
     drawOptionResampleBloom =
         (drawOptionResampleBloom + 1) % NUM_DRAW_OPTIONS_RESAMPLE_BLOOM;
@@ -201,34 +202,58 @@ int main() {
 
     if (useResampleBloom) {
       // Resampling bloom technique.
+      screenQuad.unsetTexture();
 
       // Copy to mip level 0.
       bloomBuffer.activate(0);
       mainFb.blit(bloomBuffer, GL_COLOR_BUFFER_BIT);
 
       // Perform the downsampling across the mip chain.
-      screenQuad.unsetTexture();
-      for (int mip = 1; mip < numResampleMips; ++mip) {
-        bloomBuffer.activate(mip);
-        int sourceMip = mip - 1;
+      bloomDownsampleShader.configureWith(bloomBuffer);
+      for (int destMip = 1; destMip < numResampleMips; ++destMip) {
+        bloomBuffer.activate(destMip);
+        int sourceMip = destMip - 1;
         bloomBuffer.setSourceMip(sourceMip);
-        bloomDownsampleShader.configureWith(bloomBuffer);
         screenQuad.draw(bloomDownsampleShader);
       }
 
+      // Perform the upsampling, starting with the second-to-last mip. We enable
+      // additive blending to avoid having to render into a separate texture.
+      bloomBuffer.enableAdditiveBlending();
+      bloomUpsampleShader.configureWith(bloomBuffer);
+      for (int destMip = numResampleMips - 2; destMip >= 0; --destMip) {
+        bloomBuffer.activate(destMip);
+        int sourceMip = destMip + 1;
+        bloomBuffer.setSourceMip(sourceMip);
+        screenQuad.draw(bloomUpsampleShader);
+      }
+
       bloomBuffer.unsetSourceMip();
+      bloomBuffer.disableAdditiveBlending();
       bloomBuffer.deactivate();
       win.setViewport();
 
       // Debug, look at the first 4 downsampled mips.
       if (drawOptionResampleBloom >= 1 &&
-          drawOptionResampleBloom < numResampleMips) {
+          drawOptionResampleBloom < numResampleMips + 1) {
+        int mipTarget = drawOptionResampleBloom - 1;
         // screenLodShader.setMipLevel(drawOptionResampleBloom);
-        bloomBuffer.setSourceMip(drawOptionResampleBloom);
+        bloomBuffer.setSourceMip(mipTarget);
         screenQuad.setTexture(bloomBuffer.getBloomMipChainTexture());
         screenQuad.draw(screenShader);
+        bloomBuffer.unsetSourceMip();
         return;
       }
+
+      // drawOptionResampleBloom == 0
+      qrk::Texture bloomTexture = bloomBuffer.getBloomMipChainTexture();
+      bloomTexture.bindToUnit(1);
+      bloomScreenShader.setInt("bloomTexture", 1);
+      bloomScreenShader.setBool("useBloom", useBloom);
+      bloomScreenShader.setBool("interpolateBloom", true);
+      bloomScreenShader.setFloat("bloomStrength", 0.04f);
+      screenQuad.setTexture(colorAttachment);
+      screenQuad.draw(bloomScreenShader);
     } else {
       // Gaussian blur based bloom effect.
       if (drawOptionBlurBloom == 1) {
@@ -254,8 +279,9 @@ int main() {
       // drawOptionBlurBloom == 0
       qrk::Texture bloomTexture = blurredTexture;
       bloomTexture.bindToUnit(1);
-      bloomScreenShader.setBool("useBloom", useBloom);
       bloomScreenShader.setInt("bloomTexture", 1);
+      bloomScreenShader.setBool("useBloom", useBloom);
+      bloomScreenShader.setBool("interpolateBloom", false);
       screenQuad.setTexture(colorAttachment);
       screenQuad.draw(bloomScreenShader);
     }
