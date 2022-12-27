@@ -29,6 +29,8 @@ Window::Window(int width, int height, const char* title, bool fullscreen,
     throw WindowException("ERROR::WINDOW::GLAD_INITIALIZATION_FAILED");
   }
 
+  qrk::initGlErrorLogging();
+
   // Allow us to refer to the object while accessing C APIs.
   glfwSetWindowUserPointer(window_, this);
 

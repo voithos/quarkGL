@@ -8,18 +8,29 @@ namespace qrk {
 bool isInitialized = false;
 
 /** Whether or not to automatically print glfw errors. */
-bool errorPrintingEnabled = true;
+bool glfwErrorLoggingEnabled = true;
 
-void errorCallback(int error, const char* description) {
-  if (errorPrintingEnabled) {
-    std::cout << "GLFW ERROR: " << description << " [error code " << error
-              << "]" << std::endl;
+/** Whether or not to automatically print OpenGL debug messages. */
+bool glErrorLoggingEnabled = true;
+
+void glfwErrorCallback(int error, const char* description) {
+  if (glfwErrorLoggingEnabled) {
+    fprintf(stderr, "GLFW ERROR: %s [error code %d]\n", description, error);
+  }
+}
+
+void GLAPIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id,
+                                GLenum severity, GLsizei length,
+                                const GLchar* message, const void* userParam) {
+  if (glErrorLoggingEnabled && type == GL_DEBUG_TYPE_ERROR) {
+    fprintf(stderr, "GL ERROR: %s [error type = 0x%x, severity = 0x%x]\n",
+            message, type, severity);
   }
 }
 
 void init() {
   if (!isInitialized) {
-    glfwSetErrorCallback(errorCallback);
+    glfwSetErrorCallback(glfwErrorCallback);
 
     glfwInit();
     // TODO: Do we need this? Move into qrk::Window?
@@ -38,8 +49,26 @@ void terminate() {
   }
 }
 
-void enableGlfwErrorLogging() { errorPrintingEnabled = true; }
-void disableGlfwErrorLogging() { errorPrintingEnabled = false; }
+void enableGlfwErrorLogging() { glfwErrorLoggingEnabled = true; }
+void disableGlfwErrorLogging() { glfwErrorLoggingEnabled = false; }
+
+void initGlErrorLogging() {
+  if (glErrorLoggingEnabled) {
+    enableGlErrorLogging();
+  } else {
+    disableGlErrorLogging();
+  }
+}
+
+void enableGlErrorLogging() {
+  glErrorLoggingEnabled = true;
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(glDebugCallback, 0);
+}
+void disableGlErrorLogging() {
+  glErrorLoggingEnabled = false;
+  glDisable(GL_DEBUG_OUTPUT);
+}
 
 float time() { return glfwGetTime(); }
 }  // namespace qrk

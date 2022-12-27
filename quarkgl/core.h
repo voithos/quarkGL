@@ -12,6 +12,9 @@ void init();
 void terminate();
 void enableGlfwErrorLogging();
 void disableGlfwErrorLogging();
+void initGlErrorLogging();
+void enableGlErrorLogging();
+void disableGlErrorLogging();
 float time();
 }  // namespace qrk
 
