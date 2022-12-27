@@ -132,18 +132,44 @@ int main() {
 
   // Create ping-pong buffers for blurring.
   qrk::PingPongBuffer blurBuffer(win.getSize());
-
   qrk::GaussianBlurShader blurShader;
+
+  // Create resampling buffers for resample based bloom.
+  qrk::BloomBuffer bloomBuffer(win.getSize());
+  int numResampleMips = bloomBuffer.getNumMips();
+  std::cout << "Number of mip levels for resampling: " << numResampleMips
+            << std::endl;
+  qrk::BloomDownsampleShader bloomDownsampleShader;
+
   qrk::ScreenShader screenShader(qrk::ShaderPath("examples/shaders/hdr.frag"));
+  screenShader.setBool("useHdr", false);
+  qrk::ScreenLodShader screenLodShader;
   qrk::ScreenShader bloomScreenShader(
       qrk::ShaderPath("examples/shaders/bloom_screen.frag"));
 
   bool useBloom = true;
   win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) { useBloom = !useBloom; });
-  int drawOption = 0;
-  constexpr int NUM_DRAW_OPTIONS = 3;
+  bool useResampleBloom = true;
   win.addKeyPressHandler(GLFW_KEY_2, [&](int mods) {
-    drawOption = (drawOption + 1) % NUM_DRAW_OPTIONS;
+    useResampleBloom = !useResampleBloom;
+    std::cout << "useResampleBloom = " << useResampleBloom << std::endl;
+  });
+
+  int drawOptionResampleBloom = 0;
+  const int NUM_DRAW_OPTIONS_RESAMPLE_BLOOM = numResampleMips;
+  win.addKeyPressHandler(GLFW_KEY_3, [&](int mods) {
+    drawOptionResampleBloom =
+        (drawOptionResampleBloom + 1) % NUM_DRAW_OPTIONS_RESAMPLE_BLOOM;
+    std::cout << "drawOptionResampleBloom = " << drawOptionResampleBloom
+              << std::endl;
+  });
+
+  int drawOptionBlurBloom = 0;
+  constexpr int NUM_DRAW_OPTIONS_BLUR_BLOOM = 3;
+  win.addKeyPressHandler(GLFW_KEY_4, [&](int mods) {
+    drawOptionBlurBloom =
+        (drawOptionBlurBloom + 1) % NUM_DRAW_OPTIONS_BLUR_BLOOM;
+    std::cout << "drawOptionBlurBloom = " << drawOptionBlurBloom << std::endl;
   });
 
   // win.enableFaceCull();
@@ -173,33 +199,66 @@ int main() {
     win.setViewport();
     screenShader.updateUniforms();
 
-    if (drawOption == 1) {
-      screenQuad.setTexture(bloomAttachment);
-      screenQuad.draw(screenShader);
-      return;
+    if (useResampleBloom) {
+      // Resampling bloom technique.
+
+      // Copy to mip level 0.
+      bloomBuffer.activate(0);
+      mainFb.blit(bloomBuffer, GL_COLOR_BUFFER_BIT);
+
+      // Perform the downsampling across the mip chain.
+      screenQuad.unsetTexture();
+      for (int mip = 1; mip < numResampleMips; ++mip) {
+        bloomBuffer.activate(mip);
+        int sourceMip = mip - 1;
+        bloomBuffer.setSourceMip(sourceMip);
+        bloomDownsampleShader.configureWith(bloomBuffer);
+        screenQuad.draw(bloomDownsampleShader);
+      }
+
+      bloomBuffer.unsetSourceMip();
+      bloomBuffer.deactivate();
+      win.setViewport();
+
+      // Debug, look at the first 4 downsampled mips.
+      if (drawOptionResampleBloom >= 1 &&
+          drawOptionResampleBloom < numResampleMips) {
+        // screenLodShader.setMipLevel(drawOptionResampleBloom);
+        bloomBuffer.setSourceMip(drawOptionResampleBloom);
+        screenQuad.setTexture(bloomBuffer.getBloomMipChainTexture());
+        screenQuad.draw(screenShader);
+        return;
+      }
+    } else {
+      // Gaussian blur based bloom effect.
+      if (drawOptionBlurBloom == 1) {
+        screenQuad.setTexture(bloomAttachment);
+        screenQuad.draw(screenShader);
+        return;
+      }
+
+      // Ping-pong between horizontal and vertical gaussian blurs.
+      // 5 horizontal, 5 vertical.
+      blurBuffer.multipassDraw(
+          bloomAttachment.asTexture(), blurShader, /*passes=*/5,
+          [&] { blurShader.setHorizontal(!blurShader.getHorizontal()); });
+
+      qrk::Texture blurredTexture = blurBuffer.getOutput();
+
+      if (drawOptionBlurBloom == 2) {
+        screenQuad.setTexture(blurredTexture);
+        screenQuad.draw(screenShader);
+        return;
+      }
+
+      // drawOptionBlurBloom == 0
+      qrk::Texture bloomTexture = blurredTexture;
+      bloomTexture.bindToUnit(1);
+      bloomScreenShader.setBool("useBloom", useBloom);
+      bloomScreenShader.setInt("bloomTexture", 1);
+      screenQuad.setTexture(colorAttachment);
+      screenQuad.draw(bloomScreenShader);
     }
-
-    // Ping-pong between horizontal and vertical gaussian blurs.
-    // 5 horizontal, 5 vertical.
-    blurBuffer.multipassDraw(
-        bloomAttachment.asTexture(), blurShader, /*passes=*/5,
-        [&] { blurShader.setHorizontal(!blurShader.getHorizontal()); });
-
-    qrk::Texture blurredTexture = blurBuffer.getOutput();
-
-    if (drawOption == 2) {
-      screenQuad.setTexture(blurredTexture);
-      screenQuad.draw(screenShader);
-      return;
-    }
-
-    // drawOption == 0
-    qrk::Texture bloomTexture = blurredTexture;
-    bloomTexture.bindToUnit(1);
-    bloomScreenShader.setBool("useBloom", useBloom);
-    bloomScreenShader.setInt("bloomTexture", 1);
-    screenQuad.setTexture(colorAttachment);
-    screenQuad.draw(bloomScreenShader);
   });
 
   return 0;

@@ -228,6 +228,17 @@ void Texture::bindToUnit(unsigned int textureUnit, TextureBindType bindType) {
   }
 }
 
+void Texture::setSamplerMipRange(int min, int max) {
+  glBindTexture(GL_TEXTURE_2D, id_);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, min);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, max);
+}
+
+void Texture::unsetSamplerMipRange() {
+  // OpenGL defaults.
+  setSamplerMipRange(0, 1000);
+}
+
 void Texture::applyParams(const TextureParams& params) {
   switch (params.filtering) {
     case TextureFiltering::NEAREST:

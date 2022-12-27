@@ -5,6 +5,7 @@ cc_library(
     hdrs = ["quarkgl.h"],
     include_prefix = "qrk",
     deps = [
+        ":bloom",
         ":blur",
         ":camera",
         ":core",
@@ -46,6 +47,21 @@ cc_library(
 )
 
 cc_library(
+    name = "bloom",
+    srcs = ["bloom.cc"],
+    hdrs = ["bloom.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":core",
+        ":exceptions",
+        ":framebuffer",
+        ":shader",
+        ":shader_primitives",
+        ":texture_registry",
+    ],
+)
+
+cc_library(
     name = "blur",
     srcs = ["blur.cc"],
     hdrs = ["blur.h"],
@@ -56,6 +72,7 @@ cc_library(
         ":mesh_primitives",
         ":shader",
         ":shader_primitives",
+        ":texture_registry",
     ],
 )
 

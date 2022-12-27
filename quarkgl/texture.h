@@ -99,9 +99,16 @@ class Texture {
   // Binds the texture to the given texture unit.
   // Unit should be a number starting from 0, not the actual texture unit's
   // GLenum. This will bind samplers normally, but will bind cubemaps as
-  // cubemaps and custom texture as image textures.
+  // cubemaps and custom textures as image textures.
   void bindToUnit(unsigned int textureUnit,
                   TextureBindType bindType = TextureBindType::TEXTURE);
+
+  // Sets a min/max mip level allowed when sampling from this texture. This is
+  // important to avoid undefined behavior when drawing to a mip level while
+  // sampling from another.
+  void setSamplerMipRange(int min, int max);
+  // Resets the allowed mip range to default values.
+  void unsetSamplerMipRange();
 
   unsigned int getId() const { return id_; }
   // Returns the path to a texture. Not applicable for cubemaps or generated

@@ -41,6 +41,10 @@ ScreenShader::ScreenShader(const ShaderSource& fragmentSource)
     : Shader(ShaderPath("quarkgl/shaders/builtin/screen_quad.vert"),
              fragmentSource) {}
 
+ScreenLodShader::ScreenLodShader()
+    : ScreenShader(ShaderPath("quarkgl/shaders/builtin/screen_quad_lod.frag")) {
+}
+
 ShadowMapShader::ShadowMapShader()
     : Shader(ShaderPath("quarkgl/shaders/builtin/shadow_map.vert"),
              ShaderPath("quarkgl/shaders/builtin/shadow_map.frag")) {}

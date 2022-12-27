@@ -143,7 +143,7 @@ class Framebuffer {
   virtual ~Framebuffer();
 
   // Activates the current framebuffer. Optionally specify a mipmap level to
-  // activate.
+  // draw to.
   void activate(int mipLevel = 0);
   // Deactivates the current framebuffer (and activates the default screen
   // framebuffer).

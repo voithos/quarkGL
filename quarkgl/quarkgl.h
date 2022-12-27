@@ -6,6 +6,7 @@
 #include <qrk/core.h>
 // clang-format on
 
+#include <qrk/bloom.h>
 #include <qrk/blur.h>
 #include <qrk/camera.h>
 #include <qrk/deferred.h>

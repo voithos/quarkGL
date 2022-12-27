@@ -26,6 +26,15 @@ class ScreenShader : public Shader {
   explicit ScreenShader(const ShaderSource& fragmentSource);
 };
 
+class ScreenLodShader : public ScreenShader {
+ public:
+  ScreenLodShader();
+
+  void setMipLevel(int mipLevel) {
+    setFloat("lod", static_cast<float>(mipLevel));
+  }
+};
+
 // TODO: Move this to the shadows header.
 class ShadowMapShader : public Shader {
  public:
