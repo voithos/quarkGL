@@ -12,8 +12,8 @@ cmake(
     name = "assimp",
     lib_source = ":all_srcs",
     out_shared_libs = select({
-        ":dbg_build": ["libassimpd.so"],
-        "//conditions:default": ["libassimp.so"],
+        ":dbg_build": ["libassimpd.so.5"],
+        "//conditions:default": ["libassimp.so.5"],
     }),
 )
 
