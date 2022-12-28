@@ -14,6 +14,39 @@
             "sourceFileMap": {
                 "/proc/self/cwd": "${workspaceFolder}"
             }
+        },
+        {
+            "type": "cppdbg",
+            "request": "launch",
+            "name": "Debug an example",
+            // TODO: This always seems to invalidate the build cache.
+            // "preLaunchTask": "Build examples (Debug)",
+            "program": "${workspaceRoot}/bazel-bin/examples/${input:exampleName}",
+            "args": [],
+            "cwd": "${workspaceFolder}/bazel-bin/examples/${input:exampleName}.runfiles/__main__",
+            "MIMode": "gdb",
+            "sourceFileMap": {
+                "/proc/self/cwd": "${workspaceFolder}"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "exampleName",
+            "description": "Which example to run?",
+            "options": [
+                "bloom",
+                "compute",
+                "deferred",
+                "geom_shader",
+                "hdr",
+                "instancing",
+                "normal_map",
+                "post_processing",
+                "shadow_map",
+                "ssao"
+            ]
         }
     ]
 }
