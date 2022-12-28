@@ -38,6 +38,7 @@
 
 ## Cleanup
 - [ ] P1: Add `#pragma once` for shaders
+- [ ] P1: Model loading is sometimes slow
 - [ ] P2: Add a logging system, and log e.g. invalid glGetUniformLocation() calls
 - [ ] P2: Remove some duplication from light class impl
 - [ ] P3: Add a mechanism to set #define's in the shader

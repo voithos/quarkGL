@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 
 int main() {
   constexpr int width = 800, height = 600;
@@ -18,8 +17,9 @@ int main() {
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);
   win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
 
-  auto camera =
-      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.5f, 5.0f));
+  auto camera = std::make_shared<qrk::Camera>(
+      /* position */ glm::vec3(-0.5f, 1.5f, 6.0f));
+  camera->lookAt(glm::vec3(0.5f, 0.0f, 0.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
@@ -88,6 +88,11 @@ int main() {
   bool drawShadowMap = false;
   win.addKeyPressHandler(GLFW_KEY_1,
                          [&](int mods) { drawShadowMap = !drawShadowMap; });
+
+  printf("Controls:\n");
+  printf("- WASD: movement\n");
+  printf("- Mouse: camera\n");
+  printf("- 1: draw the shadow map\n");
 
   win.enableFaceCull();
   win.loop([&](float deltaTime) {

@@ -7,7 +7,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 #include <random>
 
 const char* lampShaderSource = R"SHADER(
@@ -31,8 +30,8 @@ int main() {
 
   // Create camera.
   auto camera =
-      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 5.0f));
-  camera->lookAt(glm::vec3(0.0f, 0.0f, -1.0f));
+      std::make_shared<qrk::Camera>(/* position */ glm::vec3(2.0f, 1.0f, 5.0f));
+  camera->lookAt(glm::vec3(0.0f, -2.0f, 0.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
   cameraControls->setSpeed(10.0f);
   win.bindCamera(camera);
@@ -117,10 +116,21 @@ int main() {
   qrk::ScreenShader screenShader;
 
   bool drawOcclusionMap = false;
-  win.addKeyPressHandler(
-      GLFW_KEY_1, [&](int mods) { drawOcclusionMap = !drawOcclusionMap; });
+  win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) {
+    drawOcclusionMap = !drawOcclusionMap;
+    printf("drawOcclusionMap = %d\n", drawOcclusionMap);
+  });
   bool useSsao = true;
-  win.addKeyPressHandler(GLFW_KEY_2, [&](int mods) { useSsao = !useSsao; });
+  win.addKeyPressHandler(GLFW_KEY_2, [&](int mods) {
+    useSsao = !useSsao;
+    printf("useSsao = %d\n", useSsao);
+  });
+
+  printf("Controls:\n");
+  printf("- WASD: movement\n");
+  printf("- Mouse: camera\n");
+  printf("- 1: draw the SSAO texture\n");
+  printf("- 2: enable/disable SSAO\n");
 
   // win.enableFaceCull();
   win.loop([&](float deltaTime) {
