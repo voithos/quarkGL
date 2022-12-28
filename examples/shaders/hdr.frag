@@ -8,9 +8,12 @@ out vec4 fragColor;
 uniform sampler2D screenTexture;
 uniform bool useHdr;
 uniform int toneMapTechnique;
+uniform float colorStrength = 1.0f;
 
 void main() {
   vec3 color = texture(screenTexture, texCoords).rgb;
+
+  color *= colorStrength;
 
   if (useHdr) {
     if (toneMapTechnique == 0) {

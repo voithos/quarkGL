@@ -237,9 +237,9 @@ int main() {
       if (drawOptionResampleBloom >= 1 &&
           drawOptionResampleBloom < numResampleMips + 1) {
         int mipTarget = drawOptionResampleBloom - 1;
-        // screenLodShader.setMipLevel(drawOptionResampleBloom);
         bloomBuffer.setSourceMip(mipTarget);
         screenQuad.setTexture(bloomBuffer.getBloomMipChainTexture());
+        screenShader.setFloat("colorStrength", 0.04f);
         screenQuad.draw(screenShader);
         bloomBuffer.unsetSourceMip();
         return;
@@ -257,6 +257,7 @@ int main() {
     } else {
       // Gaussian blur based bloom effect.
       if (drawOptionBlurBloom == 1) {
+        screenShader.setFloat("colorStrength", 1.0f);
         screenQuad.setTexture(bloomAttachment);
         screenQuad.draw(screenShader);
         return;
@@ -271,6 +272,7 @@ int main() {
       qrk::Texture blurredTexture = blurBuffer.getOutput();
 
       if (drawOptionBlurBloom == 2) {
+        screenShader.setFloat("colorStrength", 1.0f);
         screenQuad.setTexture(blurredTexture);
         screenQuad.draw(screenShader);
         return;
