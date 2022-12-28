@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 
 const char* textureVertexSource = R"SHADER(
 #version 460 core
@@ -157,7 +156,8 @@ int main() {
   win->setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
 
   auto camera =
-      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
+      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 1.0f, 3.0f));
+  camera->lookAt(glm::vec3(0.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
   win->bindCamera(camera);
   win->bindCameraControls(cameraControls);
@@ -200,6 +200,10 @@ int main() {
   fb.attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
 
   screenShader.addUniformSource(win);
+
+  printf("Controls:\n");
+  printf("- WASD: movement\n");
+  printf("- Mouse: camera\n");
 
   win->loop([&](float deltaTime) {
     fb.activate();

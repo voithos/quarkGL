@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 
 // TODO: Pull into a simple color shader.
 const char* lampShaderSource = R"SHADER(
@@ -74,11 +73,21 @@ int main() {
       "examples/assets/brickwall_normal.jpg", /*isSRGB=*/false);
 
   bool useVertexNormals = false;
-  win.addKeyPressHandler(
-      GLFW_KEY_1, [&](int mods) { useVertexNormals = !useVertexNormals; });
+  win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) {
+    useVertexNormals = !useVertexNormals;
+    printf("useVertexNormals = %d\n", useVertexNormals);
+  });
   bool renderNormals = false;
-  win.addKeyPressHandler(GLFW_KEY_2,
-                         [&](int mods) { renderNormals = !renderNormals; });
+  win.addKeyPressHandler(GLFW_KEY_2, [&](int mods) {
+    renderNormals = !renderNormals;
+    printf("renderNormals = %d\n", renderNormals);
+  });
+
+  printf("Controls:\n");
+  printf("- WASD: movement\n");
+  printf("- Mouse: camera\n");
+  printf("- 1: switch between normal map and vertex normals\n");
+  printf("- 2: switch between lighting and rendering normals\n");
 
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
