@@ -14,13 +14,12 @@ int main() {
   qrk::Window win(width, height, "Bloom", /* fullscreen */ false,
                   /* samples */ 4);
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-  win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);
-  win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
+  win.setMouseButtonBehavior(qrk::MouseButtonBehavior::NONE);
 
-  auto camera =
-      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 5.0f));
-  camera->lookAt(glm::vec3(0.0f, 0.0f, 10.0f));
+  auto camera = std::make_shared<qrk::Camera>(
+      /* position */ glm::vec3(-7.0f, 3.0f, 7.0f));
+  camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
   cameraControls->setSpeed(10.0f);
   win.bindCamera(camera);
@@ -137,8 +136,6 @@ int main() {
   // Create resampling buffers for resample based bloom.
   qrk::BloomBuffer bloomBuffer(win.getSize());
   int numResampleMips = bloomBuffer.getNumMips();
-  std::cout << "Number of mip levels for resampling: " << numResampleMips
-            << std::endl;
   qrk::BloomDownsampleShader bloomDownsampleShader;
   qrk::BloomUpsampleShader bloomUpsampleShader;
 
@@ -172,6 +169,15 @@ int main() {
         (drawOptionBlurBloom + 1) % NUM_DRAW_OPTIONS_BLUR_BLOOM;
     std::cout << "drawOptionBlurBloom = " << drawOptionBlurBloom << std::endl;
   });
+
+  printf("Controls:\n");
+  printf("- WASD: movement\n");
+  printf("- Mouse: camera\n");
+  printf("- 1: enable/disable bloom\n");
+  printf("- 2: switch blur-based/resampling bloom\n");
+  printf("- 3: cycle mip levels of resampling bloom\n");
+  printf("- 4: cycle stages of blur bloom\n");
+  printf("Number of mip levels for resampling: %d\n", numResampleMips);
 
   // win.enableFaceCull();
   win.loop([&](float deltaTime) {
