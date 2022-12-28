@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 
 int main() {
   constexpr int width = 800, height = 600;
@@ -150,7 +149,7 @@ int main() {
   bool useResampleBloom = true;
   win.addKeyPressHandler(GLFW_KEY_2, [&](int mods) {
     useResampleBloom = !useResampleBloom;
-    std::cout << "useResampleBloom = " << useResampleBloom << std::endl;
+    printf("useResampleBloom = %d\n", useResampleBloom);
   });
 
   int drawOptionResampleBloom = 0;
@@ -158,8 +157,7 @@ int main() {
   win.addKeyPressHandler(GLFW_KEY_3, [&](int mods) {
     drawOptionResampleBloom =
         (drawOptionResampleBloom + 1) % NUM_DRAW_OPTIONS_RESAMPLE_BLOOM;
-    std::cout << "drawOptionResampleBloom = " << drawOptionResampleBloom
-              << std::endl;
+    printf("drawOptionResampleBloom = %d\n", drawOptionResampleBloom);
   });
 
   int drawOptionBlurBloom = 0;
@@ -167,7 +165,7 @@ int main() {
   win.addKeyPressHandler(GLFW_KEY_4, [&](int mods) {
     drawOptionBlurBloom =
         (drawOptionBlurBloom + 1) % NUM_DRAW_OPTIONS_BLUR_BLOOM;
-    std::cout << "drawOptionBlurBloom = " << drawOptionBlurBloom << std::endl;
+    printf("drawOptionBlurBloom = %d\n", drawOptionBlurBloom);
   });
 
   printf("Controls:\n");

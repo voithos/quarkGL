@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 #include <random>
 
 int main() {
@@ -17,7 +16,8 @@ int main() {
   win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
 
   auto camera = std::make_shared<qrk::Camera>(
-      /* position */ glm::vec3(0.0f, 0.0f, 10.0f));
+      /* position */ glm::vec3(0.0f, 3.0f, 18.0f));
+  camera->lookAt(glm::vec3(0.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
@@ -62,8 +62,8 @@ int main() {
   int rockCount = 8000;
   glm::mat4 modelTransforms[rockCount];
   std::mt19937 gen(42);
-  float radius = 15.0f;
-  float offset = 2.5f;
+  float radius = 10.0f;
+  float offset = 4.5f;
   for (int i = 0; i < rockCount; i++) {
     glm::mat4 model;
 
@@ -75,7 +75,7 @@ int main() {
     float x = sin(angle) * radius + displacement;
     displacement =
         (gen() % static_cast<int>(2 * offset * 100)) / 100.0f - offset;
-    float y = displacement * 0.4f;
+    float y = displacement * 0.1f;
     displacement =
         (gen() % static_cast<int>(2 * offset * 100)) / 100.0f - offset;
     float z = cos(angle) * radius + displacement;
@@ -100,6 +100,11 @@ int main() {
                   /*instanceCount=*/rockCount);
   rock.loadInstanceModels(modelTransforms, rockCount);
 
+  printf("Controls:\n");
+  printf("- WASD: movement\n");
+  printf("- Mouse: camera\n");
+  printf("Generated %d asteroid instances\n", rockCount);
+
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
     glm::mat4 view = camera->getViewTransform();
@@ -113,9 +118,10 @@ int main() {
     mainShader.updateUniforms();
 
     // Draw planet.
-    glm::mat4 model = glm::translate(glm::mat4(), glm::vec3(0.0f, -1.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(50.f), glm::vec3(1.0f, 0.0f, 0.0f));
-    mainShader.setMat4("model", model);
+    planet.setModelTransform(glm::scale(
+        glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, -1.0f, 0.0f)),
+                    glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        glm::vec3(1.0f, 1.0f, 1.0f)));
 
     planet.draw(mainShader);
 

@@ -7,7 +7,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 #include <random>
 
 const char* lampShaderSource = R"SHADER(
@@ -30,9 +29,9 @@ int main() {
   win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
 
   // Create camera.
-  auto camera =
-      std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 5.0f));
-  camera->lookAt(glm::vec3(0.0f, 0.0f, -1.0f));
+  auto camera = std::make_shared<qrk::Camera>(
+      /* position */ glm::vec3(-5.0f, 1.0f, 7.0f));
+  camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
   cameraControls->setSpeed(10.0f);
   win.bindCamera(camera);
@@ -106,32 +105,6 @@ int main() {
   qrk::ScreenShader gBufferVisShader(
       qrk::ShaderPath("examples/shaders/gbuffer.frag"));
 
-  int gBufferVis = 0;
-  constexpr int NUM_GBUFFER_VIS = 6;
-  win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) {
-    gBufferVis = (gBufferVis + 1) % NUM_GBUFFER_VIS;
-    switch (gBufferVis) {
-      case 0:
-        std::cout << "Switching to normal rendering" << std::endl;
-        break;
-      case 1:
-        std::cout << "Drawing G-Buffer positions" << std::endl;
-        break;
-      case 2:
-        std::cout << "Drawing G-Buffer normals" << std::endl;
-        break;
-      case 3:
-        std::cout << "Drawing G-Buffer albedo" << std::endl;
-        break;
-      case 4:
-        std::cout << "Drawing G-Buffer specularity" << std::endl;
-        break;
-      case 5:
-        std::cout << "Drawing G-Buffer emission" << std::endl;
-        break;
-    };
-  });
-
   // Set up the lighting pass.
   qrk::ScreenShader lightingPassShader(
       qrk::ShaderPath("examples/shaders/deferred_lighting.frag"));
@@ -142,6 +115,38 @@ int main() {
   lightingPassShader.setFloat("emissionAttenuation.constant", 1.0f);
   lightingPassShader.setFloat("emissionAttenuation.linear", 0.09f);
   lightingPassShader.setFloat("emissionAttenuation.quadratic", 0.032f);
+
+  int gBufferVis = 0;
+  constexpr int NUM_GBUFFER_VIS = 6;
+  win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) {
+    gBufferVis = (gBufferVis + 1) % NUM_GBUFFER_VIS;
+    switch (gBufferVis) {
+      case 0:
+        printf("Switching to full lighting\n");
+        break;
+      case 1:
+        printf("Drawing G-Buffer positions\n");
+        break;
+      case 2:
+        printf("Drawing G-Buffer normals\n");
+        break;
+      case 3:
+        printf("Drawing G-Buffer albedo\n");
+        break;
+      case 4:
+        printf("Drawing G-Buffer specularity\n");
+        break;
+      case 5:
+        printf("Drawing G-Buffer emission\n");
+        break;
+    };
+  });
+
+  printf("Controls:\n");
+  printf("- WASD: movement\n");
+  printf("- Mouse: camera\n");
+  printf("- 1: cycle through G-buffer\n");
+  printf("Generated %d random point lights\n", NUM_LIGHTS);
 
   // win.enableFaceCull();
   win.loop([&](float deltaTime) {

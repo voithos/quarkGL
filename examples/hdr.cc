@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 
 int main() {
   constexpr int width = 800, height = 600;
@@ -78,12 +77,32 @@ int main() {
       glm::vec3(5.0f, 5.0f, 55.0f)));
 
   bool useHdr = true;
-  win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) { useHdr = !useHdr; });
+  win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) {
+    useHdr = !useHdr;
+    printf("useHdr = %d\n", useHdr);
+  });
   int toneMapTechnique = 0;
   constexpr int NUM_TONEMAP_TECHNIQUES = 3;
   win.addKeyPressHandler(GLFW_KEY_2, [&](int mods) {
     toneMapTechnique = (toneMapTechnique + 1) % NUM_TONEMAP_TECHNIQUES;
+    switch (toneMapTechnique) {
+      case 0:
+        printf("Using tone map: Reinhard\n");
+        break;
+      case 1:
+        printf("Using tone map: Reinhard luminance\n");
+        break;
+      case 2:
+        printf("Using tone map: ACES (approx)\n");
+        break;
+    }
   });
+
+  printf("Controls:\n");
+  printf("- WASD: movement\n");
+  printf("- Mouse: camera\n");
+  printf("- 1: enable/disable tone mapping\n");
+  printf("- 2: cycle tone map method\n");
 
   win.loop([&](float deltaTime) {
     // Draw the scene to the HDR framebuffer.

@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 
 int main() {
   constexpr int width = 512, height = 512;
@@ -35,7 +34,7 @@ int main() {
 
     // Print frame rate.
     if (win.getFrameCount() % 600 == 0) {
-      std::cout << "FPS: " << 1 / deltaTime << std::endl;
+      printf("FPS: %.2f\n", 1 / deltaTime);
     }
   });
 
