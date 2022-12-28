@@ -11,5 +11,13 @@ filegroup(
 cmake(
     name = "assimp",
     lib_source = ":all_srcs",
-    out_shared_libs = ["libassimp.so.5"],
+    out_shared_libs = select({
+        ":dbg_build": ["libassimpd.so"],
+        "//conditions:default": ["libassimp.so"],
+    }),
+)
+
+config_setting(
+    name = "dbg_build",
+    values = {"compilation_mode": "dbg"},
 )
