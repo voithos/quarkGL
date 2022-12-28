@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build model_render (Debug)",
+            "type": "shell",
+            "command": "env; bazel build //examples:model_render -c dbg",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Build examples (Debug)",
+            "type": "shell",
+            "command": "bazel build //examples:all -c dbg",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Build quarkgl (Debug)",
+            "type": "shell",
+            "command": "bazel build //quarkgl:all -c dbg",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        }
+    ]
+}
