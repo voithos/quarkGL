@@ -128,6 +128,7 @@ class Window : public UniformSource {
   void disableResizeUpdates();
 
   unsigned int getFrameCount() const { return frameCount_; }
+  float getAvgFPS() const;
   glm::vec4 getClearColor() const { return clearColor_; }
   void setClearColor(glm::vec4 color) { clearColor_ = color; }
 
@@ -179,6 +180,8 @@ class Window : public UniformSource {
   void mouseButtonCallback(int button, int action, int mods);
   void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
+  void updateFrameStats(float deltaTime);
+
   GLFWwindow* window_;
   bool depthTestEnabled_ = false;
   bool stencilTestEnabled_ = false;
@@ -186,6 +189,9 @@ class Window : public UniformSource {
   float lastTime_ = 0.0f;
   float deltaTime_ = 0.0f;
   unsigned int frameCount_ = 0;
+  static constexpr int NUM_FRAME_DELTAS = 100;
+  float frameDeltas_[NUM_FRAME_DELTAS] = {0.0f};
+  float frameDeltaSum_ = 0.0f;
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;
 
   EscBehavior escBehavior_ = EscBehavior::NONE;

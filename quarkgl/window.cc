@@ -307,12 +307,28 @@ void Window::bindCameraControls(
   boundCameraControls_->resizeWindow(size.width, size.height);
 }
 
+float Window::getAvgFPS() const {
+  int denominator = std::min<int>(frameCount_, NUM_FRAME_DELTAS);
+  float avgFrameDelta = frameDeltaSum_ / denominator;
+  return 1.0f / avgFrameDelta;
+}
+
+void Window::updateFrameStats(float deltaTime) {
+  unsigned int frameDeltaIdx = frameCount_ % NUM_FRAME_DELTAS;
+  float oldDeltaTime = frameDeltas_[frameDeltaIdx];
+  frameDeltaSum_ -= oldDeltaTime;
+  frameDeltaSum_ += deltaTime;
+  frameDeltas_[frameDeltaIdx] = deltaTime;
+}
+
 void Window::loop(std::function<void(float)> callback) {
   // TODO: Add exception handling here.
   while (!glfwWindowShouldClose(window_)) {
     float currentTime = qrk::time();
     deltaTime_ = currentTime - lastTime_;
     lastTime_ = currentTime;
+
+    updateFrameStats(deltaTime_);
 
     // Clear the appropriate buffers.
     glClearColor(clearColor_.r, clearColor_.g, clearColor_.b, clearColor_.a);
@@ -336,7 +352,7 @@ void Window::loop(std::function<void(float)> callback) {
     glfwSwapBuffers(window_);
     glfwPollEvents();
 
-    frameCount_++;
+    ++frameCount_;
   }
 }
 
