@@ -16,29 +16,27 @@
 
 ABSL_FLAG(std::string, model, "", "Path to a model file");
 
-const char *lampShaderSource = R"SHADER(
+const char* lampShaderSource = R"SHADER(
 #version 460 core
 out vec4 fragColor;
 
 void main() { fragColor = vec4(1.0); }
 )SHADER";
 
-const char *normalShaderSource = R"SHADER(
+const char* normalShaderSource = R"SHADER(
 #version 460 core
 out vec4 fragColor;
 
 void main() { fragColor = vec4(1.0, 1.0, 0.0, 1.0); }
 )SHADER";
 
-enum class CameraControlType
-{
+enum class CameraControlType {
   FLY = 0,
   ORBIT,
 };
 
 // Options for the model render UI. The defaults here are used at startup.
-struct ModelRenderOptions
-{
+struct ModelRenderOptions {
   // Rendering.
   bool useVertexNormals = false;
 
@@ -56,11 +54,9 @@ struct ModelRenderOptions
 };
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
-static void helpMarker(const char *desc)
-{
+static void helpMarker(const char* desc) {
   ImGui::TextDisabled("(?)");
-  if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
-  {
+  if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
     ImGui::BeginTooltip();
     ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
     ImGui::TextUnformatted(desc);
@@ -69,20 +65,17 @@ static void helpMarker(const char *desc)
   }
 }
 
-enum class Scale
-{
+enum class Scale {
   LINEAR = 0,
   LOG,
 };
 
 // Helper for a float slider value.
-static bool floatSlider(const char *desc, float *value, float min, float max,
-                        const char *fmt = nullptr,
-                        Scale scale = Scale::LINEAR)
-{
+static bool floatSlider(const char* desc, float* value, float min, float max,
+                        const char* fmt = nullptr,
+                        Scale scale = Scale::LINEAR) {
   ImGuiSliderFlags flags = ImGuiSliderFlags_None;
-  if (scale == Scale::LOG)
-  {
+  if (scale == Scale::LOG) {
     flags = ImGuiSliderFlags_Logarithmic;
   }
   return ImGui::SliderScalar(desc, ImGuiDataType_Float, value, &min, &max, fmt,
@@ -90,14 +83,12 @@ static bool floatSlider(const char *desc, float *value, float min, float max,
 }
 
 // Called during game loop.
-void renderImGuiUI(ModelRenderOptions &opts)
-{
+void renderImGuiUI(ModelRenderOptions& opts) {
   // ImGui::ShowDemoWindow();
 
   ImGui::Begin("Model Render");
 
-  if (ImGui::CollapsingHeader("Rendering"))
-  {
+  if (ImGui::CollapsingHeader("Rendering")) {
     ImGui::Checkbox("Vertex normals", &opts.useVertexNormals);
     ImGui::SameLine();
     helpMarker(
@@ -105,14 +96,13 @@ void renderImGuiUI(ModelRenderOptions &opts)
         "will be used if available.");
   }
 
-  if (ImGui::CollapsingHeader("Camera"))
-  {
+  if (ImGui::CollapsingHeader("Camera")) {
     ImGui::RadioButton("Fly controls",
-                       reinterpret_cast<int *>(&opts.cameraControlType),
+                       reinterpret_cast<int*>(&opts.cameraControlType),
                        static_cast<int>(CameraControlType::FLY));
     ImGui::SameLine();
     ImGui::RadioButton("Orbit controls",
-                       reinterpret_cast<int *>(&opts.cameraControlType),
+                       reinterpret_cast<int*>(&opts.cameraControlType),
                        static_cast<int>(CameraControlType::ORBIT));
 
     floatSlider("Speed", &opts.speed, 0.1, 50.0);
@@ -120,18 +110,14 @@ void renderImGuiUI(ModelRenderOptions &opts)
                 Scale::LOG);
     floatSlider("FoV", &opts.fov, qrk::MIN_FOV, qrk::MAX_FOV, "%.1f°");
     if (floatSlider("Near plane", &opts.near, 0.01, 1000.0, nullptr,
-                    Scale::LOG))
-    {
-      if (opts.near > opts.far)
-      {
+                    Scale::LOG)) {
+      if (opts.near > opts.far) {
         opts.far = opts.near;
       }
     }
     if (floatSlider("Far plane", &opts.far, 0.01, 1000.0, nullptr,
-                    Scale::LOG))
-    {
-      if (opts.far < opts.near)
-      {
+                    Scale::LOG)) {
+      if (opts.far < opts.near) {
         opts.near = opts.far;
       }
     }
@@ -139,8 +125,7 @@ void renderImGuiUI(ModelRenderOptions &opts)
     ImGui::Checkbox("Capture mouse", &opts.captureMouse);
   }
 
-  if (ImGui::CollapsingHeader("Debug"))
-  {
+  if (ImGui::CollapsingHeader("Debug")) {
     ImGui::Checkbox("Draw vertex normals", &opts.drawNormals);
   }
 
@@ -149,12 +134,10 @@ void renderImGuiUI(ModelRenderOptions &opts)
 }
 
 /** Loads a model based on command line flag, or a default. */
-std::unique_ptr<qrk::Model> loadModelOrDefault()
-{
+std::unique_ptr<qrk::Model> loadModelOrDefault() {
   std::string modelPath = absl::GetFlag(FLAGS_model);
 
-  if (!modelPath.empty())
-  {
+  if (!modelPath.empty()) {
     return std::make_unique<qrk::Model>(modelPath.c_str());
   }
 
@@ -164,8 +147,7 @@ std::unique_ptr<qrk::Model> loadModelOrDefault()
   return helmet;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
   absl::SetProgramUsageMessage(
       "quarkGL model viewer. Usage:\n  model_render --model path/to/model.obj");
   absl::ParseCommandLine(argc, argv);
@@ -178,7 +160,7 @@ int main(int argc, char **argv)
   // Setup Dear ImGui.
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO& io = ImGui::GetIO();
   ImGui_ImplGlfw_InitForOpenGL(win.getGlfwRef(), /*install_callbacks=*/true);
   ImGui_ImplOpenGL3_Init("#version 460 core");
 
@@ -189,8 +171,9 @@ int main(int argc, char **argv)
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader(qrk::ShaderPath("model_render/shaders/model_render.vert"),
-                         qrk::ShaderPath("model_render/shaders/model_render.frag"));
+  qrk::Shader mainShader(
+      qrk::ShaderPath("model_render/shaders/model_render.vert"),
+      qrk::ShaderPath("model_render/shaders/model_render.frag"));
   mainShader.addUniformSource(camera);
 
   // TODO: Pull this out into a material class.
@@ -250,8 +233,7 @@ int main(int argc, char **argv)
   ModelRenderOptions opts;
 
   win.enableFaceCull();
-  win.loop([&](float deltaTime)
-           {
+  win.loop([&](float deltaTime) {
     // ImGui logic.
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -323,7 +305,8 @@ int main(int argc, char **argv)
     // == End render path ==
 
     // Finally, draw ImGui data.
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); });
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  });
 
   // Cleanup.
   ImGui_ImplOpenGL3_Shutdown();
