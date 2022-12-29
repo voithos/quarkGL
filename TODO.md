@@ -19,6 +19,7 @@
 - [ ] P1: Implement point light shadow maps: https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
 - [ ] P1: Add parallax mapping
 - [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
+- [ ] P1: Add profiler (easy_profiler?)
 - [ ] P2: Implement Light volumes
 - [ ] P2: Implement CSM: https://learnopengl.com/Guest-Articles/2021/CSM
 - [ ] P2: Don't store positions in the G-Buffer: https://mynameismjp.wordpress.com/2010/09/05/position-from-depth-3/

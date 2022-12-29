@@ -1,7 +1,5 @@
 #include <qrk/camera.h>
 
-#include <iostream>
-
 namespace qrk {
 
 namespace {

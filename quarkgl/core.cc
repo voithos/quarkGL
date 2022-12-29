@@ -1,6 +1,6 @@
 #include <qrk/core.h>
 
-#include <iostream>
+#include <cstdio>
 
 namespace qrk {
 
