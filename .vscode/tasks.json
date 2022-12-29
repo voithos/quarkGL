@@ -4,7 +4,7 @@
         {
             "label": "Build model_render (Debug)",
             "type": "shell",
-            "command": "env; bazel build //examples:model_render -c dbg",
+            "command": "bazel build //model_render:model_render -c dbg",
             "group": {
                 "kind": "build",
                 "isDefault": false

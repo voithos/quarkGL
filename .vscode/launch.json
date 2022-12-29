@@ -7,9 +7,9 @@
             "name": "Debug model_render",
             // TODO: This always seems to invalidate the build cache.
             // "preLaunchTask": "Build model_render (Debug)",
-            "program": "${workspaceRoot}/bazel-bin/examples/model_render",
+            "program": "${workspaceRoot}/bazel-bin/model_render/model_render",
             "args": [],
-            "cwd": "${workspaceFolder}/bazel-bin/examples/model_render.runfiles/__main__",
+            "cwd": "${workspaceFolder}/bazel-bin/model_render/model_render.runfiles/__main__",
             "MIMode": "gdb",
             "sourceFileMap": {
                 "/proc/self/cwd": "${workspaceFolder}"

@@ -5,27 +5,10 @@ filegroup(
     srcs = glob(["shaders/*"]),
 )
 
-cc_binary(
-    name = "model_render",
-    srcs = ["model_render.cc"],
-    data = [
-        ":shaders",
-        "assets/container.jpg",
-    ] + glob([
-        "assets/DamagedHelmet/*",
-        "assets/skybox/*",
-    ]),
-    linkopts = LINUX_LINKOPTS,
-    deps = [
-        "//quarkgl",
-        "//third_party/glad",
-        "//third_party/glm",
-        "//third_party/imgui",
-        "@com_google_absl//absl/flags:flag",
-        "@com_google_absl//absl/flags:parse",
-        "@com_google_absl//absl/flags:usage",
-        "@glfw",
-    ],
+filegroup(
+    name = "assets",
+    srcs = glob(["assets/**"]),
+    visibility = ["//model_render:__pkg__"],
 )
 
 cc_binary(
