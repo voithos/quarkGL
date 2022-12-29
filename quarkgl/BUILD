@@ -55,6 +55,7 @@ cc_library(
         ":core",
         ":exceptions",
         ":framebuffer",
+        ":mesh_primitives",
         ":shader",
         ":shader_primitives",
         ":texture_registry",

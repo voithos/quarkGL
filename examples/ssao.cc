@@ -155,6 +155,7 @@ int main() {
     gBuffer->deactivate();
 
     // Step 2: SSAO.
+    // TODO: Extract into an "SSAO pass".
     ssaoBuffer->activate();
     ssaoBuffer->clear();
 

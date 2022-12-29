@@ -9,12 +9,12 @@
 
 namespace qrk {
 
-class PingPongBuffer : public TextureSource {
+class PingPongPass {
  public:
-  PingPongBuffer(int width, int height);
-  explicit PingPongBuffer(ImageSize size)
-      : PingPongBuffer(size.width, size.height) {}
-  virtual ~PingPongBuffer() = default;
+  PingPongPass(int width, int height);
+  explicit PingPongPass(ImageSize size)
+      : PingPongPass(size.width, size.height) {}
+  virtual ~PingPongPass() = default;
 
   // Draws using the given shader multiple times, using the configured source
   // first and then ping-ponging between internal framebuffers. Passes represent
@@ -30,11 +30,9 @@ class PingPongBuffer : public TextureSource {
     return attachments_[1].asTexture();
   }
 
-  unsigned int bindTexture(unsigned int nextTextureUnit,
-                           Shader& shader) override;
-
  private:
   ScreenQuadMesh screenQuad_;
+  // Ping-pong buffers and attachments.
   Framebuffer buffers_[2];
   Attachment attachments_[2];
 };

@@ -2,15 +2,15 @@
 
 namespace qrk {
 
-PingPongBuffer::PingPongBuffer(int width, int height)
+PingPongPass::PingPongPass(int width, int height)
     : buffers_{Framebuffer(width, height), Framebuffer(width, height)} {
   attachments_[0] = buffers_[0].attachTexture(BufferType::COLOR_HDR_ALPHA);
   attachments_[1] = buffers_[1].attachTexture(BufferType::COLOR_HDR_ALPHA);
 }
 
-void PingPongBuffer::multipassDraw(Texture source, Shader& shader, int passes,
-                                   std::function<void()> callback,
-                                   TextureRegistry* textureRegistry) {
+void PingPongPass::multipassDraw(Texture source, Shader& shader, int passes,
+                                 std::function<void()> callback,
+                                 TextureRegistry* textureRegistry) {
   // For the very first iteration, we render from the source to buffer0.
   Framebuffer* currentFb = &buffers_[0];
   Texture currentTexture = source;
@@ -31,14 +31,6 @@ void PingPongBuffer::multipassDraw(Texture source, Shader& shader, int passes,
 
     currentFb->deactivate();
   }
-}
-
-unsigned int PingPongBuffer::bindTexture(unsigned int nextTextureUnit,
-                                         Shader& shader) {
-  attachments_[1].asTexture().bindToUnit(nextTextureUnit);
-  // Bind sampler uniforms.
-  shader.setInt("qrk_pingPongOutput", nextTextureUnit);
-  return nextTextureUnit + 1;
 }
 
 GaussianBlurShader::GaussianBlurShader()
