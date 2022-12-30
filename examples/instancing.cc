@@ -9,7 +9,7 @@
 #include <random>
 
 int main() {
-  qrk::Window win(800, 600, "Instancing");
+  qrk::Window win(1280, 960, "Instancing");
   win.setClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
   win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);

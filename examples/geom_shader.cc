@@ -15,7 +15,7 @@ void main() { fragColor = vec4(1.0); }
 )SHADER";
 
 int main() {
-  qrk::Window win(800, 600, "Geometry shader");
+  qrk::Window win(1280, 960, "Geometry shader");
   win.setClearColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
   win.enableMouseCapture();
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);

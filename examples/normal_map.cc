@@ -16,7 +16,7 @@ void main() { fragColor = vec4(1.0); }
 )SHADER";
 
 int main() {
-  constexpr int width = 800, height = 600;
+  constexpr int width = 1280, height = 960;
 
   qrk::Window win(width, height, "Normal map", /* fullscreen */ false,
                   /* samples */ 4);

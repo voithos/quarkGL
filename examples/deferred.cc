@@ -19,7 +19,7 @@ void main() { fragColor = vec4(lightColor, 1.0); }
 )SHADER";
 
 int main() {
-  constexpr int width = 800, height = 600;
+  constexpr int width = 1280, height = 960;
 
   qrk::Window win(width, height, "Deferred rendering", /* fullscreen */ false,
                   /* samples */ 0);

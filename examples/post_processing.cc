@@ -149,7 +149,7 @@ const float quadVertices[] = {
 // clang-format on
 
 int main() {
-  auto win = std::make_shared<qrk::Window>(800, 600, "Post processing");
+  auto win = std::make_shared<qrk::Window>(1280, 960, "Post processing");
   win->setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   win->enableMouseCapture();
   win->setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);

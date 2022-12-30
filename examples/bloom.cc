@@ -8,7 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 int main() {
-  constexpr int width = 800, height = 600;
+  constexpr int width = 1280, height = 960;
 
   qrk::Window win(width, height, "Bloom", /* fullscreen */ false,
                   /* samples */ 4);
