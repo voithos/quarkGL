@@ -51,6 +51,13 @@ struct ModelRenderOptions {
 
   // Debug.
   bool drawNormals = false;
+
+  // Performance.
+  const float* frameDeltas = nullptr;
+  int numFrameDeltas = 0;
+  int frameDeltasOffset = 0;
+  float avgFPS = 0;
+  bool enableVsync = true;
 };
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
@@ -127,6 +134,16 @@ void renderImGuiUI(ModelRenderOptions& opts) {
 
   if (ImGui::CollapsingHeader("Debug")) {
     ImGui::Checkbox("Draw vertex normals", &opts.drawNormals);
+  }
+
+  if (ImGui::CollapsingHeader("Performance")) {
+    char overlay[32];
+    sprintf(overlay, "Avg FPS %.02f", opts.avgFPS);
+    ImGui::PlotLines("Frame time", opts.frameDeltas, opts.numFrameDeltas,
+                     opts.frameDeltasOffset, overlay, 0.0f, 0.03f,
+                     ImVec2(0, 80.0f));
+
+    ImGui::Checkbox("Enable VSync", &opts.enableVsync);
   }
 
   ImGui::End();
@@ -251,6 +268,11 @@ int main(int argc, char** argv) {
     opts.near = camera->getNearPlane();
     opts.far = camera->getFarPlane();
 
+    opts.frameDeltas = win.getFrameDeltas();
+    opts.numFrameDeltas = win.getNumFrameDeltas();
+    opts.frameDeltasOffset = win.getFrameDeltasOffset();
+    opts.avgFPS = win.getAvgFPS();
+
     // Render UI.
     renderImGuiUI(opts);
 
@@ -275,6 +297,13 @@ int main(int argc, char** argv) {
       newControls->setSensitivity(cameraControls->getSensitivity());
       cameraControls = newControls;
       win.bindCameraControls(cameraControls);
+    }
+    if (opts.enableVsync != prevOpts.enableVsync) {
+      if (opts.enableVsync) {
+        win.enableVsync();
+      } else {
+        win.disableVsync();
+      }
     }
 
     win.setMouseButtonBehavior(opts.captureMouse

@@ -2,7 +2,7 @@
 
 ## Features
 - [ ] P0: Model render features
-  - [ ] Auto spin controls
+  - [ ] Auto spin controls / translate/rotate/scale
   - [x] Camera mode
   - [ ] Ambient color
   - [ ] Light color / position / etc

@@ -128,6 +128,9 @@ class Window : public UniformSource {
   void disableResizeUpdates();
 
   unsigned int getFrameCount() const { return frameCount_; }
+  const float* getFrameDeltas() const;
+  int getNumFrameDeltas() const;
+  int getFrameDeltasOffset() const;
   float getAvgFPS() const;
   glm::vec4 getClearColor() const { return clearColor_; }
   void setClearColor(glm::vec4 color) { clearColor_ = color; }
@@ -189,7 +192,7 @@ class Window : public UniformSource {
   float lastTime_ = 0.0f;
   float deltaTime_ = 0.0f;
   unsigned int frameCount_ = 0;
-  static constexpr int NUM_FRAME_DELTAS = 100;
+  static constexpr int NUM_FRAME_DELTAS = 120;
   float frameDeltas_[NUM_FRAME_DELTAS] = {0.0f};
   float frameDeltaSum_ = 0.0f;
   glm::vec4 clearColor_ = DEFAULT_CLEAR_COLOR;

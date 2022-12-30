@@ -307,6 +307,14 @@ void Window::bindCameraControls(
   boundCameraControls_->resizeWindow(size.width, size.height);
 }
 
+const float* Window::getFrameDeltas() const { return &frameDeltas_[0]; }
+
+int Window::getNumFrameDeltas() const { return NUM_FRAME_DELTAS; }
+
+int Window::getFrameDeltasOffset() const {
+  return frameCount_ % NUM_FRAME_DELTAS;
+}
+
 float Window::getAvgFPS() const {
   int denominator = std::min<int>(frameCount_, NUM_FRAME_DELTAS);
   float avgFrameDelta = frameDeltaSum_ / denominator;
@@ -314,11 +322,11 @@ float Window::getAvgFPS() const {
 }
 
 void Window::updateFrameStats(float deltaTime) {
-  unsigned int frameDeltaIdx = frameCount_ % NUM_FRAME_DELTAS;
-  float oldDeltaTime = frameDeltas_[frameDeltaIdx];
+  unsigned int offset = getFrameDeltasOffset();
+  float oldDeltaTime = frameDeltas_[offset];
   frameDeltaSum_ -= oldDeltaTime;
   frameDeltaSum_ += deltaTime;
-  frameDeltas_[frameDeltaIdx] = deltaTime;
+  frameDeltas_[offset] = deltaTime;
 }
 
 void Window::loop(std::function<void(float)> callback) {
