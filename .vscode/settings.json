@@ -64,6 +64,19 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "bit": "cpp",
-        "*.idl": "cpp"
+        "*.idl": "cpp",
+        "any": "cpp",
+        "cfenv": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "csignal": "cpp",
+        "future": "cpp",
+        "numbers": "cpp",
+        "scoped_allocator": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "typeindex": "cpp",
+        "valarray": "cpp",
+        "variant": "cpp"
     }
 }
