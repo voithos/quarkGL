@@ -20,6 +20,7 @@ class PlaneMesh : public PrimitiveMesh {
   void initializeVertexAttributes() override;
 };
 
+// A unit cube.
 class CubeMesh : public PrimitiveMesh {
  public:
   explicit CubeMesh(std::string texturePath = "");
@@ -39,6 +40,27 @@ class RoomMesh : public PrimitiveMesh {
  protected:
   void loadMeshAndTextures(const std::vector<TextureMap>& textureMaps);
   void initializeVertexAttributes() override;
+};
+
+// A unit sphere, with the given number of meridians / parallels.
+class SphereMesh : public PrimitiveMesh {
+ public:
+  static constexpr int DEFAULT_NUM_MERIDIANS = 64;
+  static constexpr int DEFAULT_NUM_PARALLELS = 64;
+
+  SphereMesh(std::string texturePath = "",
+             int numMeridians = DEFAULT_NUM_MERIDIANS,
+             int numParallels = DEFAULT_NUM_PARALLELS);
+  SphereMesh(const std::vector<TextureMap>& textureMaps,
+             int numMeridians = DEFAULT_NUM_MERIDIANS,
+             int numParallels = DEFAULT_NUM_PARALLELS);
+
+ protected:
+  void loadMeshAndTextures(const std::vector<TextureMap>& textureMaps);
+  void initializeVertexAttributes() override;
+
+  int numMeridians_;
+  int numParallels_;
 };
 
 class SkyboxMesh : public PrimitiveMesh {

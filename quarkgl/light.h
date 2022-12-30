@@ -20,6 +20,7 @@ struct Attenuation {
   float quadratic;
 };
 
+// TODO: Change this to [0, 0, 1].
 constexpr Attenuation DEFAULT_ATTENUATION = {1.0f, 0.09f, 0.032f};
 constexpr glm::vec3 DEFAULT_DIFFUSE = glm::vec3(0.5f, 0.5f, 0.5f);
 constexpr glm::vec3 DEFAULT_SPECULAR = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -121,6 +122,7 @@ class DirectionalLight : public Light {
  public:
   DirectionalLight(glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f),
                    glm::vec3 diffuse = DEFAULT_DIFFUSE,
+                   // TODO: Change this to default to whatever the diffuse was.
                    glm::vec3 specular = DEFAULT_SPECULAR);
 
   LightType getLightType() const { return LightType::DIRECTIONAL_LIGHT; }

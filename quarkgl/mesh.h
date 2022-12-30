@@ -21,6 +21,8 @@ class Renderable {
   glm::mat4 getModelTransform() const { return model_; }
   void setModelTransform(const glm::mat4& model) { model_ = model; }
 
+  // TODO: Add translation, rotation, scale methods.
+
   virtual void draw(Shader& shader,
                     TextureRegistry* textureRegistry = nullptr) {
     glm::mat4 transform(1.0f);
