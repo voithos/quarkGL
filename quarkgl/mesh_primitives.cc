@@ -259,6 +259,10 @@ void SphereMesh::loadMeshAndTextures(
     // We can subdividue the surface into meridians / parallels, and treat
     // these as UVs since they lie in the range [0, 1].
     float v = iy / static_cast<float>(heightSegments);
+    // However, we adjust it by a tiny amount to ensure that we don't generate
+    // tangents of zero length (due to the sin() in the calculations).
+    // TODO: Is this reasonable?
+    v += 1e-5;
     // Use a special offset for the poles.
     float uOffset = 0.0f;
     if (iy == 0) {
