@@ -181,7 +181,9 @@ cc_binary(
     data = [
         "assets/wood.png",
         ":shaders",
-    ],
+    ] + glob([
+        "assets/rusted_iron/*",
+    ]),
     linkopts = LINUX_LINKOPTS,
     deps = [
         "//quarkgl",

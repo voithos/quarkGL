@@ -13,6 +13,9 @@
   - [ ] Add shadow mapping
   - [ ] Add SSAO
 - [ ] P0: Implement PBR lighting
+- [ ] P0: Create PBR example
+- [ ] P0: Implement PBR texture maps
+- [ ] P0: Add support for AO maps
 - [ ] P0: Update README / documentation
 - [ ] P1: Implement material system
 - [ ] P1: Implement tessellation

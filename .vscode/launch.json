@@ -43,6 +43,7 @@
                 "hdr",
                 "instancing",
                 "normal_map",
+                "pbr",
                 "post_processing",
                 "shadow_map",
                 "ssao"

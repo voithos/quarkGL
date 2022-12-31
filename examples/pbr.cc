@@ -27,14 +27,14 @@ int main() {
   win.setMouseButtonBehavior(qrk::MouseButtonBehavior::CAPTURE_MOUSE);
 
   auto camera = std::make_shared<qrk::Camera>(
-      /* position */ glm::vec3(0.0f, 0.0f, 20.0f));
+      /* position */ glm::vec3(0.0f, 0.0f, 22.0f));
   camera->lookAt(glm::vec3(0.0f, 0.0f, -1.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
   cameraControls->setSpeed(10.0f);
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader pbrShader(qrk::ShaderPath("examples/shaders/model.vert"),
+  qrk::Shader pbrShader(qrk::ShaderPath("examples/shaders/normal_map.vert"),
                         qrk::ShaderPath("examples/shaders/pbr.frag"));
   pbrShader.addUniformSource(camera);
 
@@ -73,7 +73,7 @@ int main() {
 
   // TODO: Pull this out into a material class.
   pbrShader.setVec3("baseColor", glm::vec3(0.5f, 0.0f, 0.0f));
-  pbrShader.setVec3("material.ambient", glm::vec3(5.0f));
+  pbrShader.setVec3("material.ambient", glm::vec3(0.03f));
   pbrShader.setFloat("material.shininess", 32.0f);
   pbrShader.setFloat("material.emissionAttenuation.constant", 0.0f);
   pbrShader.setFloat("material.emissionAttenuation.linear", 0.0f);
@@ -84,9 +84,22 @@ int main() {
   constexpr int NUM_SPHERE_COLS = 7;
   constexpr float SPHERE_SPACING = 2.5;
   // Reuse one sphere for all.
-  qrk::SphereMesh sphere;
+  qrk::TextureMap rustedironBasecolor(
+      qrk::Texture::load(
+          "examples/assets/rusted_iron/rustediron2_basecolor.png"),
+      qrk::TextureMapType::DIFFUSE);
+  qrk::TextureMap rustedironNormalMap(
+      qrk::Texture::load("examples/assets/rusted_iron/rustediron2_normal.png",
+                         /*isSRGB=*/false),
+      qrk::TextureMapType::NORMAL);
+  qrk::TextureMap rustedironSpecularMap(
+      qrk::Texture::load("examples/assets/rusted_iron/rustediron2_metallic.png",
+                         /*isSRGB=*/false),
+      qrk::TextureMapType::SPECULAR);
+  qrk::SphereMesh sphere(
+      {rustedironBasecolor, rustedironNormalMap, rustedironSpecularMap});
 
-  bool usePBR = false;
+  bool usePBR = true;
   win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) {
     usePBR = !usePBR;
     printf("usePBR = %d\n", usePBR);

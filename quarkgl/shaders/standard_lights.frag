@@ -1,6 +1,7 @@
 #ifndef QUARKGL_STANDARD_LIGHTS_FRAG_
 #define QUARKGL_STANDARD_LIGHTS_FRAG_
 #pragma qrk_include < lighting.frag>
+#pragma qrk_include < pbr.frag>
 
 #ifndef QRK_MAX_DIRECTIONAL_LIGHTS
 #define QRK_MAX_DIRECTIONAL_LIGHTS 10
@@ -19,6 +20,8 @@ uniform int qrk_pointLightCount;
 #endif
 uniform QrkSpotLight qrk_spotLights[QRK_MAX_SPOT_LIGHTS];
 uniform int qrk_spotLightCount;
+
+// TODO: Rename these with "BlinnPhong" in the name and move to a separate file.
 
 /** Calculate shading from all active directional lights. */
 vec3 qrk_shadeAllDirectionalLights(QrkMaterial material, vec3 fragPos,
