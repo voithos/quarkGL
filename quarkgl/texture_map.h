@@ -18,6 +18,9 @@ class TextureMapException : public QuarkException {
 enum class TextureMapType {
   DIFFUSE = 0,
   SPECULAR,
+  ROUGHNESS,
+  METALLIC,
+  AO,
   EMISSION,
   NORMAL,
   CUBEMAP,
@@ -43,6 +46,12 @@ inline std::vector<aiTextureType> textureMapTypeToAiTextureTypes(
       // combined "metalnessRoughnessTexture", shaders should read the blue
       // channel.
       return {aiTextureType_SPECULAR, aiTextureType_METALNESS};
+    case TextureMapType::ROUGHNESS:
+      return {aiTextureType_DIFFUSE_ROUGHNESS};
+    case TextureMapType::METALLIC:
+      return {aiTextureType_METALNESS};
+    case TextureMapType::AO:
+      return {aiTextureType_AMBIENT_OCCLUSION};
     case TextureMapType::EMISSION:
       return {aiTextureType_EMISSIVE};
     case TextureMapType::NORMAL:

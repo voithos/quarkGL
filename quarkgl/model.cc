@@ -6,9 +6,9 @@
 namespace qrk {
 namespace {
 constexpr TextureMapType loaderSupportedTextureMapTypes[] = {
-    TextureMapType::DIFFUSE,
-    TextureMapType::SPECULAR,
-    TextureMapType::EMISSION,
+    TextureMapType::DIFFUSE,   TextureMapType::SPECULAR,
+    TextureMapType::ROUGHNESS, TextureMapType::METALLIC,
+    TextureMapType::AO,        TextureMapType::EMISSION,
     TextureMapType::NORMAL,
 };
 

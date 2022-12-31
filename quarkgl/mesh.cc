@@ -96,6 +96,9 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
   // Bind textures. Assumes uniform naming is "material.textureMapType[idx]".
   unsigned int diffuseIdx = 0;
   unsigned int specularIdx = 0;
+  unsigned int roughnessIdx = 0;
+  unsigned int metallicIdx = 0;
+  unsigned int aoIdx = 0;
   unsigned int emissionIdx = 0;
   bool hasNormalMap = false;
 
@@ -127,6 +130,18 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
           ss << "specularMaps[" << specularIdx << "]";
           specularIdx++;
           break;
+        case TextureMapType::ROUGHNESS:
+          ss << "roughnessMaps[" << roughnessIdx << "]";
+          roughnessIdx++;
+          break;
+        case TextureMapType::METALLIC:
+          ss << "metallicMaps[" << metallicIdx << "]";
+          metallicIdx++;
+          break;
+        case TextureMapType::AO:
+          ss << "aoMaps[" << aoIdx << "]";
+          aoIdx++;
+          break;
         case TextureMapType::EMISSION:
           ss << "emissionMaps[" << emissionIdx << "]";
           emissionIdx++;
@@ -157,6 +172,9 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
   }
   shader.setInt("material.diffuseCount", diffuseIdx);
   shader.setInt("material.specularCount", specularIdx);
+  shader.setInt("material.roughnessCount", roughnessIdx);
+  shader.setInt("material.metallicCount", metallicIdx);
+  shader.setInt("material.aoCount", aoIdx);
   shader.setInt("material.emissionCount", emissionIdx);
   shader.setInt("material.hasNormalMap", hasNormalMap);
 }

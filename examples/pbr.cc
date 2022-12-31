@@ -96,8 +96,18 @@ int main() {
       qrk::Texture::load("examples/assets/rusted_iron/rustediron2_metallic.png",
                          /*isSRGB=*/false),
       qrk::TextureMapType::SPECULAR);
-  qrk::SphereMesh sphere(
-      {rustedironBasecolor, rustedironNormalMap, rustedironSpecularMap});
+  qrk::TextureMap rustedironRoughnessMap(
+      qrk::Texture::load(
+          "examples/assets/rusted_iron/rustediron2_roughness.png",
+          /*isSRGB=*/false),
+      qrk::TextureMapType::ROUGHNESS);
+  qrk::TextureMap rustedironMetallicMap(
+      qrk::Texture::load("examples/assets/rusted_iron/rustediron2_metallic.png",
+                         /*isSRGB=*/false),
+      qrk::TextureMapType::METALLIC);
+  qrk::SphereMesh sphere({rustedironBasecolor, rustedironNormalMap,
+                          rustedironSpecularMap, rustedironRoughnessMap,
+                          rustedironMetallicMap});
 
   bool usePBR = true;
   win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) {
