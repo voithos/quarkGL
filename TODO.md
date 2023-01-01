@@ -2,14 +2,15 @@
 
 ## Features
 - [ ] P0: Model render features
-  - [ ] Auto spin controls / translate/rotate/scale
+  - [ ] Rotate/scale
   - [x] Camera mode
-  - [ ] Ambient color controls
-  - [ ] Directional light color / position / etc controls
+  - [x] Ambient color controls
+  - [x] Directional light color / position / etc controls
   - [ ] Various algorithm params?
   - [ ] Replace model via file upload
   - [ ] Switch to deferred?
-  - [ ] Add PBR
+  - [ ] Display deferred render buffers
+  - [x] Add PBR
   - [ ] Add bloom
   - [ ] Add shadow mapping
   - [ ] Add SSAO
