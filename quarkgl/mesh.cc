@@ -117,10 +117,13 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
       samplerName = "skybox";
     } else {
       texture.bindToUnit(textureUnit, TextureBindType::TEXTURE);
+      static std::string materialName = "material";
       std::ostringstream ss;
       // TODO: Make this more configurable / less generic?
       ss << "material.";
 
+      // A subset of texture types can be packed into a single texture, which we
+      // set a uniform for.
       switch (type) {
         case TextureMapType::DIFFUSE:
           ss << "diffuseMaps[" << diffuseIdx << "]";
@@ -132,14 +135,23 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
           break;
         case TextureMapType::ROUGHNESS:
           ss << "roughnessMaps[" << roughnessIdx << "]";
+          shader.setBool(materialName + ".roughnessIsPacked[" +
+                             std::to_string(roughnessIdx) + "]",
+                         textureMap.isPacked());
           roughnessIdx++;
           break;
         case TextureMapType::METALLIC:
           ss << "metallicMaps[" << metallicIdx << "]";
+          shader.setBool(materialName + ".metallicIsPacked[" +
+                             std::to_string(metallicIdx) + "]",
+                         textureMap.isPacked());
           metallicIdx++;
           break;
         case TextureMapType::AO:
           ss << "aoMaps[" << aoIdx << "]";
+          shader.setBool(
+              materialName + ".aoIsPacked[" + std::to_string(aoIdx) + "]",
+              textureMap.isPacked());
           aoIdx++;
           break;
         case TextureMapType::EMISSION:

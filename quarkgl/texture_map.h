@@ -68,15 +68,19 @@ inline std::vector<aiTextureType> textureMapTypeToAiTextureTypes(
 // A thin wrapper around a texture, with special properties.
 class TextureMap {
  public:
-  TextureMap(const Texture& texture, TextureMapType type)
-      : texture_(texture), type_(type) {}
+  TextureMap(const Texture& texture, TextureMapType type, bool isPacked = false)
+      : texture_(texture), type_(type), packed_(isPacked) {}
 
   Texture& getTexture() { return texture_; }
   TextureMapType getType() const { return type_; }
+  bool isPacked() const { return packed_; }
+  void setPacked(bool packed) { packed_ = packed; }
 
  private:
   Texture texture_;
   TextureMapType type_;
+  // Whether the texture type is part of a packed texture.
+  bool packed_;
 };
 }  // namespace qrk
 

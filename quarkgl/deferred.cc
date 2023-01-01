@@ -13,7 +13,6 @@ GBuffer::GBuffer(int width, int height) : Framebuffer(width, height) {
   // Don't need to read from depth, so we attach as a renderbuffer.
   attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
   // Position and normal are stored as "HDR" colors for higher precision.
-  // Alpha channels unused.
   positionAOBuffer_ = attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
   normalRoughnessBuffer_ = attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
   albedoMetallicBuffer_ = attachTexture(qrk::BufferType::COLOR_ALPHA);

@@ -43,16 +43,25 @@ struct QrkMaterial {
   // TODO: Consider splitting out phong / PBR material properties.
   sampler2D diffuseMaps[QRK_MAX_DIFFUSE_TEXTURES];
   int diffuseCount;
+
   sampler2D specularMaps[QRK_MAX_SPECULAR_TEXTURES];
   int specularCount;
+
   sampler2D roughnessMaps[QRK_MAX_ROUGHNESS_TEXTURES];
+  bool roughnessIsPacked[QRK_MAX_ROUGHNESS_TEXTURES];
   int roughnessCount;
+
   sampler2D metallicMaps[QRK_MAX_METALLIC_TEXTURES];
+  bool metallicIsPacked[QRK_MAX_METALLIC_TEXTURES];
   int metallicCount;
+
   sampler2D aoMaps[QRK_MAX_AO_TEXTURES];
+  bool aoIsPacked[QRK_MAX_AO_TEXTURES];
   int aoCount;
+
   sampler2D emissionMaps[QRK_MAX_EMISSION_TEXTURES];
   int emissionCount;
+
   sampler2D normalMap;
   bool hasNormalMap;
 
@@ -134,7 +143,7 @@ vec3 qrk_shadeBlinnPhongDeferred(vec3 albedo, vec3 specular, vec3 ambient,
 vec3 qrk_extractAlbedo(QrkMaterial material, vec2 texCoords) {
   vec3 albedo = vec3(0.0);
   if (material.diffuseCount > 0) {
-    albedo = vec3(texture(material.diffuseMaps[0], texCoords));
+    albedo = texture(material.diffuseMaps[0], texCoords).rgb;
   }
   return albedo;
 }
@@ -145,8 +154,10 @@ vec3 qrk_extractSpecular(QrkMaterial material, vec2 texCoords) {
   // component.
   vec3 specular = vec3(0.5);
   if (material.specularCount > 0) {
-    // We only need a single channel.
-    specular = vec3(texture(material.specularMaps[0], texCoords).r);
+    // We only need a single channel. Sometimes we treat metallic maps as
+    // specular maps, so extract from the blue channel in case the metallic map
+    // is part of a packed roughness/metallic texture.
+    specular = vec3(texture(material.specularMaps[0], texCoords).b);
   }
   return specular;
 }
@@ -156,7 +167,14 @@ float qrk_extractRoughness(QrkMaterial material, vec2 texCoords) {
   // TODO: Handle combined roughness/metallic maps.
   float roughness = 0.5;
   if (material.roughnessCount > 0) {
-    roughness = texture(material.roughnessMaps[0], texCoords).r;
+    if (material.roughnessIsPacked[0]) {
+      // Part of a packed texture. Traditionally, roughness is the green
+      // channel.
+      roughness = texture(material.roughnessMaps[0], texCoords).g;
+    } else {
+      // Separate texture.
+      roughness = texture(material.roughnessMaps[0], texCoords).r;
+    }
   }
   return roughness;
 }
@@ -166,7 +184,13 @@ float qrk_extractMetallic(QrkMaterial material, vec2 texCoords) {
   // TODO: Handle combined roughness/metallic maps.
   float metallic = 0.0;
   if (material.metallicCount > 0) {
-    metallic = texture(material.metallicMaps[0], texCoords).r;
+    if (material.metallicIsPacked[0]) {
+      // Part of a packed texture. Traditionally, metallic is the blue channel.
+      metallic = texture(material.metallicMaps[0], texCoords).b;
+    } else {
+      // Separate texture.
+      metallic = texture(material.metallicMaps[0], texCoords).r;
+    }
   }
   return metallic;
 }
@@ -179,6 +203,8 @@ float qrk_extractMetallic(QrkMaterial material, vec2 texCoords) {
 float qrk_extractAmbientOcclusion(QrkMaterial material, vec2 texCoords) {
   float ao = 1.0;
   if (material.aoCount > 0) {
+    // We could check `material.aoIsPacked[0]` here, but even in packed textures
+    // we assume that AO is in the red channel, so we can avoid that check. :)
     ao = texture(material.aoMaps[0], texCoords).r;
   }
   return ao;
@@ -188,7 +214,7 @@ float qrk_extractAmbientOcclusion(QrkMaterial material, vec2 texCoords) {
 vec3 qrk_extractEmission(QrkMaterial material, vec2 texCoords) {
   vec3 emission = vec3(0.0);
   if (material.emissionCount > 0) {
-    emission = vec3(texture(material.emissionMaps[0], texCoords));
+    emission = texture(material.emissionMaps[0], texCoords).rgb;
   }
   return emission;
 }

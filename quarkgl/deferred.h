@@ -45,6 +45,7 @@ class GBuffer : public Framebuffer, public TextureSource {
   Attachment normalRoughnessBuffer_;
   // RGB used for albedo, alpha used for metallic.
   Attachment albedoMetallicBuffer_;
+  // RGB used for emission color, alpha channel unused.
   Attachment emissionBuffer_;
 };
 
