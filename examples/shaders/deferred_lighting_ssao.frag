@@ -2,7 +2,7 @@
 #define QRK_MAX_POINT_LIGHTS 32
 #pragma qrk_include < gamma.frag>
 #pragma qrk_include < tone_mapping.frag>
-#pragma qrk_include < standard_lights.frag>
+#pragma qrk_include < standard_lights_phong.frag>
 #pragma qrk_include < lighting.frag>
 in vec2 texCoords;
 
@@ -34,7 +34,7 @@ void main() {
   }
 
   // Shade with normal lights.
-  vec3 color = qrk_shadeAllLightsDeferred(
+  vec3 color = qrk_shadeAllLightsBlinnPhongDeferred(
       fragAlbedo, fragSpecular, ambient, shininess, fragPos_viewSpace,
       fragNormal_viewSpace, /*shadow=*/0.0, fragAmbientOcclusion);
 

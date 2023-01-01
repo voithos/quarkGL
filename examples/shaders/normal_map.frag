@@ -1,7 +1,7 @@
 #version 460 core
 #pragma qrk_include < core.glsl>
 #pragma qrk_include < normals.frag>
-#pragma qrk_include < standard_lights.frag>
+#pragma qrk_include < standard_lights_phong.frag>
 #pragma qrk_include < depth.frag>
 
 // An example fragment shader that uses normal mapping.
@@ -40,8 +40,8 @@ void main() {
   }
 
   // Shade with normal lights.
-  vec3 result = qrk_shadeAllLights(material, fs_in.fragPos_viewSpace,
-                                   normal_viewSpace, fs_in.texCoords);
+  vec3 result = qrk_shadeAllLightsBlinnPhong(material, fs_in.fragPos_viewSpace,
+                                             normal_viewSpace, fs_in.texCoords);
 
   // Add emissions.
   result +=

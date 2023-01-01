@@ -1,7 +1,7 @@
 #version 460 core
 #pragma qrk_include < core.glsl>
 #pragma qrk_include < normals.frag>
-#pragma qrk_include < standard_lights.frag>
+#pragma qrk_include < standard_lights_phong.frag>
 #pragma qrk_include < standard_lights_pbr.frag>
 #pragma qrk_include < gamma.frag>
 #pragma qrk_include < tone_mapping.frag>
@@ -47,12 +47,12 @@ void main() {
     }
   } else {
     if (useTextures) {
-      result = qrk_shadeAllLights(material, fs_in.fragPos_viewSpace,
-                                  normal_viewSpace, fs_in.texCoords);
+      result = qrk_shadeAllLightsBlinnPhong(material, fs_in.fragPos_viewSpace,
+                                            normal_viewSpace, fs_in.texCoords);
     } else {
       // Even though we aren't using deferred shading, we can use the function
       // to pass colors directly and avoid textures.
-      result = qrk_shadeAllLightsDeferred(
+      result = qrk_shadeAllLightsBlinnPhongDeferred(
           /*albedo=*/baseColor, /*specular=*/vec3(0.5), material.ambient,
           material.shininess, fs_in.fragPos_viewSpace, normal_viewSpace);
     }

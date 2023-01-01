@@ -220,6 +220,17 @@ vec3 qrk_extractEmission(QrkMaterial material, vec2 texCoords) {
 }
 
 /**
+ * Calculate a material's final alpha based on its set of diffuse textures.
+ */
+float qrk_materialAlpha(QrkMaterial material, vec2 texCoords) {
+  float sum = 0.0;
+  for (int i = 0; i < material.diffuseCount; i++) {
+    sum += texture(material.diffuseMaps[i], texCoords).a;
+  }
+  return min(sum, 1.0);
+}
+
+/**
  * Calculate the Blinn-Phong shading model with ambient, diffuse, and specular
  * components. Does not include attenuation.
  */

@@ -9,6 +9,7 @@
   - [ ] Various algorithm params?
   - [ ] Replace model via file upload
   - [ ] Switch to deferred?
+  - [ ] Add PBR
   - [ ] Add bloom
   - [ ] Add shadow mapping
   - [ ] Add SSAO

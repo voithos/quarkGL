@@ -1,6 +1,6 @@
 #version 460 core
 #pragma qrk_include < core.glsl>
-#pragma qrk_include < standard_lights.frag>
+#pragma qrk_include < standard_lights_phong.frag>
 #pragma qrk_include < depth.frag>
 
 // An example fragment shader with Phong illumination.
@@ -21,8 +21,8 @@ void main() {
   vec3 normal = normalize(fs_in.fragNormal);
 
   // Shade with normal lights.
-  vec3 result =
-      qrk_shadeAllLights(material, fs_in.fragPos, normal, fs_in.texCoords);
+  vec3 result = qrk_shadeAllLightsBlinnPhong(material, fs_in.fragPos, normal,
+                                             fs_in.texCoords);
 
   // Add emissions.
   result += qrk_shadeEmission(material, fs_in.fragPos, fs_in.texCoords);
