@@ -21,7 +21,7 @@ uniform QrkAttenuation emissionAttenuation;
 uniform bool useSsao;
 
 void main() {
-  // Extract G-Buffer.
+  // Extract G-Buffer for Blinn-Phong shading.
   vec3 fragPos_viewSpace = texture(gPositionAO, texCoords).rgb;
   vec3 fragNormal_viewSpace = texture(gNormalRoughness, texCoords).rgb;
   vec3 fragAlbedo = texture(gAlbedoMetallic, texCoords).rgb;

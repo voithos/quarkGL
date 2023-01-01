@@ -15,6 +15,9 @@ void main() {
     // Positions.
     fragColor = vec4(color.rgb, 1.0);
   } else if (gBufferVis == 2) {
+    // AO.
+    fragColor = vec4(color.a, color.a, color.a, 1.0);
+  } else if (gBufferVis == 3) {
     // Normals.
     if (color.rgb == vec3(0.0)) {
       // Fragment has no normal info.
@@ -22,13 +25,16 @@ void main() {
     } else {
       fragColor = qrk_normalColor(color.rgb);
     }
-  } else if (gBufferVis == 3) {
-    // Albedo.
-    fragColor = vec4(color.rgb, 1.0);
   } else if (gBufferVis == 4) {
-    // Specular.
+    // Roughness.
     fragColor = vec4(color.a, color.a, color.a, 1.0);
   } else if (gBufferVis == 5) {
+    // Albedo.
+    fragColor = vec4(color.rgb, 1.0);
+  } else if (gBufferVis == 6) {
+    // Metallic.
+    fragColor = vec4(color.a, color.a, color.a, 1.0);
+  } else if (gBufferVis == 7) {
     // Emission.
     fragColor = vec4(color.rgb, 1.0);
   } else {

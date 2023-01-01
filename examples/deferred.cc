@@ -33,7 +33,7 @@ int main() {
       /* position */ glm::vec3(-5.0f, 1.0f, 7.0f));
   camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
   auto cameraControls = std::make_shared<qrk::FlyCameraControls>();
-  cameraControls->setSpeed(10.0f);
+  cameraControls->setSpeed(2.0f);
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
@@ -54,14 +54,14 @@ int main() {
                   ((gen() % 100) / 100.0f) * 6.0f - 3.0f));
 
     glm::vec3 lightColor(
-        ((gen() % 100) / 200.0f) + 0.5f,  // between 0.5 and 1.0
-        ((gen() % 100) / 200.0f) + 0.5f,  // between 0.5 and 1.0
-        ((gen() % 100) / 200.0f) + 0.5f   // between 0.5 and 1.0
+        ((gen() % 100) / 200.0f) * 5 + 0.5f,  // between 0.5 and 3.0
+        ((gen() % 100) / 200.0f) * 5 + 0.5f,  // between 0.5 and 3.0
+        ((gen() % 100) / 200.0f) * 5 + 0.5f   // between 0.5 and 3.0
     );
     light->setDiffuse(lightColor);
     light->setSpecular(lightColor);
     qrk::Attenuation attenuation = {
-        .constant = 1.0f, .linear = 0.7f, .quadratic = 1.8f};
+        .constant = 0.0f, .linear = 0.0f, .quadratic = 1.0f};
     light->setAttenuation(attenuation);
 
     lightRegistry->addLight(light);
@@ -111,13 +111,13 @@ int main() {
   lightingPassShader.addUniformSource(lightRegistry);
   lightingPassShader.addUniformSource(textureRegistry);
   lightingPassShader.setVec3("ambient", glm::vec3(0.05f));
-  lightingPassShader.setFloat("shininess", 16.0f);
-  lightingPassShader.setFloat("emissionAttenuation.constant", 1.0f);
-  lightingPassShader.setFloat("emissionAttenuation.linear", 0.09f);
-  lightingPassShader.setFloat("emissionAttenuation.quadratic", 0.032f);
+  lightingPassShader.setFloat("emissionStrength", 5.0f);
+  lightingPassShader.setFloat("emissionAttenuation.constant", 0.0f);
+  lightingPassShader.setFloat("emissionAttenuation.linear", 0.0f);
+  lightingPassShader.setFloat("emissionAttenuation.quadratic", 1.0f);
 
   int gBufferVis = 0;
-  constexpr int NUM_GBUFFER_VIS = 6;
+  constexpr int NUM_GBUFFER_VIS = 8;
   win.addKeyPressHandler(GLFW_KEY_1, [&](int mods) {
     gBufferVis = (gBufferVis + 1) % NUM_GBUFFER_VIS;
     switch (gBufferVis) {
@@ -128,15 +128,21 @@ int main() {
         printf("Drawing G-Buffer positions\n");
         break;
       case 2:
-        printf("Drawing G-Buffer normals\n");
+        printf("Drawing G-Buffer AO\n");
         break;
       case 3:
-        printf("Drawing G-Buffer albedo\n");
+        printf("Drawing G-Buffer normals\n");
         break;
       case 4:
-        printf("Drawing G-Buffer specularity\n");
+        printf("Drawing G-Buffer roughness\n");
         break;
       case 5:
+        printf("Drawing G-Buffer albedo\n");
+        break;
+      case 6:
+        printf("Drawing G-Buffer metallic\n");
+        break;
+      case 7:
         printf("Drawing G-Buffer emission\n");
         break;
     };
@@ -174,16 +180,18 @@ int main() {
     if (gBufferVis > 0) {
       switch (gBufferVis) {
         case 1:
-          screenQuad.setTexture(gBuffer->getPositionAOTexture());
-          break;
         case 2:
-          screenQuad.setTexture(gBuffer->getNormalRoughnessTexture());
+          screenQuad.setTexture(gBuffer->getPositionAOTexture());
           break;
         case 3:
         case 4:
-          screenQuad.setTexture(gBuffer->getAlbedoMetallicTexture());
+          screenQuad.setTexture(gBuffer->getNormalRoughnessTexture());
           break;
         case 5:
+        case 6:
+          screenQuad.setTexture(gBuffer->getAlbedoMetallicTexture());
+          break;
+        case 7:
           screenQuad.setTexture(gBuffer->getEmissionTexture());
           break;
       };
