@@ -198,8 +198,9 @@ float qrk_materialAlpha(QrkMaterial material, vec2 texCoords) {
  * Returns a multipler that can be used in shading.
  */
 float qrk_calcAttenuation(QrkAttenuation attenuation, float fragDist) {
+  // Add a small constant to avoid dividing by zero.
   return 1.0 / (attenuation.constant + attenuation.linear * fragDist +
-                attenuation.quadratic * (fragDist * fragDist));
+                attenuation.quadratic * (fragDist * fragDist) + 1e-5);
 }
 
 /**
