@@ -8,9 +8,9 @@ in vec2 texCoords;
 
 out vec4 fragColor;
 
-uniform sampler2D gPosition;
-uniform sampler2D gNormal;
-uniform sampler2D gAlbedoSpecular;
+uniform sampler2D gPositionAO;
+uniform sampler2D gNormalRoughness;
+uniform sampler2D gAlbedoMetallic;
 uniform sampler2D gEmission;
 
 uniform vec3 ambient;
@@ -19,10 +19,10 @@ uniform QrkAttenuation emissionAttenuation;
 
 void main() {
   // Extract G-Buffer.
-  vec3 fragPos_viewSpace = texture(gPosition, texCoords).rgb;
-  vec3 fragNormal_viewSpace = texture(gNormal, texCoords).rgb;
-  vec3 fragAlbedo = texture(gAlbedoSpecular, texCoords).rgb;
-  vec3 fragSpecular = vec3(texture(gAlbedoSpecular, texCoords).a);
+  vec3 fragPos_viewSpace = texture(gPositionAO, texCoords).rgb;
+  vec3 fragNormal_viewSpace = texture(gNormalRoughness, texCoords).rgb;
+  vec3 fragAlbedo = texture(gAlbedoMetallic, texCoords).rgb;
+  vec3 fragSpecular = vec3(texture(gAlbedoMetallic, texCoords).a);
   vec3 fragEmission = texture(gEmission, texCoords).rgb;
 
   // Shade with normal lights.

@@ -13,9 +13,9 @@ in VS_OUT {
 }
 fs_in;
 
-layout(location = 0) out vec3 gPosition;
-layout(location = 1) out vec3 gNormal;
-layout(location = 2) out vec4 gAlbedoSpecular;
+layout(location = 0) out vec4 gPositionAO;
+layout(location = 1) out vec4 gNormalRoughness;
+layout(location = 2) out vec4 gAlbedoMetallic;
 layout(location = 3) out vec3 gEmission;
 
 uniform QrkMaterial material;
@@ -23,18 +23,19 @@ uniform QrkMaterial material;
 void main() {
   // Fill the G-Buffer.
 
-  // Map the fragment position.
-  gPosition = fs_in.fragPos_viewSpace;
+  // Map the fragment position and AO.
+  gPositionAO.rgb = fs_in.fragPos_viewSpace;
+  gPositionAO.a = qrk_extractAmbientOcclusion(material, fs_in.texCoords);
   // Lookup normal and map from tangent space to view space. Falls back to
   // vertex normal otherwise.
-  gNormal = qrk_getNormal(material, fs_in.texCoords, fs_in.fragTBN_viewSpace,
-                          fs_in.fragNormal_viewSpace);
+  gNormalRoughness.rgb =
+      qrk_getNormal(material, fs_in.texCoords, fs_in.fragTBN_viewSpace,
+                    fs_in.fragNormal_viewSpace);
+  gNormalRoughness.a = qrk_extractRoughness(material, fs_in.texCoords);
 
-  gAlbedoSpecular.rgb = qrk_sumDiffuseColor(material, fs_in.texCoords);
-  // Use a single channel for specularity. This won't support channel-specific
-  // specularity, but in the case where PBR textures are used, will sample the
-  // 'b' metalness channel.
-  gAlbedoSpecular.a = qrk_sumSpecularColor(material, fs_in.texCoords).b;
+  gAlbedoMetallic.rgb = qrk_extractAlbedo(material, fs_in.texCoords);
+  gAlbedoMetallic.a = qrk_extractMetallic(material, fs_in.texCoords);
 
-  gEmission = qrk_sumEmissionColor(material, fs_in.texCoords);
+  // We currently don't store anything in the alpha channel.
+  gEmission = qrk_extractEmission(material, fs_in.texCoords);
 }

@@ -174,14 +174,14 @@ int main() {
     if (gBufferVis > 0) {
       switch (gBufferVis) {
         case 1:
-          screenQuad.setTexture(gBuffer->getPositionTexture());
+          screenQuad.setTexture(gBuffer->getPositionAOTexture());
           break;
         case 2:
-          screenQuad.setTexture(gBuffer->getNormalTexture());
+          screenQuad.setTexture(gBuffer->getNormalRoughnessTexture());
           break;
         case 3:
         case 4:
-          screenQuad.setTexture(gBuffer->getAlbedoSpecularTexture());
+          screenQuad.setTexture(gBuffer->getAlbedoMetallicTexture());
           break;
         case 5:
           screenQuad.setTexture(gBuffer->getEmissionTexture());

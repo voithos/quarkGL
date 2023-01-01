@@ -14,22 +14,22 @@ GBuffer::GBuffer(int width, int height) : Framebuffer(width, height) {
   attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
   // Position and normal are stored as "HDR" colors for higher precision.
   // Alpha channels unused.
-  positionBuffer_ = attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
-  normalBuffer_ = attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
-  albedoSpecularBuffer_ = attachTexture(qrk::BufferType::COLOR_ALPHA);
+  positionAOBuffer_ = attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
+  normalRoughnessBuffer_ = attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
+  albedoMetallicBuffer_ = attachTexture(qrk::BufferType::COLOR_ALPHA);
   emissionBuffer_ = attachTexture(qrk::BufferType::COLOR_ALPHA);
 }
 
 unsigned int GBuffer::bindTexture(unsigned int nextTextureUnit,
                                   Shader& shader) {
-  positionBuffer_.asTexture().bindToUnit(nextTextureUnit + 0);
-  normalBuffer_.asTexture().bindToUnit(nextTextureUnit + 1);
-  albedoSpecularBuffer_.asTexture().bindToUnit(nextTextureUnit + 2);
+  positionAOBuffer_.asTexture().bindToUnit(nextTextureUnit + 0);
+  normalRoughnessBuffer_.asTexture().bindToUnit(nextTextureUnit + 1);
+  albedoMetallicBuffer_.asTexture().bindToUnit(nextTextureUnit + 2);
   emissionBuffer_.asTexture().bindToUnit(nextTextureUnit + 3);
   // Bind sampler uniforms.
-  shader.setInt("gPosition", nextTextureUnit + 0);
-  shader.setInt("gNormal", nextTextureUnit + 1);
-  shader.setInt("gAlbedoSpecular", nextTextureUnit + 2);
+  shader.setInt("gPositionAO", nextTextureUnit + 0);
+  shader.setInt("gNormalRoughness", nextTextureUnit + 1);
+  shader.setInt("gAlbedoMetallic", nextTextureUnit + 2);
   shader.setInt("gEmission", nextTextureUnit + 3);
 
   return nextTextureUnit + 4;

@@ -26,10 +26,12 @@ class GBuffer : public Framebuffer, public TextureSource {
   explicit GBuffer(ImageSize size) : GBuffer(size.width, size.height) {}
   virtual ~GBuffer() = default;
 
-  Texture getPositionTexture() { return positionBuffer_.asTexture(); }
-  Texture getNormalTexture() { return normalBuffer_.asTexture(); }
-  Texture getAlbedoSpecularTexture() {
-    return albedoSpecularBuffer_.asTexture();
+  Texture getPositionAOTexture() { return positionAOBuffer_.asTexture(); }
+  Texture getNormalRoughnessTexture() {
+    return normalRoughnessBuffer_.asTexture();
+  }
+  Texture getAlbedoMetallicTexture() {
+    return albedoMetallicBuffer_.asTexture();
   }
   Texture getEmissionTexture() { return emissionBuffer_.asTexture(); }
 
@@ -37,10 +39,12 @@ class GBuffer : public Framebuffer, public TextureSource {
                            Shader& shader) override;
 
  private:
-  Attachment positionBuffer_;
-  Attachment normalBuffer_;
-  // RGB used for albedo, A used for specularity.
-  Attachment albedoSpecularBuffer_;
+  // RGB used for position, alpha used for AO.
+  Attachment positionAOBuffer_;
+  // RGB used for normal, alpha used for roughness.
+  Attachment normalRoughnessBuffer_;
+  // RGB used for albedo, alpha used for metallic.
+  Attachment albedoMetallicBuffer_;
   Attachment emissionBuffer_;
 };
 

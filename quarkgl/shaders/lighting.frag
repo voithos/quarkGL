@@ -411,37 +411,4 @@ float qrk_shadow(sampler2D shadowMap, vec4 fragPosLightSpace, float bias) {
   return qrk_shadowSamplePCF(shadowMap, shadowTexCoords, currentDepth, bias);
 }
 
-/** =========================== Deferred Shading =========================== **/
-
-/** Return the sum color from the material's diffuse maps. */
-vec3 qrk_sumDiffuseColor(QrkMaterial material, vec2 texCoords) {
-  vec3 sum = vec3(0);
-  for (int i = 0; i < material.diffuseCount; i++) {
-    sum += texture(material.diffuseMaps[i], texCoords).rgb;
-  }
-  return sum;
-}
-
-/** Return the sum color from the material's specular maps, or 1.0 if there are
- * no maps. */
-vec3 qrk_sumSpecularColor(QrkMaterial material, vec2 texCoords) {
-  if (material.specularCount == 0) {
-    return vec3(0.5);
-  }
-  vec3 sum = vec3(0);
-  for (int i = 0; i < material.specularCount; i++) {
-    sum += texture(material.specularMaps[i], texCoords).rgb;
-  }
-  return sum;
-}
-
-/** Return the sum color from the material's emission maps. */
-vec3 qrk_sumEmissionColor(QrkMaterial material, vec2 texCoords) {
-  vec3 sum = vec3(0);
-  for (int i = 0; i < material.emissionCount; i++) {
-    sum += texture(material.emissionMaps[i], texCoords).rgb;
-  }
-  return sum;
-}
-
 #endif

@@ -4,8 +4,8 @@
 - [ ] P0: Model render features
   - [ ] Auto spin controls / translate/rotate/scale
   - [x] Camera mode
-  - [ ] Ambient color
-  - [ ] Light color / position / etc
+  - [ ] Ambient color controls
+  - [ ] Directional light color / position / etc controls
   - [ ] Various algorithm params?
   - [ ] Replace model via file upload
   - [ ] Switch to deferred?
@@ -19,6 +19,8 @@
 - [ ] P1: Add parallax mapping
 - [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
 - [ ] P1: Add profiler (easy_profiler?)
+- [ ] P1: Add screen space reflections
+- [ ] P1: Add FXAA
 - [ ] P2: Implement Light volumes
 - [ ] P2: Implement CSM: https://learnopengl.com/Guest-Articles/2021/CSM
 - [ ] P2: Don't store positions in the G-Buffer: https://mynameismjp.wordpress.com/2010/09/05/position-from-depth-3/
