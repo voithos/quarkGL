@@ -190,10 +190,12 @@ std::vector<TextureMap> Model::loadMaterialTextureMaps(aiMaterial* material,
       std::string fullPath = directory_ + "/" + texturePath.C_Str();
 
       // Don't re-load a texture if it's already been loaded.
-      auto item = loadedTextureMaps_.find(fullPath);
-      if (item != loadedTextureMaps_.end()) {
-        // Texture has already been loaded.
-        textureMaps.push_back(item->second);
+      auto item = loadedTextures_.find(fullPath);
+      if (item != loadedTextures_.end()) {
+        // Texture has already been loaded, but likely of a different map type
+        // (for example, it could be a combined roughness / metallic map).
+        TextureMap textureMap(item->second, type);
+        textureMaps.push_back(textureMap);
         continue;
       }
 
@@ -201,9 +203,10 @@ std::vector<TextureMap> Model::loadMaterialTextureMaps(aiMaterial* material,
       // TODO: Allow for a way to override this if necessary.
       bool isSRGB = type == TextureMapType::DIFFUSE;
 
-      TextureMap textureMap(Texture::load(fullPath.c_str(), isSRGB), type);
+      Texture texture = Texture::load(fullPath.c_str(), isSRGB);
+      loadedTextures_.insert(std::make_pair(fullPath, texture));
+      TextureMap textureMap(texture, type);
       textureMaps.push_back(textureMap);
-      loadedTextureMaps_.insert(std::make_pair(fullPath, textureMap));
     }
   }
   return textureMaps;

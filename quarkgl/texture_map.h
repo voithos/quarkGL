@@ -51,7 +51,9 @@ inline std::vector<aiTextureType> textureMapTypeToAiTextureTypes(
     case TextureMapType::METALLIC:
       return {aiTextureType_METALNESS};
     case TextureMapType::AO:
-      return {aiTextureType_AMBIENT_OCCLUSION};
+      // For whatever reason, assimp stores AO maps as "lightmaps", even though
+      // there's aiTextureType_AMBIENT_OCCLUSION...
+      return {aiTextureType_LIGHTMAP};
     case TextureMapType::EMISSION:
       return {aiTextureType_EMISSIVE};
     case TextureMapType::NORMAL:

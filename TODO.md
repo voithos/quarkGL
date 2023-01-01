@@ -12,10 +12,6 @@
   - [ ] Add bloom
   - [ ] Add shadow mapping
   - [ ] Add SSAO
-- [ ] P0: Implement PBR lighting
-- [ ] P0: Create PBR example
-- [ ] P0: Implement PBR texture maps
-- [ ] P0: Add support for AO maps
 - [ ] P0: Update README / documentation
 - [ ] P1: Implement material system
 - [ ] P1: Implement tessellation
@@ -99,3 +95,7 @@
 - [x] P0: Orbit controls
 - [x] P0: Implement SSAO
 - [x] P0: Physically based bloom: https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom
+- [x] P0: Implement PBR lighting
+- [x] P0: Create PBR example
+- [x] P0: Implement PBR texture maps
+- [x] P0: Add support for AO maps

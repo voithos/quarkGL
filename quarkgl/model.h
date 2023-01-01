@@ -72,7 +72,7 @@ class Model : public Renderable {
   unsigned int instanceCount_;
   RenderableNode rootNode_;
   std::string directory_;
-  std::unordered_map<std::string, TextureMap> loadedTextureMaps_;
+  std::unordered_map<std::string, Texture> loadedTextures_;
 };
 
 }  // namespace qrk
