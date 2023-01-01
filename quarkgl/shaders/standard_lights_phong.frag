@@ -1,6 +1,7 @@
 #ifndef QUARKGL_STANDARD_LIGHTS_PHONG_FRAG_
 #define QUARKGL_STANDARD_LIGHTS_PHONG_FRAG_
 #pragma qrk_include < lighting.frag>
+#pragma qrk_include < phong.frag>
 #pragma qrk_include < standard_lights.frag>
 
 /** Calculate shading from all active directional lights. */
@@ -9,8 +10,9 @@ vec3 qrk_shadeAllDirectionalLightsBlinnPhong(QrkMaterial material, vec3 fragPos,
                                              float shadow, float ao) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_directionalLightCount; i++) {
-    result += qrk_shadeDirectionalLight(material, qrk_directionalLights[i],
-                                        fragPos, normal, texCoords, shadow, ao);
+    result += qrk_shadeDirectionalLightBlinnPhong(
+        material, qrk_directionalLights[i], fragPos, normal, texCoords, shadow,
+        ao);
   }
   return result;
 }
@@ -23,7 +25,7 @@ vec3 qrk_shadeAllDirectionalLightsBlinnPhongDeferred(vec3 albedo, vec3 specular,
                                                      float shadow, float ao) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_directionalLightCount; i++) {
-    result += qrk_shadeDirectionalLightDeferred(
+    result += qrk_shadeDirectionalLightBlinnPhongDeferred(
         albedo, specular, ambient, shininess, qrk_directionalLights[i], fragPos,
         normal, shadow, ao);
   }
@@ -35,8 +37,8 @@ vec3 qrk_shadeAllPointLightsBlinnPhong(QrkMaterial material, vec3 fragPos,
                                        vec3 normal, vec2 texCoords, float ao) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_pointLightCount; i++) {
-    result += qrk_shadePointLight(material, qrk_pointLights[i], fragPos, normal,
-                                  texCoords, ao);
+    result += qrk_shadePointLightBlinnPhong(material, qrk_pointLights[i],
+                                            fragPos, normal, texCoords, ao);
   }
   return result;
 }
@@ -48,9 +50,9 @@ vec3 qrk_shadeAllPointLightsBlinnPhongDeferred(vec3 albedo, vec3 specular,
                                                float ao) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_pointLightCount; i++) {
-    result +=
-        qrk_shadePointLightDeferred(albedo, specular, ambient, shininess,
-                                    qrk_pointLights[i], fragPos, normal, ao);
+    result += qrk_shadePointLightBlinnPhongDeferred(
+        albedo, specular, ambient, shininess, qrk_pointLights[i], fragPos,
+        normal, ao);
   }
   return result;
 }
@@ -60,8 +62,8 @@ vec3 qrk_shadeAllSpotLightsBlinnPhong(QrkMaterial material, vec3 fragPos,
                                       vec3 normal, vec2 texCoords, float ao) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_spotLightCount; i++) {
-    result += qrk_shadeSpotLight(material, qrk_spotLights[i], fragPos, normal,
-                                 texCoords, ao);
+    result += qrk_shadeSpotLightBlinnPhong(material, qrk_spotLights[i], fragPos,
+                                           normal, texCoords, ao);
   }
   return result;
 }
@@ -73,9 +75,9 @@ vec3 qrk_shadeAllSpotLightsDeferredBlinnPhong(vec3 albedo, vec3 specular,
                                               float ao) {
   vec3 result = vec3(0.0);
   for (int i = 0; i < qrk_spotLightCount; i++) {
-    result +=
-        qrk_shadeSpotLightDeferred(albedo, specular, ambient, shininess,
-                                   qrk_spotLights[i], fragPos, normal, ao);
+    result += qrk_shadeSpotLightBlinnPhongDeferred(albedo, specular, ambient,
+                                                   shininess, qrk_spotLights[i],
+                                                   fragPos, normal, ao);
   }
   return result;
 }
