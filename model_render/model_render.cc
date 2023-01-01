@@ -35,9 +35,15 @@ enum class CameraControlType {
   ORBIT,
 };
 
+enum class LightingModel {
+  BLINN_PHONG = 0,
+  COOK_TORRANCE_GGX,
+};
+
 // Options for the model render UI. The defaults here are used at startup.
 struct ModelRenderOptions {
   // Rendering.
+  LightingModel lightingModel = LightingModel::COOK_TORRANCE_GGX;
   bool useVertexNormals = false;
 
   // Camera.
@@ -91,11 +97,16 @@ static bool floatSlider(const char* desc, float* value, float min, float max,
 
 // Called during game loop.
 void renderImGuiUI(ModelRenderOptions& opts) {
-  // ImGui::ShowDemoWindow();
+  ImGui::ShowDemoWindow();
 
   ImGui::Begin("Model Render");
 
   if (ImGui::CollapsingHeader("Rendering")) {
+    ImGui::Combo("Lighting model", reinterpret_cast<int*>(&opts.lightingModel),
+                 "Blinn-Phong\0Cook-Torrance GGX\0\0");
+    ImGui::SameLine();
+    helpMarker("Which lighting model to use for shading.");
+
     ImGui::Checkbox("Vertex normals", &opts.useVertexNormals);
     ImGui::SameLine();
     helpMarker(
@@ -196,9 +207,9 @@ int main(int argc, char** argv) {
   // TODO: Pull this out into a material class.
   mainShader.setVec3("material.ambient", glm::vec3(0.1f));
   mainShader.setFloat("material.shininess", 32.0f);
-  mainShader.setFloat("material.emissionAttenuation.constant", 1.0f);
-  mainShader.setFloat("material.emissionAttenuation.linear", 0.09f);
-  mainShader.setFloat("material.emissionAttenuation.quadratic", 0.032f);
+  mainShader.setFloat("material.emissionAttenuation.constant", 0.0f);
+  mainShader.setFloat("material.emissionAttenuation.linear", 0.0f);
+  mainShader.setFloat("material.emissionAttenuation.quadratic", 1.0f);
 
   qrk::Shader normalShader(
       qrk::ShaderPath("model_render/shaders/model.vert"),
@@ -314,6 +325,7 @@ int main(int argc, char** argv) {
     // Draw main models.
     // TODO: Set up environment mapping with the skybox.
     mainShader.updateUniforms();
+    mainShader.setInt("lightingModel", static_cast<int>(opts.lightingModel));
     mainShader.setBool("useVertexNormals", opts.useVertexNormals);
     model->draw(mainShader);
 

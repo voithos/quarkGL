@@ -2,9 +2,11 @@
 #pragma qrk_include < core.glsl>
 #pragma qrk_include < normals.frag>
 #pragma qrk_include < standard_lights_phong.frag>
+#pragma qrk_include < standard_lights_pbr.frag>
 #pragma qrk_include < depth.frag>
+#pragma qrk_include < tone_mapping.frag>
 
-// An example fragment shader for rendering models.
+// A fragment shader for rendering models.
 
 in VS_OUT {
   vec2 texCoords;
@@ -17,6 +19,7 @@ fs_in;
 out vec4 fragColor;
 
 uniform QrkMaterial material;
+uniform int lightingModel;
 uniform bool useVertexNormals;
 
 void main() {
@@ -30,14 +33,26 @@ void main() {
                       fs_in.fragNormal_viewSpace);
   }
 
+  vec3 result;
   // Shade with normal lights.
-  vec3 result = qrk_shadeAllLightsBlinnPhong(material, fs_in.fragPos_viewSpace,
-                                             normal_viewSpace, fs_in.texCoords);
+  if (lightingModel == 0) {
+    // Phong.
+    result = qrk_shadeAllLightsBlinnPhong(material, fs_in.fragPos_viewSpace,
+                                          normal_viewSpace, fs_in.texCoords);
+  } else if (lightingModel == 1) {
+    // GGX.
+    result = qrk_shadeAllLightsCookTorranceGGX(
+        material, fs_in.fragPos_viewSpace, normal_viewSpace, fs_in.texCoords);
+  } else {
+    // Invalid lighting model.
+    result = vec3(1.0, 0.0, 0.0);
+  }
 
   // Add emissions.
   result +=
       qrk_shadeEmission(material, fs_in.fragPos_viewSpace, fs_in.texCoords);
 
   fragColor = vec4(result, qrk_materialAlpha(material, fs_in.texCoords));
+  fragColor.rgb = qrk_toneMapReinhard(fragColor.rgb);
   fragColor.rgb = qrk_gammaCorrect(fragColor.rgb);
 }
