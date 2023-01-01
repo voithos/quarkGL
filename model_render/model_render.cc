@@ -46,6 +46,10 @@ struct ModelRenderOptions {
   LightingModel lightingModel = LightingModel::COOK_TORRANCE_GGX;
   bool useVertexNormals = false;
 
+  glm::vec3 ambientColor = glm::vec3(0.1f);
+  float shininess = 32.0f;
+  glm::vec3 emissionAttenuation = glm::vec3(0, 0, 1.0f);
+
   // Camera.
   CameraControlType cameraControlType = CameraControlType::ORBIT;
   float speed = 0;
@@ -112,6 +116,29 @@ void renderImGuiUI(ModelRenderOptions& opts) {
     helpMarker(
         "Whether to use vertex normals for rendering. If false, a normal map "
         "will be used if available.");
+
+    ImGui::Separator();
+    ImGui::Text("Lighting");
+
+    ImGui::ColorEdit3("Ambient color",
+                      reinterpret_cast<float*>(&opts.ambientColor),
+                      ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+    ImGui::SameLine();
+    helpMarker("The color of the fixed ambient component.");
+
+    ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG);
+    floatSlider("Shininess", &opts.shininess, 1.0f, 1000.0f, nullptr,
+                Scale::LOG);
+    ImGui::SameLine();
+    helpMarker("Shininess of specular highlights. Only applies to Phong.");
+    ImGui::EndDisabled();
+
+    ImGui::DragFloat3("Emission attenuation",
+                      reinterpret_cast<float*>(&opts.emissionAttenuation),
+                      /*v_speed=*/0.1f, 0.0f, 10.0f);
+    ImGui::SameLine();
+    helpMarker(
+        "Constant, linear, and quadratic attenuation of emission lights.");
   }
 
   if (ImGui::CollapsingHeader("Camera")) {
@@ -204,13 +231,6 @@ int main(int argc, char** argv) {
       qrk::ShaderPath("model_render/shaders/model_render.frag"));
   mainShader.addUniformSource(camera);
 
-  // TODO: Pull this out into a material class.
-  mainShader.setVec3("material.ambient", glm::vec3(0.1f));
-  mainShader.setFloat("material.shininess", 32.0f);
-  mainShader.setFloat("material.emissionAttenuation.constant", 0.0f);
-  mainShader.setFloat("material.emissionAttenuation.linear", 0.0f);
-  mainShader.setFloat("material.emissionAttenuation.quadratic", 1.0f);
-
   qrk::Shader normalShader(
       qrk::ShaderPath("model_render/shaders/model.vert"),
       qrk::ShaderInline(normalShaderSource),
@@ -249,9 +269,8 @@ int main(int argc, char** argv) {
   lampShader.addUniformSource(camera);
 
   // Create a mesh for the light.
-  // TODO: Make this into a sphere.
-  qrk::CubeMesh lightCube;
-  lightCube.setModelTransform(glm::scale(
+  qrk::SphereMesh lightSphere;
+  lightSphere.setModelTransform(glm::scale(
       glm::translate(glm::mat4(), pointLight->getPosition()), glm::vec3(0.2f)));
 
   // Load model.
@@ -327,6 +346,16 @@ int main(int argc, char** argv) {
     mainShader.updateUniforms();
     mainShader.setInt("lightingModel", static_cast<int>(opts.lightingModel));
     mainShader.setBool("useVertexNormals", opts.useVertexNormals);
+    // TODO: Pull this out into a material class.
+    mainShader.setVec3("material.ambient", opts.ambientColor);
+    mainShader.setFloat("material.shininess", opts.shininess);
+    mainShader.setFloat("material.emissionAttenuation.constant",
+                        opts.emissionAttenuation.x);
+    mainShader.setFloat("material.emissionAttenuation.linear",
+                        opts.emissionAttenuation.y);
+    mainShader.setFloat("material.emissionAttenuation.quadratic",
+                        opts.emissionAttenuation.z);
+
     model->draw(mainShader);
 
     if (opts.drawNormals) {
@@ -337,7 +366,7 @@ int main(int argc, char** argv) {
 
     // Draw light source.
     lampShader.updateUniforms();
-    lightCube.draw(lampShader);
+    lightSphere.draw(lampShader);
 
     // Draw skybox.
     skyboxShader.updateUniforms();
