@@ -8,8 +8,8 @@
   - [x] Directional light color / position / etc controls
   - [ ] Various algorithm params?
   - [ ] Replace model via file upload
-  - [ ] Switch to deferred?
-  - [ ] Display deferred render buffers
+  - [x] Switch to deferred?
+  - [x] Display deferred render buffers
   - [x] Add PBR
   - [ ] Add bloom
   - [ ] Add shadow mapping
@@ -53,6 +53,7 @@
 - [ ] Blending (alpha transparency) demo
 
 ## Bugs
+- [ ] P0: Emissive textures have artifacts at close range
 - [ ] P2: light registry doesn't work with >1 shaders.
 - [ ] P2: debug normals are modified based on camera rotation. Maybe just a visual artifact?
 

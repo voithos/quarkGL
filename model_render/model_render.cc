@@ -41,6 +41,17 @@ enum class LightingModel {
   COOK_TORRANCE_GGX,
 };
 
+enum class GBufferVis {
+  DISABLED = 0,
+  POSITIONS,
+  AO,
+  NORMALS,
+  ROUGHNESS,
+  ALBEDO,
+  METALLIC,
+  EMISSION,
+};
+
 // Options for the model render UI. The defaults here are used at startup.
 struct ModelRenderOptions {
   // Rendering.
@@ -67,6 +78,7 @@ struct ModelRenderOptions {
   bool captureMouse = false;
 
   // Debug.
+  GBufferVis gBufferVis = GBufferVis::DISABLED;
   bool drawNormals = false;
 
   // Performance.
@@ -208,6 +220,13 @@ void renderImGuiUI(ModelRenderOptions& opts) {
   }
 
   if (ImGui::CollapsingHeader("Debug")) {
+    ImGui::Combo(
+        "G-Buffer vis", reinterpret_cast<int*>(&opts.gBufferVis),
+        "Disabled\0Positions\0Ambient "
+        "occlusion\0Normals\0Roughness\0Albedo\0Metallic\0Emission\0\0");
+    ImGui::SameLine();
+    helpMarker("What component of the G-Buffer to visualize.");
+
     ImGui::Checkbox("Draw vertex normals", &opts.drawNormals);
   }
 
@@ -245,7 +264,7 @@ int main(int argc, char** argv) {
   absl::ParseCommandLine(argc, argv);
 
   qrk::Window win(1920, 1080, "Model Render", /* fullscreen */ false,
-                  /* samples */ 4);
+                  /* samples */ 0);
   win.setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   win.setEscBehavior(qrk::EscBehavior::UNCAPTURE_MOUSE_OR_CLOSE);
 
@@ -266,10 +285,22 @@ int main(int argc, char** argv) {
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
 
-  qrk::Shader mainShader(
-      qrk::ShaderPath("model_render/shaders/model_render.vert"),
-      qrk::ShaderPath("model_render/shaders/model_render.frag"));
-  mainShader.addUniformSource(camera);
+  // Build the G-Buffer and prepare deferred shading.
+  qrk::DeferredGeometryPassShader geometryPassShader;
+  geometryPassShader.addUniformSource(camera);
+
+  auto gBuffer = std::make_shared<qrk::GBuffer>(win.getSize());
+  auto textureRegistry = std::make_shared<qrk::TextureRegistry>();
+  textureRegistry->addTextureSource(gBuffer);
+
+  qrk::ScreenQuadMesh screenQuad;
+  qrk::ScreenShader gBufferVisShader(
+      qrk::ShaderPath("model_render/shaders/gbuffer_vis.frag"));
+
+  qrk::ScreenShader lightingPassShader(
+      qrk::ShaderPath("model_render/shaders/lighting_pass.frag"));
+  lightingPassShader.addUniformSource(camera);
+  lightingPassShader.addUniformSource(textureRegistry);
 
   qrk::Shader normalShader(
       qrk::ShaderPath("model_render/shaders/model.vert"),
@@ -292,7 +323,7 @@ int main(int argc, char** argv) {
   // Create light registry and add lights.
   auto registry = std::make_shared<qrk::LightRegistry>();
   registry->setViewSource(camera);
-  mainShader.addUniformSource(registry);
+  lightingPassShader.addUniformSource(registry);
 
   auto directionalLight = std::make_shared<qrk::DirectionalLight>();
   registry->addLight(directionalLight);
@@ -382,22 +413,68 @@ int main(int argc, char** argv) {
                                    : qrk::MouseButtonBehavior::NONE);
 
     // == Main render path ==
-    // Draw main models.
-    // TODO: Set up environment mapping with the skybox.
-    mainShader.updateUniforms();
-    mainShader.setInt("lightingModel", static_cast<int>(opts.lightingModel));
-    mainShader.setBool("useVertexNormals", opts.useVertexNormals);
-    // TODO: Pull this out into a material class.
-    mainShader.setVec3("material.ambient", opts.ambientColor);
-    mainShader.setFloat("material.shininess", opts.shininess);
-    mainShader.setFloat("material.emissionAttenuation.constant",
-                        opts.emissionAttenuation.x);
-    mainShader.setFloat("material.emissionAttenuation.linear",
-                        opts.emissionAttenuation.y);
-    mainShader.setFloat("material.emissionAttenuation.quadratic",
-                        opts.emissionAttenuation.z);
+    // Step 1: geometry pass. Build the G-Buffer.
+    gBuffer->activate();
+    gBuffer->clear();
 
-    model->draw(mainShader);
+    geometryPassShader.updateUniforms();
+
+    // Draw model.
+    model->draw(geometryPassShader);
+
+    gBuffer->deactivate();
+
+    if (opts.gBufferVis != GBufferVis::DISABLED) {
+      switch (opts.gBufferVis) {
+        case GBufferVis::POSITIONS:
+        case GBufferVis::AO:
+          screenQuad.setTexture(gBuffer->getPositionAOTexture());
+          break;
+        case GBufferVis::NORMALS:
+        case GBufferVis::ROUGHNESS:
+          screenQuad.setTexture(gBuffer->getNormalRoughnessTexture());
+          break;
+        case GBufferVis::ALBEDO:
+        case GBufferVis::METALLIC:
+          screenQuad.setTexture(gBuffer->getAlbedoMetallicTexture());
+          break;
+        case GBufferVis::EMISSION:
+          screenQuad.setTexture(gBuffer->getEmissionTexture());
+          break;
+        case GBufferVis::DISABLED:
+          break;
+      };
+      gBufferVisShader.setInt("gBufferVis", static_cast<int>(opts.gBufferVis));
+      screenQuad.draw(gBufferVisShader);
+
+      // TODO: Refactor avoid needing to copy this.
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+      return;
+    }
+
+    // Step 2: lighting pass.
+    // TODO: Set up environment mapping with the skybox.
+    lightingPassShader.updateUniforms();
+    lightingPassShader.setInt("lightingModel",
+                              static_cast<int>(opts.lightingModel));
+    lightingPassShader.setBool("useVertexNormals", opts.useVertexNormals);
+    // TODO: Pull this out into a material class.
+    lightingPassShader.setVec3("ambient", opts.ambientColor);
+    lightingPassShader.setFloat("shininess", opts.shininess);
+    lightingPassShader.setFloat("emissionAttenuation.constant",
+                                opts.emissionAttenuation.x);
+    lightingPassShader.setFloat("emissionAttenuation.linear",
+                                opts.emissionAttenuation.y);
+    lightingPassShader.setFloat("emissionAttenuation.quadratic",
+                                opts.emissionAttenuation.z);
+
+    screenQuad.unsetTexture();
+    screenQuad.draw(lightingPassShader, textureRegistry.get());
+
+    // Step 3: forward render anything else on top.
+
+    // Before we do so, we have to blit the depth buffer.
+    gBuffer->blitToDefault(GL_DEPTH_BUFFER_BIT);
 
     if (opts.drawNormals) {
       // Draw the normals.
