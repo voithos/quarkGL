@@ -71,6 +71,12 @@ struct ModelRenderOptions {
       glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f));
 
   bool shadowMapping = true;
+  float shadowCameraCuboidExtents = 2.0f;
+  float shadowCameraNear = 0.1f;
+  float shadowCameraFar = 15.0f;
+  float shadowCameraDistance = 5.0f;
+  float shadowBiasMin = 0.0001;
+  float shadowBiasMax = 0.001;
 
   glm::vec3 ambientColor = glm::vec3(0.1f);
   float shininess = 32.0f;
@@ -194,6 +200,36 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     ImTextureID shadowMapTexID =
         reinterpret_cast<void*>(ctx.shadowMap.getDepthTexture().getId());
     ImGui::Image(shadowMapTexID, glm::vec2(200, 200));
+    floatSlider("Cuboid extents", &opts.shadowCameraCuboidExtents, 0.1f, 50.0f,
+                nullptr, Scale::LOG);
+
+    if (floatSlider("Near plane", &opts.shadowCameraNear, 0.01, 1000.0, nullptr,
+                    Scale::LOG)) {
+      if (opts.shadowCameraNear > opts.shadowCameraFar) {
+        opts.shadowCameraFar = opts.shadowCameraNear;
+      }
+    }
+    if (floatSlider("Far plane", &opts.shadowCameraFar, 0.01, 1000.0, nullptr,
+                    Scale::LOG)) {
+      if (opts.shadowCameraFar < opts.shadowCameraNear) {
+        opts.shadowCameraNear = opts.shadowCameraFar;
+      }
+    }
+    floatSlider("Distance from origin", &opts.shadowCameraDistance, 0.01,
+                100.0f, nullptr, Scale::LOG);
+    if (floatSlider("Bias min", &opts.shadowBiasMin, 0.0001, 1.0, "%.04f",
+                    Scale::LOG)) {
+      if (opts.shadowBiasMin > opts.shadowBiasMax) {
+        opts.shadowBiasMax = opts.shadowBiasMin;
+      }
+    }
+    if (floatSlider("Bias max", &opts.shadowBiasMax, 0.0001, 1.0, "%.04f",
+                    Scale::LOG)) {
+      if (opts.shadowBiasMax < opts.shadowBiasMin) {
+        opts.shadowBiasMin = opts.shadowBiasMax;
+      }
+    }
+
     ImGui::EndDisabled();
 
     ImGui::Separator();
@@ -476,6 +512,11 @@ int main(int argc, char** argv) {
     // == Main render path ==
     // Step 0: optional shadow pass.
     if (opts.shadowMapping) {
+      shadowCamera->setCuboidExtents(opts.shadowCameraCuboidExtents);
+      shadowCamera->setNearPlane(opts.shadowCameraNear);
+      shadowCamera->setFarPlane(opts.shadowCameraFar);
+      shadowCamera->setDistanceFromOrigin(opts.shadowCameraDistance);
+
       shadowMap->activate();
       shadowMap->clear();
       shadowShader.updateUniforms();
@@ -532,6 +573,8 @@ int main(int argc, char** argv) {
     // TODO: Set up environment mapping with the skybox.
     lightingPassShader.updateUniforms();
     lightingPassShader.setBool("shadowMapping", opts.shadowMapping);
+    lightingPassShader.setFloat("shadowBiasMin", opts.shadowBiasMin);
+    lightingPassShader.setFloat("shadowBiasMax", opts.shadowBiasMax);
     lightingPassShader.setInt("lightingModel",
                               static_cast<int>(opts.lightingModel));
     lightingPassShader.setInt("toneMapping",

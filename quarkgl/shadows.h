@@ -27,6 +27,19 @@ class ShadowCamera : public UniformSource {
                glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
   virtual ~ShadowCamera() = default;
 
+  float getCuboidExtents() const { return cuboidExtents_; }
+  void setCuboidExtents(float cuboidExtents) { cuboidExtents_ = cuboidExtents; }
+  float getNearPlane() const { return near_; }
+  void setNearPlane(float near) { near_ = near; }
+  float getFarPlane() const { return far_; }
+  void setFarPlane(float far) { far_ = far; }
+  float getDistanceFromOrigin() const {
+    return shadowCameraDistanceFromOrigin_;
+  }
+  void setDistanceFromOrigin(float dist) {
+    shadowCameraDistanceFromOrigin_ = dist;
+  }
+
   glm::mat4 getViewTransform();
   glm::mat4 getProjectionTransform();
 

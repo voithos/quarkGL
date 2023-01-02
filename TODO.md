@@ -6,7 +6,6 @@
   - [x] Camera mode
   - [x] Ambient color controls
   - [x] Directional light color / position / etc controls
-  - [ ] Replace model via file upload
   - [x] Switch to deferred?
   - [x] Display deferred render buffers
   - [x] Add PBR
@@ -15,12 +14,13 @@
   - [x] Tone mapping options
   - [x] Gamma correct
   - [x] Add shadow mapping
-  - [ ] Add shadow map params
-  - [ ] Add shadow map vis
+  - [x] Add shadow map params
+  - [x] Add shadow map vis
   - [ ] Add SSAO
 - [ ] P0: Update README / documentation
 - [ ] P0: Implement IBL (image based lighting)
 - [ ] P0: Add FXAA
+- [ ] P1: Replace model via imgui menu
 - [ ] P1: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 - [ ] P1: Implement tessellation
 - [ ] P1: Implement material system

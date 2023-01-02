@@ -33,6 +33,8 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 lightViewProjection;
 uniform sampler2D shadowMap;
+uniform float shadowBiasMin;
+uniform float shadowBiasMax;
 
 void main() {
   // Extract G-Buffer for PBR rendering.
@@ -49,9 +51,9 @@ void main() {
   // Shadow mapping. Currently only supported for one dir light.
   float shadow = 0.0;
   if (shadowMapping) {
-    // TODO: Parameterize shadow bias.
-    float shadowBias = qrk_shadowBias(0.001, 0.01, fragNormal_viewSpace,
-                                      qrk_directionalLights[0].direction);
+    float shadowBias =
+        qrk_shadowBias(shadowBiasMin, shadowBiasMax, fragNormal_viewSpace,
+                       qrk_directionalLights[0].direction);
     // Since we're in view space, we have to un-project to world space in order
     // to get to the light's view.
     vec4 fragPos_worldSpace = inverse(view) * vec4(fragPos_viewSpace, 1.0);
