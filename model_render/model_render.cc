@@ -339,8 +339,9 @@ int main(int argc, char** argv) {
 
   // Create a mesh for the light.
   qrk::SphereMesh lightSphere;
-  lightSphere.setModelTransform(glm::scale(
-      glm::translate(glm::mat4(), pointLight->getPosition()), glm::vec3(0.2f)));
+  lightSphere.setModelTransform(
+      glm::scale(glm::translate(glm::mat4(1.0f), pointLight->getPosition()),
+                 glm::vec3(0.2f)));
 
   // Load model.
   std::unique_ptr<qrk::Model> model = loadModelOrDefault();

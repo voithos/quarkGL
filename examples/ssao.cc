@@ -142,12 +142,12 @@ int main() {
 
     // Draw meshes.
     backpack.setModelTransform(glm::scale(
-        glm::rotate(glm::translate(glm::mat4(), glm::vec3(0, -2.2f, 0)),
+        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0, -2.2f, 0)),
                     glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
         glm::vec3(0.007f)));
     backpack.draw(geometryPassShader);
     room.setModelTransform(glm::scale(
-        glm::rotate(glm::translate(glm::mat4(), glm::vec3(0, 5.0f, 0)),
+        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0, 5.0f, 0)),
                     glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
         glm::vec3(15.0f)));
     room.draw(geometryPassShader);
@@ -201,7 +201,7 @@ int main() {
     lampShader.updateUniforms();
     for (auto& light : lights) {
       lightCube.setModelTransform(glm::scale(
-          glm::translate(glm::mat4(), light->getPosition()), glm::vec3(0.2f)));
+          glm::translate(glm::mat4(1.0f), light->getPosition()), glm::vec3(0.2f)));
       lampShader.setVec3("lightColor", light->getDiffuse());
       lightCube.draw(lampShader);
     }

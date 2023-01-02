@@ -67,20 +67,20 @@ int main() {
   // TODO: Because we don't adjust UVs, this ends up looking goofy.
   qrk::PlaneMesh plane("examples/assets/wood.png");
   plane.setModelTransform(
-      glm::scale(glm::translate(glm::mat4(), glm::vec3(0.0f, -0.5f, 0.0f)),
+      glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 0.0f)),
                  glm::vec3(125.0f)));
 
   qrk::CubeMesh box1("examples/assets/wood.png");
   box1.setModelTransform(
-      glm::scale(glm::translate(glm::mat4(), glm::vec3(0.0f, 1.5f, 0.0f)),
+      glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0f)),
                  glm::vec3(1.0f)));
   qrk::CubeMesh box2("examples/assets/wood.png");
   box2.setModelTransform(
-      glm::scale(glm::translate(glm::mat4(), glm::vec3(2.0f, 0.0f, 1.0f)),
+      glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 1.0f)),
                  glm::vec3(1.0f)));
   qrk::CubeMesh box3("examples/assets/wood.png");
   box3.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(-1.0f, 0.0f, 2.0f)),
+      glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 2.0f)),
                   glm::radians(60.0f),
                   glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f))),
       glm::vec3(0.5f)));

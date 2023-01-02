@@ -72,7 +72,7 @@ int main() {
   // Setup the tunnel.
   qrk::CubeMesh tunnel("examples/assets/wood.png");
   tunnel.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 25.0f)),
+      glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 25.0f)),
                   glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
       glm::vec3(5.0f, 5.0f, 55.0f)));
 

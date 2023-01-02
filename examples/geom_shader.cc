@@ -84,14 +84,14 @@ int main() {
     // Translate the model down so it's in the center.
     // Scale it down, since it's too big.
     nanosuit.setModelTransform(
-        glm::scale(glm::translate(glm::mat4(), glm::vec3(0.0f, -1.75f, 0.0f)),
+        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.75f, 0.0f)),
                    glm::vec3(0.2f)));
 
     nanosuit.draw(mainShader);
 
     // Draw light source.
     glm::mat4 lightModel =
-        glm::translate(glm::mat4(), pointLight->getPosition());
+        glm::translate(glm::mat4(1.0f), pointLight->getPosition());
     lightModel = glm::scale(lightModel, glm::vec3(0.2f));
     lightCube.setModelTransform(lightModel);
     lampShader.activate();

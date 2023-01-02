@@ -65,7 +65,7 @@ int main() {
   float radius = 10.0f;
   float offset = 4.5f;
   for (int i = 0; i < rockCount; i++) {
-    glm::mat4 model;
+    glm::mat4 model(1.0f);
 
     // Translate: displace along circle with offset radius.
     float angle =
@@ -119,8 +119,9 @@ int main() {
 
     // Draw planet.
     planet.setModelTransform(glm::scale(
-        glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, -1.0f, 0.0f)),
-                    glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        glm::rotate(
+            glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+            glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
         glm::vec3(1.0f, 1.0f, 1.0f)));
 
     planet.draw(mainShader);

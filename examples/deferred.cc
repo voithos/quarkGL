@@ -166,8 +166,8 @@ int main() {
     for (auto mesh : meshes) {
       for (auto pos : meshPositions) {
         mesh->setModelTransform(glm::scale(
-            glm::rotate(glm::translate(glm::mat4(), pos), glm::radians(0.0f),
-                        glm::vec3(1.0f, 0.0f, 0.0f)),
+            glm::rotate(glm::translate(glm::mat4(1.0f), pos),
+                        glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
             glm::vec3(1.0f)));
         mesh->draw(geometryPassShader);
       }
@@ -216,8 +216,9 @@ int main() {
     // Draw the lights.
     lampShader.updateUniforms();
     for (auto& light : lights) {
-      lightCube.setModelTransform(glm::scale(
-          glm::translate(glm::mat4(), light->getPosition()), glm::vec3(0.2f)));
+      lightCube.setModelTransform(
+          glm::scale(glm::translate(glm::mat4(1.0f), light->getPosition()),
+                     glm::vec3(0.2f)));
       lampShader.setVec3("lightColor", light->getDiffuse());
       lightCube.draw(lampShader);
     }

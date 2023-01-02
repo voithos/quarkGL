@@ -218,23 +218,23 @@ int main() {
     mainShader.setMat4("projection", projection);
     mainShader.setInt("texture0", 0);
 
-    glm::mat4 model;
+    glm::mat4 model(1.0f);
 
     // Draw cubes.
     cubeVarray.activate();
     cubeTexture.bindToUnit(0);
-    model = glm::translate(glm::mat4(), glm::vec3(-1.0f, 0.0f, -1.0f));
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
     mainShader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    model = glm::translate(glm::mat4(), glm::vec3(2.0f, 0.0f, 0.0f));
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
     mainShader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // Draw floor.
     planeVarray.activate();
     floorTexture.bindToUnit(0);
-    mainShader.setMat4("model", glm::mat4());
+    mainShader.setMat4("model", glm::mat4(1.0f));
     glDrawArrays(GL_TRIANGLES, 0, 6);
     planeVarray.deactivate();
 

@@ -54,7 +54,7 @@ int main() {
   // TODO: Make this into a sphere.
   qrk::CubeMesh lightCube;
   lightCube.setModelTransform(glm::scale(
-      glm::translate(glm::mat4(), pointLight->getPosition()), glm::vec3(0.2f)));
+      glm::translate(glm::mat4(1.0f), pointLight->getPosition()), glm::vec3(0.2f)));
 
   // TODO: Pull this out into a material class.
   mainShader.setVec3("material.ambient", glm::vec3(0.1f));
@@ -92,7 +92,7 @@ int main() {
   win.enableFaceCull();
   win.loop([&](float deltaTime) {
     plane.setModelTransform(glm::scale(
-        glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f)),
+        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
                     glm::radians(qrk::time() * -20.0f),
                     glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))),
         glm::vec3(3.0f)));

@@ -70,28 +70,28 @@ int main() {
   std::vector<qrk::Mesh*> meshes;
   qrk::CubeMesh floor("examples/assets/wood.png");
   floor.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, -1.0f, 0.0f)),
+      glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
                   glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
       glm::vec3(25.0f, 1.0f, 25.0f)));
   meshes.push_back(&floor);
 
   qrk::CubeMesh cube1("examples/assets/container2.png");
   cube1.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 1.5f, 0.0f)),
+      glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0f)),
                   glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
       glm::vec3(1.0f)));
   meshes.push_back(&cube1);
 
   qrk::CubeMesh cube2("examples/assets/container2.png");
   cube2.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(2.0f, 0.0f, 1.0f)),
+      glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 1.0f)),
                   glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
       glm::vec3(1.0f)));
   meshes.push_back(&cube2);
 
   qrk::CubeMesh cube3("examples/assets/container2.png");
   cube3.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(-1.0f, -1.0f, 2.0f)),
+      glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 2.0f)),
                   glm::radians(60.0f),
                   glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f))),
       glm::vec3(2.0f)));
@@ -99,7 +99,7 @@ int main() {
 
   qrk::CubeMesh cube4("examples/assets/container2.png");
   cube4.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(0.0f, 2.7f, 4.0f)),
+      glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.7f, 4.0f)),
                   glm::radians(23.0f),
                   glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f))),
       glm::vec3(2.5f)));
@@ -107,7 +107,7 @@ int main() {
 
   qrk::CubeMesh cube5("examples/assets/container2.png");
   cube5.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(-2.0f, 1.0f, -3.0f)),
+      glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.0f, -3.0f)),
                   glm::radians(124.0f),
                   glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f))),
       glm::vec3(2.0f)));
@@ -115,7 +115,7 @@ int main() {
 
   qrk::CubeMesh cube6("examples/assets/container2.png");
   cube6.setModelTransform(glm::scale(
-      glm::rotate(glm::translate(glm::mat4(), glm::vec3(-3.0f, 0.0f, 0.0f)),
+      glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f)),
                   glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
       glm::vec3(1.0f)));
   meshes.push_back(&cube6);
@@ -192,7 +192,7 @@ int main() {
     for (auto& light : lights) {
       qrk::CubeMesh lightCube;
       lightCube.setModelTransform(glm::scale(
-          glm::translate(glm::mat4(), light->getPosition()), glm::vec3(1.0f)));
+          glm::translate(glm::mat4(1.0f), light->getPosition()), glm::vec3(1.0f)));
       lampShader.setVec3("lightColor", light->getDiffuse());
       lightCube.draw(lampShader);
     }

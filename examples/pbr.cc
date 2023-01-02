@@ -149,7 +149,7 @@ int main() {
 
         sphere.setModelTransform(glm::scale(
             glm::rotate(
-                glm::translate(glm::mat4(), glm::vec3(xOffset, yOffset, 0.0f)),
+                glm::translate(glm::mat4(1.0f), glm::vec3(xOffset, yOffset, 0.0f)),
                 glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
             glm::vec3(1.0f)));
 
@@ -161,7 +161,7 @@ int main() {
     lampShader.updateUniforms();
     for (auto& light : lights) {
       lightCube.setModelTransform(glm::scale(
-          glm::translate(glm::mat4(), light->getPosition()), glm::vec3(1.0f)));
+          glm::translate(glm::mat4(1.0f), light->getPosition()), glm::vec3(1.0f)));
       lampShader.setVec3("lightColor", light->getDiffuse());
       lightCube.draw(lampShader);
     }
