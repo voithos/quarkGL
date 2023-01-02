@@ -79,6 +79,7 @@ struct ModelRenderOptions {
 
   // Debug.
   GBufferVis gBufferVis = GBufferVis::DISABLED;
+  bool wireframe = false;
   bool drawNormals = false;
 
   // Performance.
@@ -227,6 +228,7 @@ void renderImGuiUI(ModelRenderOptions& opts) {
     ImGui::SameLine();
     helpMarker("What component of the G-Buffer to visualize.");
 
+    ImGui::Checkbox("Wireframe", &opts.wireframe);
     ImGui::Checkbox("Draw vertex normals", &opts.drawNormals);
   }
 
@@ -421,7 +423,13 @@ int main(int argc, char** argv) {
     geometryPassShader.updateUniforms();
 
     // Draw model.
+    if (opts.wireframe) {
+      win.enableWireframe();
+    }
     model->draw(geometryPassShader);
+    if (opts.wireframe) {
+      win.disableWireframe();
+    }
 
     gBuffer->deactivate();
 
@@ -485,7 +493,13 @@ int main(int argc, char** argv) {
 
     // Draw light source.
     lampShader.updateUniforms();
+    if (opts.wireframe) {
+      win.enableWireframe();
+    }
     lightSphere.draw(lampShader);
+    if (opts.wireframe) {
+      win.disableWireframe();
+    }
 
     // Draw skybox.
     skyboxShader.updateUniforms();

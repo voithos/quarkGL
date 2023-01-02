@@ -117,6 +117,9 @@ class Window : public UniformSource {
   void enableFaceCull() { glEnable(GL_CULL_FACE); }
   void disableFaceCull() { glDisable(GL_CULL_FACE); }
 
+  void enableWireframe() { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
+  void disableWireframe() { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
+
   void cullFrontFaces() { glCullFace(GL_FRONT); }
   void cullBackFaces() { glCullFace(GL_BACK); }
 

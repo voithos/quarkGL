@@ -15,29 +15,28 @@
   - [ ] Add shadow mapping
   - [ ] Add SSAO
 - [ ] P0: Update README / documentation
-- [ ] P1: Implement material system
+- [ ] P0: Implement IBL (image based lighting)
+- [ ] P0: Add FXAA
+- [ ] P1: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 - [ ] P1: Implement tessellation
-- [ ] P1: Implement point light shadow maps: https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
+- [ ] P1: Implement material system
 - [ ] P1: Add parallax mapping
-- [ ] P1: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
+- [ ] P1: Implement point light shadow maps: https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
 - [ ] P1: Add profiler (easy_profiler?)
 - [ ] P1: Add screen space reflections
-- [ ] P1: Add FXAA
 - [ ] P2: Implement Light volumes
 - [ ] P2: Implement CSM: https://learnopengl.com/Guest-Articles/2021/CSM
 - [ ] P2: Don't store positions in the G-Buffer: https://mynameismjp.wordpress.com/2010/09/05/position-from-depth-3/
 - [ ] P2: Implement virtual textures. http://holger.dammertz.org/stuff/notes_VirtualTexturing.html
-- [ ] P2: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 - [ ] P2: Add a scene graph. https://learnopengl.com/Guest-Articles/2021/Scene/Scene-Graph
 - [ ] P2: Expose scene graph in model_render UI
 - [ ] P2: Implement frustum culling. https://learnopengl.com/Guest-Articles/2021/Scene/Frustum-Culling
 - [ ] P2: Consider supporting uniform buffer objects. https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
 - [ ] P2: Go through some of the shader effects from https://lettier.github.io/3d-game-shaders-for-beginners/index.html
 - [ ] P2: Add automatic exposure: https://bruop.github.io/exposure/
-- [ ] P3: Implement IBL (image based lighting)
+- [ ] P3: Add env map lighting support. https://learnopengl.com/Advanced-OpenGL/Cubemaps
 - [ ] P3: Area lights https://learnopengl.com/Guest-Articles/2022/Area-Lights
 - [ ] P3: Tons of shadow map improvements described here: https://docs.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps
-- [ ] P3: Add a wireframe mode.
 - [ ] P4: Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
 ## Cleanup
@@ -105,3 +104,4 @@
 - [x] P0: Implement PBR texture maps
 - [x] P0: Add support for AO maps
 - [x] P0: Banding in specular when using GL_RGBA16F with deferred shading
+- [x] P3: Add a wireframe mode.
