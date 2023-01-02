@@ -12,6 +12,9 @@
   - [x] Display deferred render buffers
   - [x] Add PBR
   - [ ] Add bloom
+  - [ ] Emission strength
+  - [ ] Tone mapping options
+  - [ ] Gamma correct
   - [ ] Add shadow mapping
   - [ ] Add SSAO
 - [ ] P0: Update README / documentation
@@ -52,7 +55,6 @@
 - [ ] Blending (alpha transparency) demo
 
 ## Bugs
-- [ ] P0: Emissive textures have artifacts at close range
 - [ ] P2: light registry doesn't work with >1 shaders.
 - [ ] P2: debug normals are modified based on camera rotation. Maybe just a visual artifact?
 
@@ -105,3 +107,4 @@
 - [x] P0: Add support for AO maps
 - [x] P0: Banding in specular when using GL_RGBA16F with deferred shading
 - [x] P3: Add a wireframe mode.
+- [x] P0: Emissive textures have artifacts at close range

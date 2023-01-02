@@ -204,9 +204,10 @@ std::vector<TextureMap> Model::loadMaterialTextureMaps(aiMaterial* material,
         continue;
       }
 
-      // Assume that diffuse textures are in sRGB.
+      // Assume that diffuse and emissive textures are in sRGB.
       // TODO: Allow for a way to override this if necessary.
-      bool isSRGB = type == TextureMapType::DIFFUSE;
+      bool isSRGB =
+          type == TextureMapType::DIFFUSE || type == TextureMapType::EMISSION;
 
       Texture texture = Texture::load(fullPath.c_str(), isSRGB);
       TextureMap textureMap(texture, type);
