@@ -22,6 +22,9 @@ uniform float emissionStrength;
 uniform QrkAttenuation emissionAttenuation;
 
 uniform int lightingModel;
+uniform int toneMapping;
+uniform bool gammaCorrect;
+uniform float gamma;
 // TODO: This is currently broken, needs to be supported in the geometry pass.
 uniform bool useVertexNormals;
 
@@ -35,28 +38,42 @@ void main() {
   float fragMetallic = texture(gAlbedoMetallic, texCoords).a;
   vec3 fragEmission = texture(gEmission, texCoords).rgb;
 
-  vec3 result;
+  vec3 color;
   // Shade with normal lights.
   if (lightingModel == 0) {
     // Phong.
-    result = qrk_shadeAllLightsBlinnPhongDeferred(
+    color = qrk_shadeAllLightsBlinnPhongDeferred(
         fragAlbedo, /*specular=*/vec3(fragMetallic), ambient, shininess,
         fragPos_viewSpace, fragNormal_viewSpace);
   } else if (lightingModel == 1) {
     // GGX.
-    result = qrk_shadeAllLightsCookTorranceGGXDeferred(
+    color = qrk_shadeAllLightsCookTorranceGGXDeferred(
         fragAlbedo, ambient, fragRoughness, fragMetallic, fragPos_viewSpace,
         fragNormal_viewSpace);
   } else {
-    // Invalid lighting model.
-    result = vec3(1.0, 0.0, 0.0);
+    // Invalid lighting model (pink to signal!).
+    color = vec3(1.0, 0.0, 0.5);
   }
 
   // Add emissions.
-  result += qrk_shadeEmissionDeferred(fragEmission, fragPos_viewSpace,
-                                      emissionAttenuation);
+  color += qrk_shadeEmissionDeferred(fragEmission, fragPos_viewSpace,
+                                     emissionAttenuation);
 
-  result = qrk_toneMapReinhard(result);
-  result = qrk_gammaCorrect(result);
-  fragColor = vec4(result, 1.0);
+  // Perform tone mapping.
+  if (toneMapping == 1) {
+    color = qrk_toneMapReinhard(color);
+  } else if (toneMapping == 2) {
+    color = qrk_toneMapReinhardLuminance(color);
+  } else if (toneMapping == 3) {
+    color = qrk_toneMapAcesApprox(color);
+  } else {
+    // No tone mapping.
+  }
+
+  // Perform gamma correction.
+  if (gammaCorrect) {
+    color = qrk_gammaCorrect(color, gamma);
+  }
+
+  fragColor = vec4(color, 1.0);
 }

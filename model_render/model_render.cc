@@ -52,6 +52,13 @@ enum class GBufferVis {
   EMISSION,
 };
 
+enum class ToneMapping {
+  NONE = 0,
+  REINHARD,
+  REINHARD_LUMINANCE,
+  ACES_APPROX,
+};
+
 // Options for the model render UI. The defaults here are used at startup.
 struct ModelRenderOptions {
   // Rendering.
@@ -67,6 +74,10 @@ struct ModelRenderOptions {
   glm::vec3 ambientColor = glm::vec3(0.1f);
   float shininess = 32.0f;
   glm::vec3 emissionAttenuation = glm::vec3(0, 0, 1.0f);
+
+  ToneMapping toneMapping = ToneMapping::ACES_APPROX;
+  bool gammaCorrect = true;
+  float gamma = 2.2f;
 
   // Camera.
   CameraControlType cameraControlType = CameraControlType::ORBIT;
@@ -184,10 +195,20 @@ void renderImGuiUI(ModelRenderOptions& opts) {
 
       ImGui::DragFloat3("Emission attenuation",
                         reinterpret_cast<float*>(&opts.emissionAttenuation),
-                        /*v_speed=*/0.1f, 0.0f, 10.0f);
+                        /*v_speed=*/0.01f, 0.0f, 10.0f);
       ImGui::SameLine();
       helpMarker(
           "Constant, linear, and quadratic attenuation of emission lights.");
+
+      ImGui::Separator();
+      ImGui::Text("Post-processing");
+
+      ImGui::Combo("Tone mapping", reinterpret_cast<int*>(&opts.toneMapping),
+                   "None\0Reinhard\0Reinhard luminance\0ACES (approx)\0\0");
+      ImGui::Checkbox("Gamma correct", &opts.gammaCorrect);
+      ImGui::BeginDisabled(!opts.gammaCorrect);
+      floatSlider("Gamma", &opts.gamma, 0.01f, 8.0f, nullptr, Scale::LOG);
+      ImGui::EndDisabled();
     }
   }
 
@@ -466,6 +487,10 @@ int main(int argc, char** argv) {
     lightingPassShader.updateUniforms();
     lightingPassShader.setInt("lightingModel",
                               static_cast<int>(opts.lightingModel));
+    lightingPassShader.setInt("toneMapping",
+                              static_cast<int>(opts.toneMapping));
+    lightingPassShader.setBool("gammaCorrect", opts.gammaCorrect);
+    lightingPassShader.setFloat("gamma", static_cast<int>(opts.gamma));
     lightingPassShader.setBool("useVertexNormals", opts.useVertexNormals);
     // TODO: Pull this out into a material class.
     lightingPassShader.setVec3("ambient", opts.ambientColor);

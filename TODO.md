@@ -13,8 +13,8 @@
   - [x] Add PBR
   - [ ] Add bloom
   - [ ] Emission strength
-  - [ ] Tone mapping options
-  - [ ] Gamma correct
+  - [x] Tone mapping options
+  - [x] Gamma correct
   - [ ] Add shadow mapping
   - [ ] Add SSAO
 - [ ] P0: Update README / documentation
