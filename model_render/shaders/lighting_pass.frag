@@ -25,8 +25,6 @@ uniform int lightingModel;
 uniform int toneMapping;
 uniform bool gammaCorrect;
 uniform float gamma;
-// TODO: This is currently broken, needs to be supported in the geometry pass.
-uniform bool useVertexNormals;
 
 void main() {
   // Extract G-Buffer for PBR rendering.

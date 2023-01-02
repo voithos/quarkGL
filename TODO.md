@@ -6,7 +6,6 @@
   - [x] Camera mode
   - [x] Ambient color controls
   - [x] Directional light color / position / etc controls
-  - [ ] Various algorithm params?
   - [ ] Replace model via file upload
   - [x] Switch to deferred?
   - [x] Display deferred render buffers

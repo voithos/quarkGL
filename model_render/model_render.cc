@@ -63,7 +63,6 @@ enum class ToneMapping {
 struct ModelRenderOptions {
   // Rendering.
   LightingModel lightingModel = LightingModel::COOK_TORRANCE_GGX;
-  bool useVertexNormals = false;
 
   glm::vec3 directionalDiffuse = glm::vec3(0.5f);
   glm::vec3 directionalSpecular = glm::vec3(0.5f);
@@ -142,12 +141,6 @@ void renderImGuiUI(ModelRenderOptions& opts) {
                  "Blinn-Phong\0Cook-Torrance GGX\0\0");
     ImGui::SameLine();
     helpMarker("Which lighting model to use for shading.");
-
-    ImGui::Checkbox("Vertex normals", &opts.useVertexNormals);
-    ImGui::SameLine();
-    helpMarker(
-        "Whether to use vertex normals for rendering. If false, a normal map "
-        "will be used if available.");
 
     if (ImGui::CollapsingHeader("Lighting", ImGuiTreeNodeFlags_DefaultOpen)) {
       ImGui::Text("Directional light");
@@ -494,7 +487,6 @@ int main(int argc, char** argv) {
                               static_cast<int>(opts.toneMapping));
     lightingPassShader.setBool("gammaCorrect", opts.gammaCorrect);
     lightingPassShader.setFloat("gamma", static_cast<int>(opts.gamma));
-    lightingPassShader.setBool("useVertexNormals", opts.useVertexNormals);
     // TODO: Pull this out into a material class.
     lightingPassShader.setVec3("ambient", opts.ambientColor);
     lightingPassShader.setFloat("shininess", opts.shininess);
