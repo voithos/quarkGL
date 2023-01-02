@@ -447,4 +447,28 @@ void ScreenQuadMesh::initializeVertexAttributes() {
   vertexArray_.finalizeVertexAttribs();
 }
 
+void ScreenQuadMesh::bindTextures(Shader& shader,
+                                  TextureRegistry* textureRegistry) {
+  if (textureMaps_.empty()) {
+    return;
+  }
+
+  // Bind textures, assuming a given uniform naming.
+  // If a TextureRegistry isn't provided, just start with texture unit 0.
+  unsigned int textureUnit = 0;
+  if (textureRegistry != nullptr) {
+    textureRegistry->pushUsageBlock();
+    textureUnit = textureRegistry->getNextTextureUnit();
+  }
+
+  Texture& texture = textureMaps_[0].getTexture();
+  texture.bindToUnit(textureUnit, TextureBindType::TEXTURE);
+
+  // Set the sampler to the correct texture unit.
+  shader.setInt("qrk_screenTexture", textureUnit);
+  if (textureRegistry != nullptr) {
+    textureRegistry->popUsageBlock();
+  }
+}
+
 }  // namespace qrk

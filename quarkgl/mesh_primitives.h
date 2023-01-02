@@ -92,6 +92,7 @@ class ScreenQuadMesh : public PrimitiveMesh {
  protected:
   void loadMesh();
   void initializeVertexAttributes() override;
+  void bindTextures(Shader& shader, TextureRegistry* textureRegistry) override;
 };
 
 }  // namespace qrk
