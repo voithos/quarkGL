@@ -135,11 +135,12 @@ static bool floatSlider(const char* desc, float* value, float min, float max,
 // Non-normative context for UI rendering. Used for accessing renderer info.
 struct UIContext {
   qrk::Camera& camera;
+  qrk::ShadowMap& shadowMap;
 };
 
 // Called during game loop.
 void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
-  // ImGui::ShowDemoWindow();
+  ImGui::ShowDemoWindow();
 
   ImGui::Begin("Model Render");
 
@@ -149,78 +150,86 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     ImGui::SameLine();
     helpMarker("Which lighting model to use for shading.");
 
-    if (ImGui::CollapsingHeader("Lighting", ImGuiTreeNodeFlags_DefaultOpen)) {
-      ImGui::Text("Directional light");
-      static bool lockSpecular = true;
-      ImGui::ColorEdit3("Diffuse color",
-                        reinterpret_cast<float*>(&opts.directionalDiffuse),
-                        ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
-      ImGui::BeginDisabled(lockSpecular);
-      ImGui::ColorEdit3("Specular color",
-                        reinterpret_cast<float*>(&opts.directionalSpecular),
-                        ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
-      ImGui::EndDisabled();
-      ImGui::Checkbox("Lock specular", &lockSpecular);
-      ImGui::SameLine();
-      helpMarker(
-          "Whether to lock the specular light color to the diffuse. Usually "
-          "desired for PBR.");
-      if (lockSpecular) {
-        opts.directionalSpecular = opts.directionalDiffuse;
-      }
-      floatSlider("Intensity", &opts.directionalIntensity, 1.0f, 50.0f, nullptr,
-                  Scale::LINEAR);
-
-      ImGui::SliderFloat3("Direction",
-                          reinterpret_cast<float*>(&opts.directionalDirection),
-                          -1.0f, 1.0f);
-      // Perform some shenanigans so that the gizmo rotates along with the
-      // camera while still representing the same light dir..
-      glm::vec3 dirViewSpace =
-          glm::vec3(ctx.camera.getViewTransform() *
-                    glm::vec4(opts.directionalDirection, 0.0f));
-      ImGui::gizmo3D("##directional_direction", dirViewSpace,
-                     /*size=*/120);
-      opts.directionalDirection =
-          glm::vec3(glm::inverse(ctx.camera.getViewTransform()) *
-                    glm::vec4(glm::normalize(dirViewSpace), 0.0f));
-      ImGui::Checkbox("Shadow mapping", &opts.shadowMapping);
-
-      ImGui::Separator();
-      ImGui::Text("Environment");
-
-      ImGui::ColorEdit3("Ambient color",
-                        reinterpret_cast<float*>(&opts.ambientColor),
-                        ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
-      ImGui::SameLine();
-      helpMarker("The color of the fixed ambient component.");
-
-      ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG);
-      floatSlider("Shininess", &opts.shininess, 1.0f, 1000.0f, nullptr,
-                  Scale::LOG);
-      ImGui::SameLine();
-      helpMarker("Shininess of specular highlights. Only applies to Phong.");
-      ImGui::EndDisabled();
-
-      floatSlider("Emission intensity", &opts.emissionIntensity, 0.1f, 50.0f,
-                  nullptr, Scale::LOG);
-      ImGui::DragFloat3("Emission attenuation",
-                        reinterpret_cast<float*>(&opts.emissionAttenuation),
-                        /*v_speed=*/0.01f, 0.0f, 10.0f);
-      ImGui::SameLine();
-      helpMarker(
-          "Constant, linear, and quadratic attenuation of emission lights.");
-
-      ImGui::Separator();
-      ImGui::Text("Post-processing");
-
-      ImGui::Combo("Tone mapping", reinterpret_cast<int*>(&opts.toneMapping),
-                   "None\0Reinhard\0Reinhard luminance\0ACES (approx)\0\0");
-      ImGui::Checkbox("Gamma correct", &opts.gammaCorrect);
-      ImGui::BeginDisabled(!opts.gammaCorrect);
-      floatSlider("Gamma", &opts.gamma, 0.01f, 8.0f, nullptr, Scale::LOG);
-      ImGui::EndDisabled();
+    ImGui::Separator();
+    ImGui::Text("Directional light");
+    static bool lockSpecular = true;
+    ImGui::ColorEdit3("Diffuse color",
+                      reinterpret_cast<float*>(&opts.directionalDiffuse),
+                      ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+    ImGui::BeginDisabled(lockSpecular);
+    ImGui::ColorEdit3("Specular color",
+                      reinterpret_cast<float*>(&opts.directionalSpecular),
+                      ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+    ImGui::EndDisabled();
+    ImGui::Checkbox("Lock specular", &lockSpecular);
+    ImGui::SameLine();
+    helpMarker(
+        "Whether to lock the specular light color to the diffuse. Usually "
+        "desired for PBR.");
+    if (lockSpecular) {
+      opts.directionalSpecular = opts.directionalDiffuse;
     }
+    floatSlider("Intensity", &opts.directionalIntensity, 1.0f, 50.0f, nullptr,
+                Scale::LINEAR);
+
+    ImGui::SliderFloat3("Direction",
+                        reinterpret_cast<float*>(&opts.directionalDirection),
+                        -1.0f, 1.0f);
+    // Perform some shenanigans so that the gizmo rotates along with the
+    // camera while still representing the same light dir..
+    glm::vec3 dirViewSpace =
+        glm::vec3(ctx.camera.getViewTransform() *
+                  glm::vec4(opts.directionalDirection, 0.0f));
+    ImGui::gizmo3D("##directional_direction", dirViewSpace,
+                   /*size=*/120);
+    opts.directionalDirection =
+        glm::vec3(glm::inverse(ctx.camera.getViewTransform()) *
+                  glm::vec4(glm::normalize(dirViewSpace), 0.0f));
+
+    ImGui::Separator();
+    ImGui::Text("Shadows");
+
+    ImGui::Checkbox("Shadow mapping", &opts.shadowMapping);
+    ImGui::BeginDisabled(!opts.shadowMapping);
+    ImTextureID shadowMapTexID =
+        reinterpret_cast<void*>(ctx.shadowMap.getDepthTexture().getId());
+    ImGui::Image(shadowMapTexID, glm::vec2(200, 200));
+    ImGui::EndDisabled();
+
+    ImGui::Separator();
+    ImGui::Text("Environment");
+
+    ImGui::ColorEdit3("Ambient color",
+                      reinterpret_cast<float*>(&opts.ambientColor),
+                      ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+    ImGui::SameLine();
+    helpMarker("The color of the fixed ambient component.");
+
+    ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG);
+    floatSlider("Shininess", &opts.shininess, 1.0f, 1000.0f, nullptr,
+                Scale::LOG);
+    ImGui::SameLine();
+    helpMarker("Shininess of specular highlights. Only applies to Phong.");
+    ImGui::EndDisabled();
+
+    floatSlider("Emission intensity", &opts.emissionIntensity, 0.1f, 50.0f,
+                nullptr, Scale::LOG);
+    ImGui::DragFloat3("Emission attenuation",
+                      reinterpret_cast<float*>(&opts.emissionAttenuation),
+                      /*v_speed=*/0.01f, 0.0f, 10.0f);
+    ImGui::SameLine();
+    helpMarker(
+        "Constant, linear, and quadratic attenuation of emission lights.");
+
+    ImGui::Separator();
+    ImGui::Text("Post-processing");
+
+    ImGui::Combo("Tone mapping", reinterpret_cast<int*>(&opts.toneMapping),
+                 "None\0Reinhard\0Reinhard luminance\0ACES (approx)\0\0");
+    ImGui::Checkbox("Gamma correct", &opts.gammaCorrect);
+    ImGui::BeginDisabled(!opts.gammaCorrect);
+    floatSlider("Gamma", &opts.gamma, 0.01f, 8.0f, nullptr, Scale::LOG);
+    ImGui::EndDisabled();
   }
 
   if (ImGui::CollapsingHeader("Camera")) {
@@ -422,7 +431,7 @@ int main(int argc, char** argv) {
     opts.avgFPS = win.getAvgFPS();
 
     // Render UI.
-    renderImGuiUI(opts, {.camera = *camera});
+    renderImGuiUI(opts, {.camera = *camera, .shadowMap = *shadowMap});
 
     // Post-process options. Some option values are used later during rendering.
     directionalLight->setDiffuse(opts.directionalDiffuse *
