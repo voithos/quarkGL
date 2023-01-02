@@ -204,8 +204,10 @@ void Framebuffer::checkFlags(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
     case BufferType::COLOR_HDR:
+    case BufferType::COLOR_SNORM:
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
+    case BufferType::COLOR_SNORM_ALPHA:
     case BufferType::GRAYSCALE:
       // Multiple color attachments OK.
       return;
@@ -237,8 +239,10 @@ void Framebuffer::updateFlags(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
     case BufferType::COLOR_HDR:
+    case BufferType::COLOR_SNORM:
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
+    case BufferType::COLOR_SNORM_ALPHA:
     case BufferType::GRAYSCALE:
       hasColorAttachment_ = true;
       numColorAttachments_++;

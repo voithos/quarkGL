@@ -95,7 +95,7 @@ Texture Texture::loadCubemap(std::vector<std::string> faces) {
 
   Texture texture;
   texture.numMips_ = 1;
-  texture.internalFormat_ = GL_RGB;  // Cubemaps must be RGB.
+  texture.internalFormat_ = GL_RGB8;  // Cubemaps must be RGB.
 
   glGenTextures(1, &texture.id_);
   glBindTexture(GL_TEXTURE_CUBE_MAP, texture.id_);

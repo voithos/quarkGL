@@ -24,8 +24,12 @@ enum class BufferType {
   COLOR = 0,
   // HDR color attachment, allowing color values to exceed 1.0
   COLOR_HDR,
+  // SNORM attachment, only allowing numbers in the range [-1, 1] but with
+  // greater precision.
+  COLOR_SNORM,
   COLOR_ALPHA,
   COLOR_HDR_ALPHA,
+  COLOR_SNORM_ALPHA,
   GRAYSCALE,
   DEPTH,
   STENCIL,
@@ -54,8 +58,10 @@ inline const GLenum bufferTypeToGlAttachmentType(BufferType type,
   switch (type) {
     case BufferType::COLOR:
     case BufferType::COLOR_HDR:
+    case BufferType::COLOR_SNORM:
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
+    case BufferType::COLOR_SNORM_ALPHA:
     case BufferType::GRAYSCALE:
       return GL_COLOR_ATTACHMENT0 + attachmentIndex;
     case BufferType::DEPTH:
@@ -75,10 +81,14 @@ inline const GLenum bufferTypeToGlInternalFormat(BufferType type) {
       return GL_RGB8;
     case BufferType::COLOR_HDR:
       return GL_RGB16F;
+    case BufferType::COLOR_SNORM:
+      return GL_RGB16_SNORM;
     case BufferType::COLOR_ALPHA:
       return GL_RGBA8;
     case BufferType::COLOR_HDR_ALPHA:
       return GL_RGBA16F;
+    case BufferType::COLOR_SNORM_ALPHA:
+      return GL_RGBA16_SNORM;
     case BufferType::GRAYSCALE:
       return GL_R8;
     case BufferType::DEPTH:
@@ -96,9 +106,11 @@ inline const GLenum bufferTypeToGlFormat(BufferType type) {
   switch (type) {
     case BufferType::COLOR:
     case BufferType::COLOR_HDR:
+    case BufferType::COLOR_SNORM:
       return GL_RGB;
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
+    case BufferType::COLOR_SNORM_ALPHA:
       return GL_RGBA;
     case BufferType::GRAYSCALE:
       return GL_RED;
@@ -120,6 +132,8 @@ inline const GLenum bufferTypeToGlDataType(BufferType type) {
       return GL_UNSIGNED_BYTE;
     case BufferType::COLOR_HDR:
     case BufferType::COLOR_HDR_ALPHA:
+    case BufferType::COLOR_SNORM:
+    case BufferType::COLOR_SNORM_ALPHA:
       return GL_FLOAT;
     case BufferType::GRAYSCALE:
       return GL_UNSIGNED_BYTE;

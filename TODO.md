@@ -104,3 +104,4 @@
 - [x] P0: Create PBR example
 - [x] P0: Implement PBR texture maps
 - [x] P0: Add support for AO maps
+- [x] P0: Banding in specular when using GL_RGBA16F with deferred shading
