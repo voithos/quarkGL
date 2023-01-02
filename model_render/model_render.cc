@@ -66,13 +66,15 @@ struct ModelRenderOptions {
 
   glm::vec3 directionalDiffuse = glm::vec3(0.5f);
   glm::vec3 directionalSpecular = glm::vec3(0.5f);
-  float directionalIntensity = 1.0f;
+  float directionalIntensity = 10.0f;
   glm::vec3 directionalDirection =
       glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f));
 
+  bool shadowMapping = true;
+
   glm::vec3 ambientColor = glm::vec3(0.1f);
   float shininess = 32.0f;
-  float emissionIntensity = 1.0f;
+  float emissionIntensity = 5.0f;
   glm::vec3 emissionAttenuation = glm::vec3(0, 0, 1.0f);
 
   ToneMapping toneMapping = ToneMapping::ACES_APPROX;
@@ -167,9 +169,11 @@ void renderImGuiUI(ModelRenderOptions& opts) {
       ImGui::SliderFloat3("Direction",
                           reinterpret_cast<float*>(&opts.directionalDirection),
                           -1.0f, 1.0f);
+      // TODO: Fix this to rotate along with camera.
       ImGui::gizmo3D("##directional_direction", opts.directionalDirection,
                      /*size=*/120);
       opts.directionalDirection = glm::normalize(opts.directionalDirection);
+      ImGui::Checkbox("Shadow mapping", &opts.shadowMapping);
 
       ImGui::Separator();
       ImGui::Text("Environment");
@@ -294,15 +298,36 @@ int main(int argc, char** argv) {
   ImGui_ImplGlfw_InitForOpenGL(win.getGlfwRef(), /*install_callbacks=*/true);
   ImGui_ImplOpenGL3_Init("#version 460 core");
 
+  // == Main setup ==
+
   // Prepare opts for usage.
   ModelRenderOptions opts;
 
+  // Setup the camera.
   auto camera =
       std::make_shared<qrk::Camera>(/* position */ glm::vec3(0.0f, 0.0f, 3.0f));
   std::shared_ptr<qrk::CameraControls> cameraControls =
       std::make_shared<qrk::OrbitCameraControls>(*camera);
   win.bindCamera(camera);
   win.bindCameraControls(cameraControls);
+
+  // Create light registry and add lights.
+  auto lightRegistry = std::make_shared<qrk::LightRegistry>();
+  lightRegistry->setViewSource(camera);
+
+  auto directionalLight = std::make_shared<qrk::DirectionalLight>();
+  lightRegistry->addLight(directionalLight);
+
+  auto pointLight =
+      std::make_shared<qrk::PointLight>(glm::vec3(1.2f, 1.0f, 2.0f));
+  pointLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
+  lightRegistry->addLight(pointLight);
+
+  // Create a mesh for the light.
+  qrk::SphereMesh lightSphere;
+  lightSphere.setModelTransform(
+      glm::scale(glm::translate(glm::mat4(1.0f), pointLight->getPosition()),
+                 glm::vec3(0.2f)));
 
   // Build the G-Buffer and prepare deferred shading.
   qrk::DeferredGeometryPassShader geometryPassShader;
@@ -320,13 +345,21 @@ int main(int argc, char** argv) {
       qrk::ShaderPath("model_render/shaders/lighting_pass.frag"));
   lightingPassShader.addUniformSource(camera);
   lightingPassShader.addUniformSource(textureRegistry);
+  lightingPassShader.addUniformSource(lightRegistry);
 
-  qrk::Shader normalShader(
-      qrk::ShaderPath("model_render/shaders/model.vert"),
-      qrk::ShaderInline(normalShaderSource),
-      qrk::ShaderPath("model_render/shaders/model_normals.geom"));
-  normalShader.addUniformSource(camera);
+  // Setup shadow mapping.
+  constexpr int SHADOW_MAP_SIZE = 2048;
+  auto shadowMap =
+      std::make_shared<qrk::ShadowMap>(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+  textureRegistry->addTextureSource(shadowMap);
+  lightingPassShader.addUniformSource(textureRegistry);
 
+  qrk::ShadowMapShader shadowShader;
+  auto shadowCamera = std::make_shared<qrk::ShadowCamera>(directionalLight);
+  shadowShader.addUniformSource(shadowCamera);
+  lightingPassShader.addUniformSource(shadowCamera);
+
+  // Setup skybox.
   qrk::SkyboxShader skyboxShader;
   skyboxShader.addUniformSource(camera);
 
@@ -339,30 +372,18 @@ int main(int argc, char** argv) {
       "examples/assets/skybox/back.jpg",
   });
 
-  // Create light registry and add lights.
-  auto registry = std::make_shared<qrk::LightRegistry>();
-  registry->setViewSource(camera);
-  lightingPassShader.addUniformSource(registry);
-
-  auto directionalLight = std::make_shared<qrk::DirectionalLight>();
-  registry->addLight(directionalLight);
-
-  auto pointLight =
-      std::make_shared<qrk::PointLight>(glm::vec3(1.2f, 1.0f, 2.0f));
-  pointLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
-  registry->addLight(pointLight);
+  // Prepare some debug shaders.
+  qrk::Shader normalShader(
+      qrk::ShaderPath("model_render/shaders/model.vert"),
+      qrk::ShaderInline(normalShaderSource),
+      qrk::ShaderPath("model_render/shaders/model_normals.geom"));
+  normalShader.addUniformSource(camera);
 
   qrk::Shader lampShader(qrk::ShaderPath("model_render/shaders/model.vert"),
                          qrk::ShaderInline(lampShaderSource));
   lampShader.addUniformSource(camera);
 
-  // Create a mesh for the light.
-  qrk::SphereMesh lightSphere;
-  lightSphere.setModelTransform(
-      glm::scale(glm::translate(glm::mat4(1.0f), pointLight->getPosition()),
-                 glm::vec3(0.2f)));
-
-  // Load model.
+  // Load primary model.
   std::unique_ptr<qrk::Model> model = loadModelOrDefault();
 
   win.enableFaceCull();
@@ -433,6 +454,15 @@ int main(int argc, char** argv) {
                                    : qrk::MouseButtonBehavior::NONE);
 
     // == Main render path ==
+    // Step 0: optional shadow pass.
+    if (opts.shadowMapping) {
+      shadowMap->activate();
+      shadowMap->clear();
+      shadowShader.updateUniforms();
+      model->draw(shadowShader);
+      shadowMap->deactivate();
+    }
+
     // Step 1: geometry pass. Build the G-Buffer.
     gBuffer->activate();
     gBuffer->clear();
@@ -481,6 +511,7 @@ int main(int argc, char** argv) {
     // Step 2: lighting pass.
     // TODO: Set up environment mapping with the skybox.
     lightingPassShader.updateUniforms();
+    lightingPassShader.setBool("shadowMapping", opts.shadowMapping);
     lightingPassShader.setInt("lightingModel",
                               static_cast<int>(opts.lightingModel));
     lightingPassShader.setInt("toneMapping",

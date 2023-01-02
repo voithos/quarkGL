@@ -16,6 +16,8 @@ uniform sampler2D gNormalRoughness;
 uniform sampler2D gAlbedoMetallic;
 uniform sampler2D gEmission;
 
+uniform bool shadowMapping;
+
 uniform vec3 ambient;
 uniform float shininess;
 uniform float emissionIntensity;
@@ -25,6 +27,12 @@ uniform int lightingModel;
 uniform int toneMapping;
 uniform bool gammaCorrect;
 uniform float gamma;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+uniform mat4 lightViewProjection;
+uniform sampler2D shadowMap;
 
 void main() {
   // Extract G-Buffer for PBR rendering.
@@ -37,17 +45,35 @@ void main() {
   vec3 fragEmission = texture(gEmission, texCoords).rgb;
 
   vec3 color;
+
+  // Shadow mapping. Currently only supported for one dir light.
+  float shadow = 0.0;
+  if (shadowMapping) {
+    // TODO: Parameterize shadow bias.
+    float shadowBias = qrk_shadowBias(0.001, 0.01, fragNormal_viewSpace,
+                                      qrk_directionalLights[0].direction);
+    // Since we're in view space, we have to un-project to world space in order
+    // to get to the light's view.
+    vec4 fragPos_worldSpace = inverse(view) * vec4(fragPos_viewSpace, 1.0);
+    vec4 fragPos_lightSpace = lightViewProjection * fragPos_worldSpace;
+    shadow = qrk_shadow(shadowMap, fragPos_lightSpace, shadowBias);
+  }
+
+  // Ambient occlusion.
+  // TODO: Add SSAO as well.
+  float ao = fragAO;
+
   // Shade with normal lights.
   if (lightingModel == 0) {
     // Phong.
     color = qrk_shadeAllLightsBlinnPhongDeferred(
         fragAlbedo, /*specular=*/vec3(fragMetallic), ambient, shininess,
-        fragPos_viewSpace, fragNormal_viewSpace);
+        fragPos_viewSpace, fragNormal_viewSpace, shadow, ao);
   } else if (lightingModel == 1) {
     // GGX.
     color = qrk_shadeAllLightsCookTorranceGGXDeferred(
         fragAlbedo, ambient, fragRoughness, fragMetallic, fragPos_viewSpace,
-        fragNormal_viewSpace);
+        fragNormal_viewSpace, shadow, ao);
   } else {
     // Invalid lighting model (pink to signal!).
     color = vec3(1.0, 0.0, 0.5);

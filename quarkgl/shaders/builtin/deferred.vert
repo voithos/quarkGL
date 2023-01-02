@@ -9,6 +9,7 @@ layout(location = 3) in vec2 vertexTexCoords;
 
 out VS_OUT {
   vec2 texCoords;
+  // TODO: Consider changing this to be worldSpace.
   vec3 fragPos_viewSpace;
   vec3 fragNormal_viewSpace;
   mat3 fragTBN_viewSpace;  // Transforms from tangent frame to view frame.
@@ -32,6 +33,7 @@ void main() {
 
   // Build a tangent space transform matrix.
   vec3 normal_viewSpace = normalize(modelViewInverseTranspose * vertexNormal);
+  // TODO: Should this not use inverse-transpose?
   vec3 tangent_viewSpace = normalize(modelViewInverseTranspose * vertexTangent);
   vs_out.fragTBN_viewSpace =
       qrk_calculateTBN(normal_viewSpace, tangent_viewSpace);

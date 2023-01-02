@@ -14,7 +14,9 @@
   - [x] Emission strength
   - [x] Tone mapping options
   - [x] Gamma correct
-  - [ ] Add shadow mapping
+  - [x] Add shadow mapping
+  - [ ] Add shadow map params
+  - [ ] Add shadow map vis
   - [ ] Add SSAO
 - [ ] P0: Update README / documentation
 - [ ] P0: Implement IBL (image based lighting)
