@@ -73,6 +73,7 @@ struct ModelRenderOptions {
 
   glm::vec3 ambientColor = glm::vec3(0.1f);
   float shininess = 32.0f;
+  float emissionIntensity = 1.0f;
   glm::vec3 emissionAttenuation = glm::vec3(0, 0, 1.0f);
 
   ToneMapping toneMapping = ToneMapping::ACES_APPROX;
@@ -193,6 +194,8 @@ void renderImGuiUI(ModelRenderOptions& opts) {
       helpMarker("Shininess of specular highlights. Only applies to Phong.");
       ImGui::EndDisabled();
 
+      floatSlider("Emission intensity", &opts.emissionIntensity, 0.1f, 50.0f,
+                  nullptr, Scale::LOG);
       ImGui::DragFloat3("Emission attenuation",
                         reinterpret_cast<float*>(&opts.emissionAttenuation),
                         /*v_speed=*/0.01f, 0.0f, 10.0f);
@@ -495,6 +498,7 @@ int main(int argc, char** argv) {
     // TODO: Pull this out into a material class.
     lightingPassShader.setVec3("ambient", opts.ambientColor);
     lightingPassShader.setFloat("shininess", opts.shininess);
+    lightingPassShader.setFloat("emissionIntensity", opts.emissionIntensity);
     lightingPassShader.setFloat("emissionAttenuation.constant",
                                 opts.emissionAttenuation.x);
     lightingPassShader.setFloat("emissionAttenuation.linear",

@@ -12,7 +12,7 @@
   - [x] Display deferred render buffers
   - [x] Add PBR
   - [ ] Add bloom
-  - [ ] Emission strength
+  - [x] Emission strength
   - [x] Tone mapping options
   - [x] Gamma correct
   - [ ] Add shadow mapping

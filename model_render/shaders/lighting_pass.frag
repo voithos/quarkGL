@@ -18,7 +18,7 @@ uniform sampler2D gEmission;
 
 uniform vec3 ambient;
 uniform float shininess;
-uniform float emissionStrength;
+uniform float emissionIntensity;
 uniform QrkAttenuation emissionAttenuation;
 
 uniform int lightingModel;
@@ -56,8 +56,9 @@ void main() {
   }
 
   // Add emissions.
-  color += qrk_shadeEmissionDeferred(fragEmission, fragPos_viewSpace,
-                                     emissionAttenuation);
+  color += emissionIntensity * qrk_shadeEmissionDeferred(fragEmission,
+                                                         fragPos_viewSpace,
+                                                         emissionAttenuation);
 
   // Perform tone mapping.
   if (toneMapping == 1) {
