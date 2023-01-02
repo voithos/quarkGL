@@ -132,8 +132,13 @@ static bool floatSlider(const char* desc, float* value, float min, float max,
                              flags);
 }
 
+// Non-normative context for UI rendering. Used for accessing renderer info.
+struct UIContext {
+  qrk::Camera& camera;
+};
+
 // Called during game loop.
-void renderImGuiUI(ModelRenderOptions& opts) {
+void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
   // ImGui::ShowDemoWindow();
 
   ImGui::Begin("Model Render");
@@ -169,10 +174,16 @@ void renderImGuiUI(ModelRenderOptions& opts) {
       ImGui::SliderFloat3("Direction",
                           reinterpret_cast<float*>(&opts.directionalDirection),
                           -1.0f, 1.0f);
-      // TODO: Fix this to rotate along with camera.
-      ImGui::gizmo3D("##directional_direction", opts.directionalDirection,
+      // Perform some shenanigans so that the gizmo rotates along with the
+      // camera while still representing the same light dir..
+      glm::vec3 dirViewSpace =
+          glm::vec3(ctx.camera.getViewTransform() *
+                    glm::vec4(opts.directionalDirection, 0.0f));
+      ImGui::gizmo3D("##directional_direction", dirViewSpace,
                      /*size=*/120);
-      opts.directionalDirection = glm::normalize(opts.directionalDirection);
+      opts.directionalDirection =
+          glm::vec3(glm::inverse(ctx.camera.getViewTransform()) *
+                    glm::vec4(glm::normalize(dirViewSpace), 0.0f));
       ImGui::Checkbox("Shadow mapping", &opts.shadowMapping);
 
       ImGui::Separator();
@@ -411,7 +422,7 @@ int main(int argc, char** argv) {
     opts.avgFPS = win.getAvgFPS();
 
     // Render UI.
-    renderImGuiUI(opts);
+    renderImGuiUI(opts, {.camera = *camera});
 
     // Post-process options. Some option values are used later during rendering.
     directionalLight->setDiffuse(opts.directionalDiffuse *
