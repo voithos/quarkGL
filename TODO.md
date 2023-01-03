@@ -1,23 +1,6 @@
 # TODOs
 
 ## Features
-- [ ] P0: Model render features
-  - [ ] Rotate/scale
-  - [x] Camera mode
-  - [x] Ambient color controls
-  - [x] Directional light color / position / etc controls
-  - [x] Switch to deferred?
-  - [x] Display deferred render buffers
-  - [x] Add PBR
-  - [x] Add bloom
-  - [x] Emission strength
-  - [x] Tone mapping options
-  - [x] Gamma correct
-  - [x] Add shadow mapping
-  - [x] Add shadow map params
-  - [x] Add shadow map vis
-  - [x] Add SSAO
-  - [ ] Decide what to do with point lights?
 - [ ] P0: Update README / documentation
 - [ ] P0: Implement IBL (image based lighting)
 - [ ] P0: Add FXAA
@@ -110,3 +93,19 @@
 - [x] P0: Banding in specular when using GL_RGBA16F with deferred shading
 - [x] P3: Add a wireframe mode.
 - [x] P0: Emissive textures have artifacts at close range
+- [x] P0: Model render features
+  - [x] Rotate/scale
+  - [x] Camera mode
+  - [x] Ambient color controls
+  - [x] Directional light color / position / etc controls
+  - [x] Switch to deferred?
+  - [x] Display deferred render buffers
+  - [x] Add PBR
+  - [x] Add bloom
+  - [x] Emission strength
+  - [x] Tone mapping options
+  - [x] Gamma correct
+  - [x] Add shadow mapping
+  - [x] Add shadow map params
+  - [x] Add shadow map vis
+  - [x] Add SSAO

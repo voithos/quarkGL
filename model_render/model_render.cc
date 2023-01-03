@@ -61,6 +61,9 @@ enum class ToneMapping {
 
 // Options for the model render UI. The defaults here are used at startup.
 struct ModelRenderOptions {
+  // Model.
+  glm::quat modelRotation = glm::identity<glm::quat>();
+
   // Rendering.
   LightingModel lightingModel = LightingModel::COOK_TORRANCE_GGX;
 
@@ -155,6 +158,21 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
 
   ImGui::Begin("Model Render");
 
+  if (ImGui::CollapsingHeader("Model", ImGuiTreeNodeFlags_DefaultOpen)) {
+    // Perform some shenanigans so that the gizmo rotates along with the
+    // camera while still representing the same model rotation.
+    glm::quat rotViewSpace =
+        glm::quat_cast(ctx.camera.getViewTransform()) * opts.modelRotation;
+    ImGui::gizmo3D("Rotation", rotViewSpace, /*size=*/120);
+    opts.modelRotation =
+        glm::quat_cast(glm::inverse(ctx.camera.getViewTransform())) *
+        glm::normalize(rotViewSpace);
+
+    if (ImGui::Button("Reset")) {
+      opts.modelRotation = glm::identity<glm::quat>();
+    }
+  }
+
   if (ImGui::CollapsingHeader("Rendering")) {
     ImGui::Combo("Lighting model", reinterpret_cast<int*>(&opts.lightingModel),
                  "Blinn-Phong\0Cook-Torrance GGX\0\0");
@@ -183,19 +201,18 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     floatSlider("Intensity", &opts.directionalIntensity, 1.0f, 50.0f, nullptr,
                 Scale::LINEAR);
 
-    ImGui::SliderFloat3("Direction",
-                        reinterpret_cast<float*>(&opts.directionalDirection),
-                        -1.0f, 1.0f);
     // Perform some shenanigans so that the gizmo rotates along with the
     // camera while still representing the same light dir..
     glm::vec3 dirViewSpace =
         glm::vec3(ctx.camera.getViewTransform() *
                   glm::vec4(opts.directionalDirection, 0.0f));
-    ImGui::gizmo3D("##directional_direction", dirViewSpace,
-                   /*size=*/120);
+    ImGui::gizmo3D("Light dir", dirViewSpace, /*size=*/120);
     opts.directionalDirection =
         glm::vec3(glm::inverse(ctx.camera.getViewTransform()) *
                   glm::vec4(glm::normalize(dirViewSpace), 0.0f));
+    ImGui::SliderFloat3("##directional_direction",
+                        reinterpret_cast<float*>(&opts.directionalDirection),
+                        -1.0f, 1.0f);
 
     ImGui::Separator();
     ImGui::Text("Shadows");
@@ -518,6 +535,8 @@ int main(int argc, char** argv) {
     renderImGuiUI(opts, {.camera = *camera, .shadowMap = *shadowMap});
 
     // Post-process options. Some option values are used later during rendering.
+    model->setModelTransform(glm::mat4_cast(opts.modelRotation));
+
     directionalLight->setDiffuse(opts.directionalDiffuse *
                                  opts.directionalIntensity);
     directionalLight->setSpecular(opts.directionalSpecular *
