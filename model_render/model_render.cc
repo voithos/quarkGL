@@ -84,7 +84,7 @@ struct ModelRenderOptions {
   glm::vec3 emissionAttenuation = glm::vec3(0, 0, 1.0f);
 
   bool bloom = true;
-  float bloomMix = 0.01;
+  float bloomMix = 0.005;
   ToneMapping toneMapping = ToneMapping::ACES_APPROX;
   bool gammaCorrect = true;
   float gamma = 2.2f;
