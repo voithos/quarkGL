@@ -28,6 +28,7 @@ int Shader::safeGetUniformLocation(const char* name) {
   if (uniform == -1) {
     // TODO: Log a message; either uniform is invalid, or it got optimized away
     // by the shader.
+    // printf("unknown uniform: %s\n", name);
   }
   return uniform;
 }

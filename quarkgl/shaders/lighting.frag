@@ -127,7 +127,6 @@ vec3 qrk_extractSpecular(QrkMaterial material, vec2 texCoords) {
 
 /** Extracts roughness from the material. */
 float qrk_extractRoughness(QrkMaterial material, vec2 texCoords) {
-  // TODO: Handle combined roughness/metallic maps.
   float roughness = 0.5;
   if (material.roughnessCount > 0) {
     if (material.roughnessIsPacked[0]) {
@@ -144,7 +143,6 @@ float qrk_extractRoughness(QrkMaterial material, vec2 texCoords) {
 
 /** Extracts metallic from the material. */
 float qrk_extractMetallic(QrkMaterial material, vec2 texCoords) {
-  // TODO: Handle combined roughness/metallic maps.
   float metallic = 0.0;
   if (material.metallicCount > 0) {
     if (material.metallicIsPacked[0]) {
