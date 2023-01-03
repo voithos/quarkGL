@@ -9,7 +9,7 @@
   - [x] Switch to deferred?
   - [x] Display deferred render buffers
   - [x] Add PBR
-  - [ ] Add bloom
+  - [x] Add bloom
   - [x] Emission strength
   - [x] Tone mapping options
   - [x] Gamma correct

@@ -32,9 +32,9 @@ void main() {
   vs_out.fragNormal_viewSpace = modelViewInverseTranspose * vertexNormal;
 
   // Build a tangent space transform matrix.
-  vec3 normal_viewSpace = normalize(modelViewInverseTranspose * vertexNormal);
-  // TODO: Should this not use inverse-transpose?
-  vec3 tangent_viewSpace = normalize(modelViewInverseTranspose * vertexTangent);
+  vec3 normal_viewSpace = normalize(vs_out.fragNormal_viewSpace);
+  vec3 tangent_viewSpace =
+      normalize(vec3(view * model * vec4(vertexTangent, 0.0)));
   vs_out.fragTBN_viewSpace =
       qrk_calculateTBN(normal_viewSpace, tangent_viewSpace);
 }

@@ -71,7 +71,6 @@ void DirectionalLight::updateUniforms(Shader& shader) {
 }
 
 void DirectionalLight::applyViewTransform(const glm::mat4& view) {
-  // TODO: This should probably be inverse+transpose of the view.
   viewDirection_ = glm::vec3(view * glm::vec4(direction_, 0.0f));
   hasViewBeenApplied_ = true;
 }
@@ -145,7 +144,6 @@ void SpotLight::updateUniforms(Shader& shader) {
 
 void SpotLight::applyViewTransform(const glm::mat4& view) {
   viewPosition_ = glm::vec3(view * glm::vec4(position_, 1.0f));
-  // TODO: This should probably be inverse+transpose of the view.
   viewDirection_ = glm::vec3(view * glm::vec4(direction_, 0.0f));
   hasViewBeenApplied_ = true;
 }
