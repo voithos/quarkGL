@@ -51,6 +51,7 @@ vec3 qrk_shadeCookTorranceGGXDeferred(vec3 albedo, float roughness,
   // Compute reflectance at normal incidence. For dielectrics (like plastic),
   // we use a typical F0 of 0.04, whereas metals tend to be more reflective
   // and also chromatic (they tint the reflection with their albedo).
+  // TODO: This can be extracted as a material parameter for more control.
   vec3 F0 = vec3(0.04);
   F0 = mix(F0, albedo, metallic);
 

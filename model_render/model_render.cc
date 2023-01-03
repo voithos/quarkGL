@@ -79,6 +79,9 @@ struct ModelRenderOptions {
   float shadowBiasMax = 0.001;
 
   glm::vec3 ambientColor = glm::vec3(0.1f);
+  bool ssao = true;
+  float ssaoRadius = 0.5f;
+  float ssaoBias = 0.025f;
   float shininess = 32.0f;
   float emissionIntensity = 5.0f;
   glm::vec3 emissionAttenuation = glm::vec3(0, 0, 1.0f);
@@ -242,6 +245,13 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
                       ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
     ImGui::SameLine();
     helpMarker("The color of the fixed ambient component.");
+
+    ImGui::Checkbox("SSAO", &opts.ssao);
+    ImGui::BeginDisabled(!opts.ssao);
+    floatSlider("SSAO radius", &opts.ssaoRadius, 0.01, 5.0, "%.04f",
+                Scale::LOG);
+    floatSlider("SSAO bias", &opts.ssaoBias, 0.0001, 1.0, "%.04f", Scale::LOG);
+    ImGui::EndDisabled();
 
     ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG);
     floatSlider("Shininess", &opts.shininess, 1.0f, 1000.0f, nullptr,
@@ -427,6 +437,23 @@ int main(int argc, char** argv) {
   shadowShader.addUniformSource(shadowCamera);
   lightingPassShader.addUniformSource(shadowCamera);
 
+  // Setup SSAO.
+  qrk::SsaoShader ssaoShader;
+  ssaoShader.addUniformSource(camera);
+
+  auto ssaoKernel = std::make_shared<qrk::SsaoKernel>();
+  ssaoShader.addUniformSource(ssaoKernel);
+  auto ssaoBuffer = std::make_shared<qrk::SsaoBuffer>(win.getSize());
+
+  auto ssaoTextureRegistry = std::make_shared<qrk::TextureRegistry>();
+  ssaoTextureRegistry->addTextureSource(gBuffer);
+  ssaoTextureRegistry->addTextureSource(ssaoKernel);
+  ssaoShader.addUniformSource(ssaoTextureRegistry);
+
+  qrk::SsaoBlurShader ssaoBlurShader;
+  auto ssaoBlurredBuffer = std::make_shared<qrk::SsaoBuffer>(win.getSize());
+  lightingTextureRegistry->addTextureSource(ssaoBlurredBuffer);
+
   // Setup post processing.
   auto bloomPass = std::make_shared<qrk::BloomPass>(win.getSize());
 
@@ -590,6 +617,32 @@ int main(int argc, char** argv) {
       return;
     }
 
+    // Step 1.2: optional SSAO pass.
+    // TODO: Extract into an "SSAO pass".
+    if (opts.ssao) {
+      ssaoKernel->setRadius(opts.ssaoRadius);
+      ssaoKernel->setBias(opts.ssaoBias);
+
+      ssaoBuffer->activate();
+      ssaoBuffer->clear();
+
+      ssaoShader.updateUniforms();
+
+      screenQuad.unsetTexture();
+      screenQuad.draw(ssaoShader, ssaoTextureRegistry.get());
+
+      ssaoBuffer->deactivate();
+
+      // Step 1.2.1: SSAO blur.
+      ssaoBlurredBuffer->activate();
+      ssaoBlurredBuffer->clear();
+
+      ssaoBlurShader.configureWith(*ssaoKernel, *ssaoBuffer);
+      screenQuad.draw(ssaoBlurShader);
+
+      ssaoBlurredBuffer->deactivate();
+    }
+
     // Step 2: lighting pass. Draw to the main framebuffer.
     mainFb.activate();
     mainFb.clear();
@@ -599,6 +652,7 @@ int main(int argc, char** argv) {
     lightingPassShader.setBool("shadowMapping", opts.shadowMapping);
     lightingPassShader.setFloat("shadowBiasMin", opts.shadowBiasMin);
     lightingPassShader.setFloat("shadowBiasMax", opts.shadowBiasMax);
+    lightingPassShader.setBool("ssao", opts.ssao);
     lightingPassShader.setInt("lightingModel",
                               static_cast<int>(opts.lightingModel));
     // TODO: Pull this out into a material class.

@@ -17,6 +17,8 @@ uniform sampler2D gAlbedoMetallic;
 uniform sampler2D gEmission;
 
 uniform bool shadowMapping;
+uniform bool ssao;
+uniform sampler2D qrk_ssao;
 
 uniform vec3 ambient;
 uniform float shininess;
@@ -59,8 +61,12 @@ void main() {
   }
 
   // Ambient occlusion.
-  // TODO: Add SSAO as well.
   float ao = fragAO;
+  if (ssao) {
+    // Add SSAO and combined with texture based ambient occlusion from the
+    // G-buffer.
+    ao *= texture(qrk_ssao, texCoords).r;
+  }
 
   // Shade with normal lights.
   if (lightingModel == 0) {

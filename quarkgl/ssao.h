@@ -44,6 +44,8 @@ class SsaoKernel : public UniformSource, public TextureSource {
                            Shader& shader) override;
 
  private:
+  // TODO: Expose this after texture lifecycle is handled (currently
+  // regenerating would cause orphaned textures).
   void regenerate(int kernelSize, int noiseTextureSideLength);
 
   float radius_;

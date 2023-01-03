@@ -16,7 +16,8 @@
   - [x] Add shadow mapping
   - [x] Add shadow map params
   - [x] Add shadow map vis
-  - [ ] Add SSAO
+  - [x] Add SSAO
+  - [ ] Decide what to do with point lights?
 - [ ] P0: Update README / documentation
 - [ ] P0: Implement IBL (image based lighting)
 - [ ] P0: Add FXAA
