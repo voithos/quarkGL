@@ -83,6 +83,8 @@ struct ModelRenderOptions {
   float emissionIntensity = 5.0f;
   glm::vec3 emissionAttenuation = glm::vec3(0, 0, 1.0f);
 
+  bool bloom = true;
+  float bloomMix = 0.01;
   ToneMapping toneMapping = ToneMapping::ACES_APPROX;
   bool gammaCorrect = true;
   float gamma = 2.2f;
@@ -146,7 +148,7 @@ struct UIContext {
 
 // Called during game loop.
 void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
-  ImGui::ShowDemoWindow();
+  // ImGui::ShowDemoWindow();
 
   ImGui::Begin("Model Render");
 
@@ -248,7 +250,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     helpMarker("Shininess of specular highlights. Only applies to Phong.");
     ImGui::EndDisabled();
 
-    floatSlider("Emission intensity", &opts.emissionIntensity, 0.1f, 50.0f,
+    floatSlider("Emission intensity", &opts.emissionIntensity, 0.1f, 1000.0f,
                 nullptr, Scale::LOG);
     ImGui::DragFloat3("Emission attenuation",
                       reinterpret_cast<float*>(&opts.emissionAttenuation),
@@ -259,6 +261,11 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
 
     ImGui::Separator();
     ImGui::Text("Post-processing");
+
+    ImGui::Checkbox("Bloom", &opts.bloom);
+    ImGui::BeginDisabled(!opts.bloom);
+    floatSlider("Bloom mix", &opts.bloomMix, 0.001f, 1.0f, nullptr, Scale::LOG);
+    ImGui::EndDisabled();
 
     ImGui::Combo("Tone mapping", reinterpret_cast<int*>(&opts.toneMapping),
                  "None\0Reinhard\0Reinhard luminance\0ACES (approx)\0\0");
@@ -385,13 +392,19 @@ int main(int argc, char** argv) {
       glm::scale(glm::translate(glm::mat4(1.0f), pointLight->getPosition()),
                  glm::vec3(0.2f)));
 
+  // Set up the main framebuffer that will store intermediate states.
+  qrk::Framebuffer mainFb(win.getSize());
+  auto mainColorAttachment =
+      mainFb.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
+  mainFb.attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
+
   // Build the G-Buffer and prepare deferred shading.
   qrk::DeferredGeometryPassShader geometryPassShader;
   geometryPassShader.addUniformSource(camera);
 
   auto gBuffer = std::make_shared<qrk::GBuffer>(win.getSize());
-  auto textureRegistry = std::make_shared<qrk::TextureRegistry>();
-  textureRegistry->addTextureSource(gBuffer);
+  auto lightingTextureRegistry = std::make_shared<qrk::TextureRegistry>();
+  lightingTextureRegistry->addTextureSource(gBuffer);
 
   qrk::ScreenQuadMesh screenQuad;
   qrk::ScreenShader gBufferVisShader(
@@ -400,20 +413,28 @@ int main(int argc, char** argv) {
   qrk::ScreenShader lightingPassShader(
       qrk::ShaderPath("model_render/shaders/lighting_pass.frag"));
   lightingPassShader.addUniformSource(camera);
-  lightingPassShader.addUniformSource(textureRegistry);
+  lightingPassShader.addUniformSource(lightingTextureRegistry);
   lightingPassShader.addUniformSource(lightRegistry);
 
   // Setup shadow mapping.
   constexpr int SHADOW_MAP_SIZE = 2048;
   auto shadowMap =
       std::make_shared<qrk::ShadowMap>(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
-  textureRegistry->addTextureSource(shadowMap);
-  lightingPassShader.addUniformSource(textureRegistry);
+  lightingTextureRegistry->addTextureSource(shadowMap);
 
   qrk::ShadowMapShader shadowShader;
   auto shadowCamera = std::make_shared<qrk::ShadowCamera>(directionalLight);
   shadowShader.addUniformSource(shadowCamera);
   lightingPassShader.addUniformSource(shadowCamera);
+
+  // Setup post processing.
+  auto bloomPass = std::make_shared<qrk::BloomPass>(win.getSize());
+
+  auto postprocessTextureRegistry = std::make_shared<qrk::TextureRegistry>();
+  postprocessTextureRegistry->addTextureSource(bloomPass);
+  qrk::ScreenShader postprocessShader(
+      qrk::ShaderPath("model_render/shaders/post_processing.frag"));
+  postprocessShader.addUniformSource(postprocessTextureRegistry);
 
   // Setup skybox.
   qrk::SkyboxShader skyboxShader;
@@ -569,7 +590,10 @@ int main(int argc, char** argv) {
       return;
     }
 
-    // Step 2: lighting pass.
+    // Step 2: lighting pass. Draw to the main framebuffer.
+    mainFb.activate();
+    mainFb.clear();
+
     // TODO: Set up environment mapping with the skybox.
     lightingPassShader.updateUniforms();
     lightingPassShader.setBool("shadowMapping", opts.shadowMapping);
@@ -577,10 +601,6 @@ int main(int argc, char** argv) {
     lightingPassShader.setFloat("shadowBiasMax", opts.shadowBiasMax);
     lightingPassShader.setInt("lightingModel",
                               static_cast<int>(opts.lightingModel));
-    lightingPassShader.setInt("toneMapping",
-                              static_cast<int>(opts.toneMapping));
-    lightingPassShader.setBool("gammaCorrect", opts.gammaCorrect);
-    lightingPassShader.setFloat("gamma", static_cast<int>(opts.gamma));
     // TODO: Pull this out into a material class.
     lightingPassShader.setVec3("ambient", opts.ambientColor);
     lightingPassShader.setFloat("shininess", opts.shininess);
@@ -593,12 +613,16 @@ int main(int argc, char** argv) {
                                 opts.emissionAttenuation.z);
 
     screenQuad.unsetTexture();
-    screenQuad.draw(lightingPassShader, textureRegistry.get());
+    screenQuad.draw(lightingPassShader, lightingTextureRegistry.get());
+
+    mainFb.deactivate();
 
     // Step 3: forward render anything else on top.
 
     // Before we do so, we have to blit the depth buffer.
-    gBuffer->blitToDefault(GL_DEPTH_BUFFER_BIT);
+    gBuffer->blit(mainFb, GL_DEPTH_BUFFER_BIT);
+
+    mainFb.activate();
 
     if (opts.drawNormals) {
       // Draw the normals.
@@ -619,6 +643,25 @@ int main(int argc, char** argv) {
     // Draw skybox.
     skyboxShader.updateUniforms();
     skybox.draw(skyboxShader);
+
+    mainFb.deactivate();
+
+    // Step 4: post processing.
+    if (opts.bloom) {
+      bloomPass->multipassDraw(/*sourceFb=*/mainFb);
+    }
+
+    win.setViewport();
+
+    // Draw to the screen using the post process shader.
+    postprocessShader.updateUniforms();
+    postprocessShader.setBool("bloom", opts.bloom);
+    postprocessShader.setFloat("bloomMix", opts.bloomMix);
+    postprocessShader.setInt("toneMapping", static_cast<int>(opts.toneMapping));
+    postprocessShader.setBool("gammaCorrect", opts.gammaCorrect);
+    postprocessShader.setFloat("gamma", static_cast<int>(opts.gamma));
+    screenQuad.setTexture(mainColorAttachment);
+    screenQuad.draw(postprocessShader, postprocessTextureRegistry.get());
 
     // == End render path ==
 

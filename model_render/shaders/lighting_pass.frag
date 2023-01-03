@@ -24,9 +24,6 @@ uniform float emissionIntensity;
 uniform QrkAttenuation emissionAttenuation;
 
 uniform int lightingModel;
-uniform int toneMapping;
-uniform bool gammaCorrect;
-uniform float gamma;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -85,22 +82,6 @@ void main() {
   color += emissionIntensity * qrk_shadeEmissionDeferred(fragEmission,
                                                          fragPos_viewSpace,
                                                          emissionAttenuation);
-
-  // Perform tone mapping.
-  if (toneMapping == 1) {
-    color = qrk_toneMapReinhard(color);
-  } else if (toneMapping == 2) {
-    color = qrk_toneMapReinhardLuminance(color);
-  } else if (toneMapping == 3) {
-    color = qrk_toneMapAcesApprox(color);
-  } else {
-    // No tone mapping.
-  }
-
-  // Perform gamma correction.
-  if (gammaCorrect) {
-    color = qrk_gammaCorrect(color, gamma);
-  }
 
   fragColor = vec4(color, 1.0);
 }
