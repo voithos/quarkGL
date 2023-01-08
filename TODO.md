@@ -3,7 +3,6 @@
 ## Features
 - [ ] P0: Update README / documentation
 - [ ] P0: Implement IBL (image based lighting)
-- [ ] P0: Add FXAA
 - [ ] P1: Replace model via imgui menu
 - [ ] P1: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 - [ ] P1: Implement tessellation
@@ -109,3 +108,4 @@
   - [x] Add shadow map params
   - [x] Add shadow map vis
   - [x] Add SSAO
+- [x] P0: Add FXAA

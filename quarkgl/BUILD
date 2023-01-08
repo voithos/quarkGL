@@ -5,6 +5,7 @@ cc_library(
     hdrs = ["quarkgl.h"],
     include_prefix = "qrk",
     deps = [
+        ":aa",
         ":bloom",
         ":blur",
         ":camera",
@@ -43,6 +44,18 @@ cc_library(
     deps = [
         "//third_party/glad",
         "@glfw",
+    ],
+)
+
+cc_library(
+    name = "aa",
+    srcs = ["aa.cc"],
+    hdrs = ["aa.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":core",
+        ":shader",
+        ":shader_primitives",
     ],
 )
 

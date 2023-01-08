@@ -95,6 +95,8 @@ struct ModelRenderOptions {
   bool gammaCorrect = true;
   float gamma = 2.2f;
 
+  bool fxaa = true;
+
   // Camera.
   CameraControlType cameraControlType = CameraControlType::ORBIT;
   float speed = 0;
@@ -300,6 +302,8 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     ImGui::BeginDisabled(!opts.gammaCorrect);
     floatSlider("Gamma", &opts.gamma, 0.01f, 8.0f, nullptr, Scale::LOG);
     ImGui::EndDisabled();
+
+    ImGui::Checkbox("FXAA", &opts.fxaa);
   }
 
   if (ImGui::CollapsingHeader("Camera")) {
@@ -425,6 +429,10 @@ int main(int argc, char** argv) {
       mainFb.attachTexture(qrk::BufferType::COLOR_HDR_ALPHA);
   mainFb.attachRenderbuffer(qrk::BufferType::DEPTH_AND_STENCIL);
 
+  qrk::Framebuffer finalFb(win.getSize());
+  auto finalColorAttachment =
+      finalFb.attachTexture(qrk::BufferType::COLOR_ALPHA);
+
   // Build the G-Buffer and prepare deferred shading.
   qrk::DeferredGeometryPassShader geometryPassShader;
   geometryPassShader.addUniformSource(camera);
@@ -479,6 +487,8 @@ int main(int argc, char** argv) {
   qrk::ScreenShader postprocessShader(
       qrk::ShaderPath("model_render/shaders/post_processing.frag"));
   postprocessShader.addUniformSource(postprocessTextureRegistry);
+
+  qrk::FXAAShader fxaaShader;
 
   // Setup skybox.
   qrk::SkyboxShader skyboxShader;
@@ -724,9 +734,10 @@ int main(int argc, char** argv) {
       bloomPass->multipassDraw(/*sourceFb=*/mainFb);
     }
 
-    win.setViewport();
+    finalFb.activate();
+    finalFb.clear();
 
-    // Draw to the screen using the post process shader.
+    // Draw to the final FB using the post process shader.
     postprocessShader.updateUniforms();
     postprocessShader.setBool("bloom", opts.bloom);
     postprocessShader.setFloat("bloomMix", opts.bloomMix);
@@ -735,6 +746,18 @@ int main(int argc, char** argv) {
     postprocessShader.setFloat("gamma", static_cast<int>(opts.gamma));
     screenQuad.setTexture(mainColorAttachment);
     screenQuad.draw(postprocessShader, postprocessTextureRegistry.get());
+
+    finalFb.deactivate();
+
+    win.setViewport();
+
+    // Finally draw to the screen via the FXAA shader.
+    if (opts.fxaa) {
+      screenQuad.setTexture(finalColorAttachment);
+      screenQuad.draw(fxaaShader);
+    } else {
+      finalFb.blitToDefault(GL_COLOR_BUFFER_BIT);
+    }
 
     // == End render path ==
 
