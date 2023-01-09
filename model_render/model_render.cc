@@ -57,6 +57,7 @@ enum class ToneMapping {
   REINHARD,
   REINHARD_LUMINANCE,
   ACES_APPROX,
+  AMD,
 };
 
 // Options for the model render UI. The defaults here are used at startup.
@@ -297,7 +298,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     ImGui::EndDisabled();
 
     ImGui::Combo("Tone mapping", reinterpret_cast<int*>(&opts.toneMapping),
-                 "None\0Reinhard\0Reinhard luminance\0ACES (approx)\0\0");
+                 "None\0Reinhard\0Reinhard luminance\0ACES (approx)\0AMD\0\0");
     ImGui::Checkbox("Gamma correct", &opts.gammaCorrect);
     ImGui::BeginDisabled(!opts.gammaCorrect);
     floatSlider("Gamma", &opts.gamma, 0.01f, 8.0f, nullptr, Scale::LOG);

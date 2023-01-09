@@ -29,6 +29,8 @@ void main() {
     color = qrk_toneMapReinhardLuminance(color);
   } else if (toneMapping == 3) {
     color = qrk_toneMapAcesApprox(color);
+  } else if (toneMapping == 4) {
+    color = qrk_toneMapAMD(color);
   } else {
     // No tone mapping.
   }
