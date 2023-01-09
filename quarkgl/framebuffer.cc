@@ -20,22 +20,45 @@ Framebuffer::Framebuffer(int width, int height, int samples)
   glGenFramebuffers(1, &fbo_);
 }
 
-Framebuffer::~Framebuffer() { glDeleteFramebuffers(1, &fbo_); }
+Framebuffer::~Framebuffer() {
+  glDeleteFramebuffers(1, &fbo_);
+  // TODO: Delete attachments.
+}
 
-void Framebuffer::activate(int mipLevel) {
+void Framebuffer::activate(int mipLevel, int cubemapFace) {
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
   // Activate the specified mip level (usually 0).
   for (Attachment& attachment : attachments_) {
     GLenum attachmentType = bufferTypeToGlAttachmentType(
         attachment.type, attachment.colorAttachmentIndex);
-    if (attachment.target == AttachmentTarget::TEXTURE) {
-      glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, GL_TEXTURE_2D,
-                             attachment.id, mipLevel);
-    } else if (mipLevel != 0) {
-      // Non-0 mips are only allowed for textures.
-      throw FramebufferException(
-          "ERROR::FRAMEBUFFER::MIP_ACTIVATED_FOR_NON_TEXTURE");
+
+    switch (attachment.target) {
+      case AttachmentTarget::TEXTURE: {
+        GLenum target = GL_TEXTURE_2D;
+        if (cubemapFace >= 0) {
+          if (cubemapFace >= 6) {
+            throw FramebufferException(
+                "ERROR::FRAMEBUFFER::CUBEMAP_FACE_OUT_OF_RANGE");
+          }
+          target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + cubemapFace;
+        }
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, target,
+                               attachment.id, mipLevel);
+      } break;
+      case AttachmentTarget::RENDERBUFFER:
+        // Perform some checks.
+        if (mipLevel != 0) {
+          // Non-0 mips are only allowed for textures.
+          throw FramebufferException(
+              "ERROR::FRAMEBUFFER::MIP_ACTIVATED_FOR_RENDERBUFFER");
+        }
+        if (cubemapFace >= 0) {
+          // Renderbuffers currently can't be cubemaps.
+          throw FramebufferException(
+              "ERROR::FRAMEBUFFER::CUBEMAP_FACE_GIVEN_FOR_RENDERBUFFER");
+        }
+        break;
     }
   }
 
@@ -61,7 +84,14 @@ Attachment Framebuffer::attachTexture(BufferType type,
   checkFlags(type);
   activate();
 
+  bool isCubemap = false;
   GLenum textureTarget = samples_ ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+  // Special case cubemaps.
+  if (type == BufferType::COLOR_CUBEMAP_HDR ||
+      type == BufferType::COLOR_CUBEMAP_HDR_ALPHA) {
+    textureTarget = GL_TEXTURE_CUBE_MAP;
+    isCubemap = true;
+  }
 
   // Generate texture based on given buffer type.
   // TODO: This does the same thing as the Texture class - should it use that
@@ -76,15 +106,15 @@ Attachment Framebuffer::attachTexture(BufferType type,
   if (params.generateMips == MipGeneration::ALWAYS) {
     numMips = calculateNumMips(width_, height_);
   }
-  if (samples_) {
-    glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples_,
-                              internalFormat, width_, height_,
+  if (samples_ && !isCubemap) {
+    glTexStorage2DMultisample(textureTarget, samples_, internalFormat, width_,
+                              height_,
                               /*fixedsamplelocations=*/GL_TRUE);
   } else {
-    glTexStorage2D(GL_TEXTURE_2D, numMips, internalFormat, width_, height_);
+    glTexStorage2D(textureTarget, numMips, internalFormat, width_, height_);
   }
 
-  Texture::applyParams(params);
+  Texture::applyParams(params, isCubemap);
 
   // Attach the texture to the framebuffer.
   int colorAttachmentIndex = numColorAttachments_;
@@ -104,7 +134,7 @@ Attachment Framebuffer::attachTexture(BufferType type,
   deactivate();
 
   return saveAttachment(texture, numMips, AttachmentTarget::TEXTURE, type,
-                        colorAttachmentIndex);
+                        colorAttachmentIndex, isCubemap);
 }
 
 Attachment Framebuffer::attachRenderbuffer(BufferType type) {
@@ -148,7 +178,7 @@ Attachment Framebuffer::attachRenderbuffer(BufferType type) {
   deactivate();
 
   return saveAttachment(rbo, /*numMips=*/1, AttachmentTarget::RENDERBUFFER,
-                        type, colorAttachmentIndex);
+                        type, colorAttachmentIndex, /*isCubemap=*/false);
 }
 
 Attachment Framebuffer::getTexture(BufferType type) {
@@ -178,14 +208,16 @@ void Framebuffer::blitToDefault(GLenum bits) {
 
 Attachment Framebuffer::saveAttachment(unsigned int id, int numMips,
                                        AttachmentTarget target, BufferType type,
-                                       int colorAttachmentIndex) {
+                                       int colorAttachmentIndex,
+                                       bool isCubemap) {
   Attachment attachment = {.id = id,
                            .width = width_,
                            .height = height_,
                            .numMips = numMips,
                            .target = target,
                            .type = type,
-                           .colorAttachmentIndex = colorAttachmentIndex};
+                           .colorAttachmentIndex = colorAttachmentIndex,
+                           .isCubemap = isCubemap};
   attachments_.push_back(attachment);
   return attachment;
 }
@@ -205,9 +237,11 @@ void Framebuffer::checkFlags(BufferType type) {
     case BufferType::COLOR:
     case BufferType::COLOR_HDR:
     case BufferType::COLOR_SNORM:
+    case BufferType::COLOR_CUBEMAP_HDR:
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
     case BufferType::COLOR_SNORM_ALPHA:
+    case BufferType::COLOR_CUBEMAP_HDR_ALPHA:
     case BufferType::GRAYSCALE:
       // Multiple color attachments OK.
       return;
@@ -240,9 +274,11 @@ void Framebuffer::updateFlags(BufferType type) {
     case BufferType::COLOR:
     case BufferType::COLOR_HDR:
     case BufferType::COLOR_SNORM:
+    case BufferType::COLOR_CUBEMAP_HDR:
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
     case BufferType::COLOR_SNORM_ALPHA:
+    case BufferType::COLOR_CUBEMAP_HDR_ALPHA:
     case BufferType::GRAYSCALE:
       hasColorAttachment_ = true;
       numColorAttachments_++;

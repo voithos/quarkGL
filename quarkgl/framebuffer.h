@@ -30,6 +30,8 @@ enum class BufferType {
   COLOR_ALPHA,
   COLOR_HDR_ALPHA,
   COLOR_SNORM_ALPHA,
+  COLOR_CUBEMAP_HDR,
+  COLOR_CUBEMAP_HDR_ALPHA,
   GRAYSCALE,
   DEPTH,
   STENCIL,
@@ -47,6 +49,7 @@ class Attachment {
   BufferType type;
   // Attachment index. Only applies for color buffers.
   int colorAttachmentIndex;
+  bool isCubemap;
 
   Texture asTexture();
 
@@ -62,6 +65,8 @@ inline const GLenum bufferTypeToGlAttachmentType(BufferType type,
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
     case BufferType::COLOR_SNORM_ALPHA:
+    case BufferType::COLOR_CUBEMAP_HDR:
+    case BufferType::COLOR_CUBEMAP_HDR_ALPHA:
     case BufferType::GRAYSCALE:
       return GL_COLOR_ATTACHMENT0 + attachmentIndex;
     case BufferType::DEPTH:
@@ -80,12 +85,14 @@ inline const GLenum bufferTypeToGlInternalFormat(BufferType type) {
     case BufferType::COLOR:
       return GL_RGB8;
     case BufferType::COLOR_HDR:
+    case BufferType::COLOR_CUBEMAP_HDR:
       return GL_RGB16F;
     case BufferType::COLOR_SNORM:
       return GL_RGB16_SNORM;
     case BufferType::COLOR_ALPHA:
       return GL_RGBA8;
     case BufferType::COLOR_HDR_ALPHA:
+    case BufferType::COLOR_CUBEMAP_HDR_ALPHA:
       return GL_RGBA16F;
     case BufferType::COLOR_SNORM_ALPHA:
       return GL_RGBA16_SNORM;
@@ -107,10 +114,12 @@ inline const GLenum bufferTypeToGlFormat(BufferType type) {
     case BufferType::COLOR:
     case BufferType::COLOR_HDR:
     case BufferType::COLOR_SNORM:
+    case BufferType::COLOR_CUBEMAP_HDR:
       return GL_RGB;
     case BufferType::COLOR_ALPHA:
     case BufferType::COLOR_HDR_ALPHA:
     case BufferType::COLOR_SNORM_ALPHA:
+    case BufferType::COLOR_CUBEMAP_HDR_ALPHA:
       return GL_RGBA;
     case BufferType::GRAYSCALE:
       return GL_RED;
@@ -134,6 +143,8 @@ inline const GLenum bufferTypeToGlDataType(BufferType type) {
     case BufferType::COLOR_HDR_ALPHA:
     case BufferType::COLOR_SNORM:
     case BufferType::COLOR_SNORM_ALPHA:
+    case BufferType::COLOR_CUBEMAP_HDR:
+    case BufferType::COLOR_CUBEMAP_HDR_ALPHA:
       return GL_FLOAT;
     case BufferType::GRAYSCALE:
       return GL_UNSIGNED_BYTE;
@@ -157,8 +168,8 @@ class Framebuffer {
   virtual ~Framebuffer();
 
   // Activates the current framebuffer. Optionally specify a mipmap level to
-  // draw to.
-  void activate(int mipLevel = 0);
+  // draw to, and a cubemap face (0 means GL_TEXTURE_CUBE_MAP_POSITIVE_X, etc).
+  void activate(int mipLevel = 0, int cubemapFace = -1);
   // Deactivates the current framebuffer (and activates the default screen
   // framebuffer).
   void deactivate();
@@ -213,7 +224,7 @@ class Framebuffer {
 
   Attachment saveAttachment(unsigned int id, int numMips,
                             AttachmentTarget target, BufferType type,
-                            int colorAttachmentIndex);
+                            int colorAttachmentIndex, bool isCubemap);
   Attachment getAttachment(AttachmentTarget target, BufferType type);
   void checkFlags(BufferType type);
   void updateFlags(BufferType type);
