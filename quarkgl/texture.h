@@ -78,16 +78,25 @@ class Texture {
   static Texture load(const char* path, bool isSRGB,
                       const TextureParams& params);
 
+  // Loads an HDR texture from the given path.
+  static Texture loadHdr(const char* path);
+  static Texture loadHdr(const char* path, const TextureParams& params);
+
   // Loads a cubemap from a set of 6 textures for the faces. Textures must be
   // passed in order starting with GL_TEXTURE_CUBE_MAP_POSITIVE_X and
   // incrementing from there; namely, in the order right, left, top, bottom,
   // front, and back.
   static Texture loadCubemap(std::vector<std::string> faces);
+  static Texture loadCubemap(std::vector<std::string> faces,
+                             const TextureParams& params);
 
   // Creates a custom texture of the given size and format.
   static Texture create(int width, int height, GLenum internalFormat);
   static Texture create(int width, int height, GLenum internalFormat,
                         const TextureParams& params);
+  static Texture createCubemap(int size, GLenum internalFormat);
+  static Texture createCubemap(int size, GLenum internalFormat,
+                               const TextureParams& params);
   // Creates a custom texture based on the given input data.
   // TODO: Change this to take an unsigned char ptr?
   static Texture createFromData(int width, int height, GLenum internalFormat,
@@ -131,9 +140,8 @@ class Texture {
   int numMips_;
   GLenum internalFormat_;
 
-  // Applies the given params to the currently-active texture. Assumes the
-  // texture is a 2d texture (e.g. not a cubemap).
-  static void applyParams(const TextureParams& params);
+  // Applies the given params to the currently-active texture.
+  static void applyParams(const TextureParams& params, bool isCubemap = false);
 
   friend class Framebuffer;
   friend class Attachment;
