@@ -22,7 +22,7 @@ void main() {
     }
   }
 
-  color = qrk_toneMapAcesApprox(color);
+  color = qrk_toneMapAMD(color);
   color = qrk_gammaCorrect(color);
   fragColor = vec4(color, 1.0);
 }
