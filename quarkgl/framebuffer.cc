@@ -118,10 +118,13 @@ Attachment Framebuffer::attachTexture(BufferType type,
 
   // Attach the texture to the framebuffer.
   int colorAttachmentIndex = numColorAttachments_;
+
   GLenum attachmentType =
       bufferTypeToGlAttachmentType(type, colorAttachmentIndex);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, textureTarget, texture,
-                         /* mipmap level */ 0);
+  glFramebufferTexture2D(
+      GL_FRAMEBUFFER, attachmentType,
+      isCubemap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : textureTarget, texture,
+      /* mipmap level */ 0);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     throw FramebufferException("ERROR::FRAMEBUFFER::TEXTURE::INCOMPLETE");

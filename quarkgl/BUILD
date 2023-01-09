@@ -10,6 +10,7 @@ cc_library(
         ":blur",
         ":camera",
         ":core",
+        ":cubemap",
         ":deferred",
         ":exceptions",
         ":framebuffer",
@@ -104,6 +105,22 @@ cc_library(
         "//third_party/glad",
         "//third_party/glm",
         "@glfw",
+    ],
+)
+
+cc_library(
+    name = "cubemap",
+    srcs = ["cubemap.cc"],
+    hdrs = ["cubemap.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":core",
+        ":exceptions",
+        ":framebuffer",
+        ":mesh_primitives",
+        ":shader",
+        ":shader_primitives",
+        ":texture_registry",
     ],
 )
 

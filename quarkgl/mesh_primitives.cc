@@ -1,3 +1,5 @@
+#include "mesh_primitives.h"
+
 #include <qrk/mesh_primitives.h>
 
 namespace qrk {
@@ -387,8 +389,11 @@ constexpr float skyboxVertices[] = {
 };
 // clang-format on
 
-SkyboxMesh::SkyboxMesh(std::vector<std::string> faces) {
-  TextureMap textureMap(Texture::loadCubemap(faces), TextureMapType::CUBEMAP);
+SkyboxMesh::SkyboxMesh(std::vector<std::string> faces)
+    : SkyboxMesh(Texture::loadCubemap(faces)) {}
+
+SkyboxMesh::SkyboxMesh(Texture texture) {
+  TextureMap textureMap(texture, TextureMapType::CUBEMAP);
   constexpr unsigned int skyboxVertexSizeBytes = 3 * sizeof(float);
   loadMeshData(skyboxVertices, sizeof(skyboxVertices) / skyboxVertexSizeBytes,
                skyboxVertexSizeBytes, /*indices=*/{}, {textureMap});

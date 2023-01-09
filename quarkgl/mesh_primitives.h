@@ -70,6 +70,7 @@ class SkyboxMesh : public PrimitiveMesh {
   // incrementing from there; namely, in the order right, left, top, bottom,
   // front, and back.
   explicit SkyboxMesh(std::vector<std::string> faces);
+  explicit SkyboxMesh(Texture texture);
 
  protected:
   void initializeVertexAttributes() override;

@@ -10,6 +10,7 @@
 #include <qrk/bloom.h>
 #include <qrk/blur.h>
 #include <qrk/camera.h>
+#include <qrk/cubemap.h>
 #include <qrk/deferred.h>
 #include <qrk/exceptions.h>
 #include <qrk/framebuffer.h>
