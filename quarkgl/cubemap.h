@@ -13,6 +13,23 @@ class CubemapException : public QuarkException {
   using QuarkException::QuarkException;
 };
 
+// A helper for rendering to a cubemap texture in a framebuffer. The passed-in
+// framebuffer must outlive the life of this helper.
+class CubemapRenderHelper {
+ public:
+  CubemapRenderHelper(Framebuffer* buffer) : buffer_(buffer) {}
+
+  // Draws with the given shader to each face of the cubemap. This results in 6
+  // different draw calls. Shader should be prepared (i.e. necessary textures
+  // should either be bound or be in the registry, uniforms should be set, etc).
+  void multipassDraw(Shader& shader,
+                     TextureRegistry* textureRegistry = nullptr);
+
+ private:
+  Framebuffer* buffer_;
+  CubeMesh cube_;
+};
+
 class EquirectCubemapShader : public Shader {
  public:
   EquirectCubemapShader();
@@ -35,7 +52,6 @@ class EquirectCubemapConverter : public TextureSource {
                            Shader& shader) override;
 
  private:
-  CubeMesh cube_;
   Framebuffer buffer_;
   Attachment cubemap_;
   EquirectCubemapShader equirectCubemapShader_;

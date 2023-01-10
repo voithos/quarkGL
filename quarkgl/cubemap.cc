@@ -4,25 +4,12 @@
 
 namespace qrk {
 
-EquirectCubemapShader::EquirectCubemapShader()
-    : Shader(ShaderPath("quarkgl/shaders/builtin/equirect_cubemap.vert"),
-             ShaderPath("quarkgl/shaders/builtin/equirect_cubemap.frag")) {}
-
-EquirectCubemapConverter::EquirectCubemapConverter(int width, int height)
-    : buffer_(width, height) {
-  cubemap_ = buffer_.attachTexture(BufferType::COLOR_CUBEMAP_HDR);
-}
-
-void EquirectCubemapConverter::multipassDraw(Texture source) {
-  // Set up the source.
-  source.bindToUnit(0);
-  equirectCubemapShader_.setInt("qrk_equirectMap", 0);
-
+void CubemapRenderHelper::multipassDraw(Shader& shader,
+                                        TextureRegistry* textureRegistry) {
   // Set projection to a 90-degree, 1:1 aspect ratio in order to render a single
   // face of the cube.
-  equirectCubemapShader_.setMat4(
-      "projection",
-      glm::perspective(glm::radians(90.0f), /*aspect=*/1.0f, 0.1f, 10.0f));
+  shader.setMat4("projection", glm::perspective(glm::radians(90.0f),
+                                                /*aspect=*/1.0f, 0.1f, 10.0f));
 
   // TODO: Why are the up vectors negative?
   glm::mat4 faceViews[] = {
@@ -40,14 +27,32 @@ void EquirectCubemapConverter::multipassDraw(Texture source) {
                   glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))};
 
   for (int cubemapFace = 0; cubemapFace < 6; ++cubemapFace) {
-    buffer_.activate(/*miplevel=*/0, cubemapFace);
-    buffer_.clear();
+    buffer_->activate(/*miplevel=*/0, cubemapFace);
+    buffer_->clear();
 
-    equirectCubemapShader_.setMat4("view", faceViews[cubemapFace]);
-    cube_.draw(equirectCubemapShader_);
+    shader.setMat4("view", faceViews[cubemapFace]);
+    cube_.draw(shader, textureRegistry);
   }
 
-  buffer_.deactivate();
+  buffer_->deactivate();
+}
+
+EquirectCubemapShader::EquirectCubemapShader()
+    : Shader(ShaderPath("quarkgl/shaders/builtin/equirect_cubemap.vert"),
+             ShaderPath("quarkgl/shaders/builtin/equirect_cubemap.frag")) {}
+
+EquirectCubemapConverter::EquirectCubemapConverter(int width, int height)
+    : buffer_(width, height) {
+  cubemap_ = buffer_.attachTexture(BufferType::COLOR_CUBEMAP_HDR);
+}
+
+void EquirectCubemapConverter::multipassDraw(Texture source) {
+  // Set up the source.
+  source.bindToUnit(0);
+  equirectCubemapShader_.setInt("qrk_equirectMap", 0);
+
+  CubemapRenderHelper renderHelper(&buffer_);
+  renderHelper.multipassDraw(equirectCubemapShader_);
 }
 
 unsigned int EquirectCubemapConverter::bindTexture(unsigned int nextTextureUnit,
