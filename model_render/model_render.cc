@@ -520,14 +520,20 @@ int main(int argc, char** argv) {
   constexpr int CUBEMAP_SIZE = 1024;
   qrk::EquirectCubemapConverter equirectCubemapConverter(CUBEMAP_SIZE,
                                                          CUBEMAP_SIZE);
-  equirectCubemapConverter.multipassDraw(ibl);
+  {
+    qrk::DebugGroup debugGroup("HDR equirect to cubemap");
+    equirectCubemapConverter.multipassDraw(ibl);
+  }
   auto cubemap = equirectCubemapConverter.getCubemap();
 
   // Irradiance map averages radiance uniformly so it doesn't have a lot of high
   // frequency details and can thus be small.
   auto irradianceCalculator =
       std::make_shared<qrk::CubemapIrradianceCalculator>(32, 32);
-  irradianceCalculator->multipassDraw(cubemap);
+  {
+    qrk::DebugGroup debugGroup("Irradiance calculation");
+    irradianceCalculator->multipassDraw(cubemap);
+  }
   auto irradianceMap = irradianceCalculator->getIrradianceMap();
   lightingTextureRegistry->addTextureSource(irradianceCalculator);
 
@@ -608,6 +614,7 @@ int main(int argc, char** argv) {
     // == Main render path ==
     // Step 0: optional shadow pass.
     if (opts.shadowMapping) {
+      qrk::DebugGroup debugGroup("Directional shadow map");
       shadowCamera->setCuboidExtents(opts.shadowCameraCuboidExtents);
       shadowCamera->setNearPlane(opts.shadowCameraNear);
       shadowCamera->setFarPlane(opts.shadowCameraFar);
@@ -621,53 +628,64 @@ int main(int argc, char** argv) {
     }
 
     // Step 1: geometry pass. Build the G-Buffer.
-    gBuffer->activate();
-    gBuffer->clear();
+    {
+      qrk::DebugGroup debugGroup("Geometry pass");
+      gBuffer->activate();
+      gBuffer->clear();
 
-    geometryPassShader.updateUniforms();
+      geometryPassShader.updateUniforms();
 
-    // Draw model.
-    if (opts.wireframe) {
-      win.enableWireframe();
+      // Draw model.
+      if (opts.wireframe) {
+        win.enableWireframe();
+      }
+      model->draw(geometryPassShader);
+      if (opts.wireframe) {
+        win.disableWireframe();
+      }
+
+      gBuffer->deactivate();
     }
-    model->draw(geometryPassShader);
-    if (opts.wireframe) {
-      win.disableWireframe();
-    }
-
-    gBuffer->deactivate();
 
     if (opts.gBufferVis != GBufferVis::DISABLED) {
-      switch (opts.gBufferVis) {
-        case GBufferVis::POSITIONS:
-        case GBufferVis::AO:
-          screenQuad.setTexture(gBuffer->getPositionAOTexture());
-          break;
-        case GBufferVis::NORMALS:
-        case GBufferVis::ROUGHNESS:
-          screenQuad.setTexture(gBuffer->getNormalRoughnessTexture());
-          break;
-        case GBufferVis::ALBEDO:
-        case GBufferVis::METALLIC:
-          screenQuad.setTexture(gBuffer->getAlbedoMetallicTexture());
-          break;
-        case GBufferVis::EMISSION:
-          screenQuad.setTexture(gBuffer->getEmissionTexture());
-          break;
-        case GBufferVis::DISABLED:
-          break;
-      };
-      gBufferVisShader.setInt("gBufferVis", static_cast<int>(opts.gBufferVis));
-      screenQuad.draw(gBufferVisShader);
+      {
+        qrk::DebugGroup debugGroup("G-Buffer vis");
+        switch (opts.gBufferVis) {
+          case GBufferVis::POSITIONS:
+          case GBufferVis::AO:
+            screenQuad.setTexture(gBuffer->getPositionAOTexture());
+            break;
+          case GBufferVis::NORMALS:
+          case GBufferVis::ROUGHNESS:
+            screenQuad.setTexture(gBuffer->getNormalRoughnessTexture());
+            break;
+          case GBufferVis::ALBEDO:
+          case GBufferVis::METALLIC:
+            screenQuad.setTexture(gBuffer->getAlbedoMetallicTexture());
+            break;
+          case GBufferVis::EMISSION:
+            screenQuad.setTexture(gBuffer->getEmissionTexture());
+            break;
+          case GBufferVis::DISABLED:
+            break;
+        };
+        gBufferVisShader.setInt("gBufferVis",
+                                static_cast<int>(opts.gBufferVis));
+        screenQuad.draw(gBufferVisShader);
+      }
 
       // TODO: Refactor avoid needing to copy this.
-      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+      {
+        qrk::DebugGroup debugGroup("Imgui pass");
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+      }
       return;
     }
 
     // Step 1.2: optional SSAO pass.
     // TODO: Extract into an "SSAO pass".
     if (opts.ssao) {
+      qrk::DebugGroup debugGroup("SSAO pass");
       ssaoKernel->setRadius(opts.ssaoRadius);
       ssaoKernel->setBias(opts.ssaoBias);
 
@@ -692,87 +710,99 @@ int main(int argc, char** argv) {
     }
 
     // Step 2: lighting pass. Draw to the main framebuffer.
-    mainFb.activate();
-    mainFb.clear();
+    {
+      qrk::DebugGroup debugGroup("Deferred lighting pass");
+      mainFb.activate();
+      mainFb.clear();
 
-    // TODO: Set up environment mapping with the skybox.
-    lightingPassShader.updateUniforms();
-    lightingPassShader.setBool("shadowMapping", opts.shadowMapping);
-    lightingPassShader.setFloat("shadowBiasMin", opts.shadowBiasMin);
-    lightingPassShader.setFloat("shadowBiasMax", opts.shadowBiasMax);
-    lightingPassShader.setBool("useIrradianceMap", opts.useIrradianceMap);
-    lightingPassShader.setBool("ssao", opts.ssao);
-    lightingPassShader.setInt("lightingModel",
-                              static_cast<int>(opts.lightingModel));
-    // TODO: Pull this out into a material class.
-    lightingPassShader.setVec3("ambient", opts.ambientColor);
-    lightingPassShader.setFloat("shininess", opts.shininess);
-    lightingPassShader.setFloat("emissionIntensity", opts.emissionIntensity);
-    lightingPassShader.setFloat("emissionAttenuation.constant",
-                                opts.emissionAttenuation.x);
-    lightingPassShader.setFloat("emissionAttenuation.linear",
-                                opts.emissionAttenuation.y);
-    lightingPassShader.setFloat("emissionAttenuation.quadratic",
-                                opts.emissionAttenuation.z);
+      // TODO: Set up environment mapping with the skybox.
+      lightingPassShader.updateUniforms();
+      lightingPassShader.setBool("shadowMapping", opts.shadowMapping);
+      lightingPassShader.setFloat("shadowBiasMin", opts.shadowBiasMin);
+      lightingPassShader.setFloat("shadowBiasMax", opts.shadowBiasMax);
+      lightingPassShader.setBool("useIrradianceMap", opts.useIrradianceMap);
+      lightingPassShader.setBool("ssao", opts.ssao);
+      lightingPassShader.setInt("lightingModel",
+                                static_cast<int>(opts.lightingModel));
+      // TODO: Pull this out into a material class.
+      lightingPassShader.setVec3("ambient", opts.ambientColor);
+      lightingPassShader.setFloat("shininess", opts.shininess);
+      lightingPassShader.setFloat("emissionIntensity", opts.emissionIntensity);
+      lightingPassShader.setFloat("emissionAttenuation.constant",
+                                  opts.emissionAttenuation.x);
+      lightingPassShader.setFloat("emissionAttenuation.linear",
+                                  opts.emissionAttenuation.y);
+      lightingPassShader.setFloat("emissionAttenuation.quadratic",
+                                  opts.emissionAttenuation.z);
 
-    screenQuad.unsetTexture();
-    screenQuad.draw(lightingPassShader, lightingTextureRegistry.get());
+      screenQuad.unsetTexture();
+      screenQuad.draw(lightingPassShader, lightingTextureRegistry.get());
 
-    mainFb.deactivate();
+      mainFb.deactivate();
+    }
 
     // Step 3: forward render anything else on top.
+    {
+      qrk::DebugGroup debugGroup("Forward pass");
 
-    // Before we do so, we have to blit the depth buffer.
-    gBuffer->blit(mainFb, GL_DEPTH_BUFFER_BIT);
+      // Before we do so, we have to blit the depth buffer.
+      gBuffer->blit(mainFb, GL_DEPTH_BUFFER_BIT);
 
-    mainFb.activate();
+      mainFb.activate();
 
-    if (opts.drawNormals) {
-      // Draw the normals.
-      normalShader.updateUniforms();
-      model->draw(normalShader);
+      if (opts.drawNormals) {
+        // Draw the normals.
+        normalShader.updateUniforms();
+        model->draw(normalShader);
+      }
+
+      // Draw light source.
+      lampShader.updateUniforms();
+      if (opts.wireframe) {
+        win.enableWireframe();
+      }
+      lightSphere.draw(lampShader);
+      if (opts.wireframe) {
+        win.disableWireframe();
+      }
+
+      // Draw skybox.
+      skyboxShader.updateUniforms();
+      skybox.draw(skyboxShader);
+
+      mainFb.deactivate();
     }
-
-    // Draw light source.
-    lampShader.updateUniforms();
-    if (opts.wireframe) {
-      win.enableWireframe();
-    }
-    lightSphere.draw(lampShader);
-    if (opts.wireframe) {
-      win.disableWireframe();
-    }
-
-    // Draw skybox.
-    skyboxShader.updateUniforms();
-    skybox.draw(skyboxShader);
-
-    mainFb.deactivate();
 
     // Step 4: post processing.
     if (opts.bloom) {
+      qrk::DebugGroup debugGroup("Bloom pass");
       bloomPass->multipassDraw(/*sourceFb=*/mainFb);
     }
 
-    finalFb.activate();
-    finalFb.clear();
+    {
+      qrk::DebugGroup debugGroup("Tonemap & gamma");
+      finalFb.activate();
+      finalFb.clear();
 
-    // Draw to the final FB using the post process shader.
-    postprocessShader.updateUniforms();
-    postprocessShader.setBool("bloom", opts.bloom);
-    postprocessShader.setFloat("bloomMix", opts.bloomMix);
-    postprocessShader.setInt("toneMapping", static_cast<int>(opts.toneMapping));
-    postprocessShader.setBool("gammaCorrect", opts.gammaCorrect);
-    postprocessShader.setFloat("gamma", static_cast<int>(opts.gamma));
-    screenQuad.setTexture(mainColorAttachment);
-    screenQuad.draw(postprocessShader, postprocessTextureRegistry.get());
+      // Draw to the final FB using the post process shader.
+      postprocessShader.updateUniforms();
+      postprocessShader.setBool("bloom", opts.bloom);
+      postprocessShader.setFloat("bloomMix", opts.bloomMix);
+      postprocessShader.setInt("toneMapping",
+                               static_cast<int>(opts.toneMapping));
+      postprocessShader.setBool("gammaCorrect", opts.gammaCorrect);
+      postprocessShader.setFloat("gamma", static_cast<int>(opts.gamma));
+      screenQuad.setTexture(mainColorAttachment);
+      screenQuad.draw(postprocessShader, postprocessTextureRegistry.get());
 
-    finalFb.deactivate();
+      finalFb.deactivate();
+    }
 
     win.setViewport();
 
     // Finally draw to the screen via the FXAA shader.
     if (opts.fxaa) {
+      qrk::DebugGroup debugGroup("FXAA");
       screenQuad.setTexture(finalColorAttachment);
       screenQuad.draw(fxaaShader);
     } else {
@@ -782,7 +812,10 @@ int main(int argc, char** argv) {
     // == End render path ==
 
     // Finally, draw ImGui data.
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    {
+      qrk::DebugGroup debugGroup("Imgui pass");
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
   });
 
   // Cleanup.

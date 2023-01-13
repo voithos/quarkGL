@@ -11,6 +11,7 @@ cc_library(
         ":camera",
         ":core",
         ":cubemap",
+        ":debug",
         ":deferred",
         ":exceptions",
         ":framebuffer",
@@ -45,6 +46,16 @@ cc_library(
     deps = [
         "//third_party/glad",
         "@glfw",
+    ],
+)
+
+cc_library(
+    name = "debug",
+    srcs = ["debug.cc"],
+    hdrs = ["debug.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":core",
     ],
 )
 
