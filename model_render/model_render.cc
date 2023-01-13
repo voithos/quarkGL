@@ -202,7 +202,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     if (lockSpecular) {
       opts.directionalSpecular = opts.directionalDiffuse;
     }
-    floatSlider("Intensity", &opts.directionalIntensity, 1.0f, 50.0f, nullptr,
+    floatSlider("Intensity", &opts.directionalIntensity, 0.0f, 50.0f, nullptr,
                 Scale::LINEAR);
 
     // Perform some shenanigans so that the gizmo rotates along with the
@@ -288,7 +288,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     helpMarker("Shininess of specular highlights. Only applies to Phong.");
     ImGui::EndDisabled();
 
-    floatSlider("Emission intensity", &opts.emissionIntensity, 0.1f, 1000.0f,
+    floatSlider("Emission intensity", &opts.emissionIntensity, 0.0f, 1000.0f,
                 nullptr, Scale::LOG);
     ImGui::DragFloat3("Emission attenuation",
                       reinterpret_cast<float*>(&opts.emissionAttenuation),
@@ -516,7 +516,7 @@ int main(int argc, char** argv) {
 
   // TODO: Make this more configurable.
   qrk::Texture ibl =
-      qrk::Texture::loadHdr("examples/assets/ibl/Alexs_Apt_2k.hdr");
+      qrk::Texture::loadHdr("examples/assets/ibl/Milkyway_small.hdr");
   constexpr int CUBEMAP_SIZE = 1024;
   qrk::EquirectCubemapConverter equirectCubemapConverter(CUBEMAP_SIZE,
                                                          CUBEMAP_SIZE);
