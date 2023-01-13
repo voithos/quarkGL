@@ -38,7 +38,47 @@ vec3 qrk_fresnelSchlick(float LdotH, vec3 F0) {
 }
 
 /**
- * Calculate the deferred Blinn-Phong shading model with ambient, diffuse, and
+ * A variant of Schlick's approximation that takes a roughness "fudge factor".
+ * Meant to be used when computing the Fresnel factor on a prefiltered map (i.e.
+ * a color that is actually sampled from many directions, not just 1).
+ * https://seblagarde.wordpress.com/2011/08/17/hello-world/
+ */
+vec3 qrk_fresnelSchlickRoughness(float LdotV, vec3 F0, float roughness) {
+  return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - LdotV, 5.0);
+}
+
+/** Calculate the ambient irradiance shading component. */
+vec3 qrk_shadeAmbientIrradianceDeferred(vec3 albedo, vec3 irradiance,
+                                        float roughness, float metallic,
+                                        float ao, vec3 viewDir, vec3 normal) {
+  // Compute reflectance at normal incidence.
+  vec3 F0 = vec3(0.04);
+  F0 = mix(F0, albedo, metallic);
+
+  // Use the roughness-aware fresnel function to compute the specular component.
+  vec3 kS = qrk_fresnelSchlickRoughness(clamp(dot(normal, viewDir), 0.0, 1.0),
+                                        F0, roughness);
+  // Extract out the diffuse component and calculate diffuse lighting.
+  vec3 kD = 1.0 - kS;
+  return kD * albedo * irradiance * ao;
+}
+
+/**
+ * Calculate shading for ambient irradiance component based on the given
+ * material.
+ */
+vec3 qrk_shadeAmbientIrradiance(QrkMaterial material, vec2 texCoords,
+                                vec3 irradiance, vec3 viewDir, vec3 normal) {
+  vec3 albedo = qrk_extractAlbedo(material, texCoords);
+  float roughness = qrk_extractRoughness(material, texCoords);
+  float metallic = qrk_extractMetallic(material, texCoords);
+  float ao = qrk_extractAmbientOcclusion(material, texCoords);
+  return qrk_shadeAmbientIrradianceDeferred(albedo, irradiance, roughness,
+                                            metallic, ao, viewDir, normal);
+}
+
+/**
+ * Calculate the deferred Cook-Torrance shading model with diffuse, and
  * specular components, along with direct material colors. Does not include
  * attenuation.
  */
@@ -85,7 +125,7 @@ vec3 qrk_shadeCookTorranceGGXDeferred(vec3 albedo, float roughness,
 }
 
 /**
- * Calculate the Blinn-Phong shading model with ambient, diffuse, and specular
+ * Calculate the Cook-Torrance shading model with diffuse, and specular
  * components. Does not include attenuation.
  */
 vec3 qrk_shadeCookTorranceGGX(QrkMaterial material, vec3 lightDiffuse,

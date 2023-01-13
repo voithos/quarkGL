@@ -82,6 +82,7 @@ struct ModelRenderOptions {
   float shadowBiasMin = 0.0001;
   float shadowBiasMax = 0.001;
 
+  bool useIrradianceMap = true;
   glm::vec3 ambientColor = glm::vec3(0.1f);
   bool ssao = true;
   float ssaoRadius = 0.5f;
@@ -260,11 +261,18 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     ImGui::Separator();
     ImGui::Text("Environment");
 
+    ImGui::BeginDisabled(opts.lightingModel == LightingModel::BLINN_PHONG);
+    ImGui::Checkbox("Use irradiance map", &opts.useIrradianceMap);
+    ImGui::EndDisabled();
+
+    ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG &&
+                         opts.useIrradianceMap);
     ImGui::ColorEdit3("Ambient color",
                       reinterpret_cast<float*>(&opts.ambientColor),
                       ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
     ImGui::SameLine();
     helpMarker("The color of the fixed ambient component.");
+    ImGui::EndDisabled();
 
     ImGui::Checkbox("SSAO", &opts.ssao);
     ImGui::BeginDisabled(!opts.ssao);
@@ -495,15 +503,6 @@ int main(int argc, char** argv) {
   qrk::SkyboxShader skyboxShader;
   skyboxShader.addUniformSource(camera);
 
-  qrk::SkyboxMesh skybox({
-      "examples/assets/skybox/right.jpg",
-      "examples/assets/skybox/left.jpg",
-      "examples/assets/skybox/top.jpg",
-      "examples/assets/skybox/bottom.jpg",
-      "examples/assets/skybox/front.jpg",
-      "examples/assets/skybox/back.jpg",
-  });
-
   // Prepare some debug shaders.
   qrk::Shader normalShader(
       qrk::ShaderPath("model_render/shaders/model.vert"),
@@ -514,6 +513,25 @@ int main(int argc, char** argv) {
   qrk::Shader lampShader(qrk::ShaderPath("model_render/shaders/model.vert"),
                          qrk::ShaderInline(lampShaderSource));
   lampShader.addUniformSource(camera);
+
+  // TODO: Make this more configurable.
+  qrk::Texture ibl =
+      qrk::Texture::loadHdr("examples/assets/ibl/Alexs_Apt_2k.hdr");
+  constexpr int CUBEMAP_SIZE = 1024;
+  qrk::EquirectCubemapConverter equirectCubemapConverter(CUBEMAP_SIZE,
+                                                         CUBEMAP_SIZE);
+  equirectCubemapConverter.multipassDraw(ibl);
+  auto cubemap = equirectCubemapConverter.getCubemap();
+
+  // Irradiance map averages radiance uniformly so it doesn't have a lot of high
+  // frequency details and can thus be small.
+  auto irradianceCalculator =
+      std::make_shared<qrk::CubemapIrradianceCalculator>(32, 32);
+  irradianceCalculator->multipassDraw(cubemap);
+  auto irradianceMap = irradianceCalculator->getIrradianceMap();
+  lightingTextureRegistry->addTextureSource(irradianceCalculator);
+
+  qrk::SkyboxMesh skybox(cubemap);
 
   // Load primary model.
   std::unique_ptr<qrk::Model> model = loadModelOrDefault();
@@ -682,6 +700,7 @@ int main(int argc, char** argv) {
     lightingPassShader.setBool("shadowMapping", opts.shadowMapping);
     lightingPassShader.setFloat("shadowBiasMin", opts.shadowBiasMin);
     lightingPassShader.setFloat("shadowBiasMax", opts.shadowBiasMax);
+    lightingPassShader.setBool("useIrradianceMap", opts.useIrradianceMap);
     lightingPassShader.setBool("ssao", opts.ssao);
     lightingPassShader.setInt("lightingModel",
                               static_cast<int>(opts.lightingModel));

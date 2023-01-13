@@ -57,7 +57,7 @@ void EquirectCubemapConverter::multipassDraw(Texture source) {
 
 unsigned int EquirectCubemapConverter::bindTexture(unsigned int nextTextureUnit,
                                                    Shader& shader) {
-  cubemap_.asTexture().bindToUnit(nextTextureUnit);
+  cubemap_.asTexture().bindToUnit(nextTextureUnit, TextureBindType::CUBEMAP);
   // Bind sampler uniforms.
   shader.setInt("qrk_cubemap", nextTextureUnit);
 
@@ -91,7 +91,7 @@ void CubemapIrradianceCalculator::multipassDraw(Texture source) {
 
 unsigned int CubemapIrradianceCalculator::bindTexture(
     unsigned int nextTextureUnit, Shader& shader) {
-  cubemap_.asTexture().bindToUnit(nextTextureUnit);
+  cubemap_.asTexture().bindToUnit(nextTextureUnit, TextureBindType::CUBEMAP);
   // Bind sampler uniforms.
   shader.setInt("qrk_irradianceMap", nextTextureUnit);
 

@@ -38,12 +38,15 @@ void main() {
     if (useTextures) {
       result = qrk_shadeAllLightsCookTorranceGGX(
           material, fs_in.fragPos_viewSpace, normal_viewSpace, fs_in.texCoords);
+      result += qrk_shadeAmbient(material, baseColor, fs_in.texCoords);
     } else {
       // Even though we aren't using deferred shading, we can use the function
       // to pass colors directly and avoid textures.
       result = qrk_shadeAllLightsCookTorranceGGXDeferred(
-          /*albedo=*/baseColor, material.ambient, roughness, metallic,
-          fs_in.fragPos_viewSpace, normal_viewSpace);
+          /*albedo=*/baseColor, roughness, metallic, fs_in.fragPos_viewSpace,
+          normal_viewSpace);
+      result +=
+          qrk_shadeAmbientDeferred(baseColor, material.ambient, /*ao=*/1.0);
     }
   } else {
     if (useTextures) {

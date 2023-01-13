@@ -85,14 +85,13 @@ vec3 qrk_shadeAllSpotLightsCookTorranceGGXDeferred(vec3 albedo, float roughness,
 }
 
 /**
- * Calculate shading from all light sources, including ambient, except emission
+ * Calculate shading from all light sources, except ambient and emission
  * textures.
  */
 vec3 qrk_shadeAllLightsCookTorranceGGX(QrkMaterial material, vec3 fragPos,
                                        vec3 normal, vec2 texCoords,
-                                       float shadow, float ssao) {
+                                       float shadow) {
   vec3 albedo = qrk_extractAlbedo(material, texCoords);
-  vec3 ambient = qrk_shadeAmbient(material, albedo, texCoords) * ssao;
 
   vec3 directional = qrk_shadeAllDirectionalLightsCookTorranceGGX(
       material, fragPos, normal, texCoords, shadow);
@@ -100,42 +99,39 @@ vec3 qrk_shadeAllLightsCookTorranceGGX(QrkMaterial material, vec3 fragPos,
                                                       texCoords);
   vec3 spot = qrk_shadeAllSpotLightsCookTorranceGGX(material, fragPos, normal,
                                                     texCoords);
-  return ambient + directional + point + spot;
+  return directional + point + spot;
 }
 
 vec3 qrk_shadeAllLightsCookTorranceGGX(QrkMaterial material, vec3 fragPos,
                                        vec3 normal, vec2 texCoords) {
   return qrk_shadeAllLightsCookTorranceGGX(material, fragPos, normal, texCoords,
-                                           /*shadow=*/0.0, /*ssao=*/1.0);
+                                           /*shadow=*/0.0);
 }
 
 /**
- * Calculate shading from all light sources, including ambient, except emission
+ * Calculate shading from all light sources, except ambient and emission
  * textures, using deferred data.
  * AO can be a mix of AO textures and SSAO, but the mixing should be handled by
  * the caller.
  */
-vec3 qrk_shadeAllLightsCookTorranceGGXDeferred(vec3 albedo, vec3 ambientColor,
-                                               float roughness, float metallic,
-                                               vec3 fragPos, vec3 normal,
-                                               float shadow, float ao) {
-  vec3 ambient = qrk_shadeAmbientDeferred(albedo, ambientColor, ao);
-
+vec3 qrk_shadeAllLightsCookTorranceGGXDeferred(vec3 albedo, float roughness,
+                                               float metallic, vec3 fragPos,
+                                               vec3 normal, float shadow) {
   vec3 directional = qrk_shadeAllDirectionalLightsCookTorranceGGXDeferred(
       albedo, roughness, metallic, fragPos, normal, shadow);
   vec3 point = qrk_shadeAllPointLightsCookTorranceGGXDeferred(
       albedo, roughness, metallic, fragPos, normal);
   vec3 spot = qrk_shadeAllSpotLightsCookTorranceGGXDeferred(
       albedo, roughness, metallic, fragPos, normal);
-  return ambient + directional + point + spot;
+  return directional + point + spot;
 }
 
-vec3 qrk_shadeAllLightsCookTorranceGGXDeferred(vec3 albedo, vec3 ambientColor,
-                                               float roughness, float metallic,
-                                               vec3 fragPos, vec3 normal) {
-  return qrk_shadeAllLightsCookTorranceGGXDeferred(
-      albedo, ambientColor, roughness, metallic, fragPos, normal,
-      /*shadow=*/0.0, /*ao=*/1.0);
+vec3 qrk_shadeAllLightsCookTorranceGGXDeferred(vec3 albedo, float roughness,
+                                               float metallic, vec3 fragPos,
+                                               vec3 normal) {
+  return qrk_shadeAllLightsCookTorranceGGXDeferred(albedo, roughness, metallic,
+                                                   fragPos, normal,
+                                                   /*shadow=*/0.0);
 }
 
 #endif

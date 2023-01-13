@@ -34,6 +34,8 @@ uniform mat4 lightViewProjection;
 uniform sampler2D shadowMap;
 uniform float shadowBiasMin;
 uniform float shadowBiasMax;
+uniform samplerCube qrk_irradianceMap;
+uniform bool useIrradianceMap;
 
 void main() {
   // Extract G-Buffer for PBR rendering.
@@ -77,8 +79,21 @@ void main() {
   } else if (lightingModel == 1) {
     // GGX.
     color = qrk_shadeAllLightsCookTorranceGGXDeferred(
-        fragAlbedo, ambient, fragRoughness, fragMetallic, fragPos_viewSpace,
-        fragNormal_viewSpace, shadow, ao);
+        fragAlbedo, fragRoughness, fragMetallic, fragPos_viewSpace,
+        fragNormal_viewSpace, shadow);
+    // Add ambient term.
+    if (useIrradianceMap) {
+      // Need to sample from the irradiance cubemap via worldspace normals.
+      vec3 fragNormal_worldSpace = mat3(transpose(view)) * fragNormal_viewSpace;
+      vec3 fragIrradiance =
+          texture(qrk_irradianceMap, normalize(fragNormal_worldSpace)).rgb;
+      vec3 viewDir_viewSpace = normalize(-fragPos_viewSpace);
+      color += qrk_shadeAmbientIrradianceDeferred(
+          fragAlbedo, fragIrradiance, fragRoughness, fragMetallic, ao,
+          viewDir_viewSpace, fragNormal_viewSpace);
+    } else {
+      color += qrk_shadeAmbientDeferred(fragAlbedo, ambient, ao);
+    }
   } else {
     // Invalid lighting model (pink to signal!).
     color = vec3(1.0, 0.0, 0.5);

@@ -29,8 +29,10 @@ void main() {
 
   // Shade with normal lights.
   vec3 color = qrk_shadeAllLightsCookTorranceGGXDeferred(
-      fragAlbedo, ambient, fragRoughness, fragMetallic, fragPos_viewSpace,
+      fragAlbedo, fragRoughness, fragMetallic, fragPos_viewSpace,
       fragNormal_viewSpace);
+
+  color += qrk_shadeAmbientDeferred(fragAlbedo, ambient, /*ao=*/1.0);
 
   // Add emissions.
   color += qrk_shadeEmissionDeferred(fragEmission * emissionStrength,
