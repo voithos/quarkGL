@@ -1,5 +1,5 @@
-#ifndef QUARKGL_STANDARD_LIGHTS_FRAG_
-#define QUARKGL_STANDARD_LIGHTS_FRAG_
+#pragma once
+
 #pragma qrk_include < lighting.frag>
 #pragma qrk_include < pbr.frag>
 
@@ -20,5 +20,3 @@ uniform int qrk_pointLightCount;
 #endif
 uniform QrkSpotLight qrk_spotLights[QRK_MAX_SPOT_LIGHTS];
 uniform int qrk_spotLightCount;
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef QUARKGL_DEPTH_FRAG_
-#define QUARKGL_DEPTH_FRAG_
+#pragma once
 
 /**
  * Calculates the linear space depth based on non-linear depth buffer.
@@ -22,5 +21,3 @@ vec4 qrk_depthColor(float near, float far) {
   float depthColor = depth / far;
   return vec4(vec3(depthColor), 1.0);
 }
-
-#endif

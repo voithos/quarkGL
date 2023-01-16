@@ -1,5 +1,4 @@
-#ifndef QUARKGL_TONE_MAPPING_FRAG_
-#define QUARKGL_TONE_MAPPING_FRAG_
+#pragma once
 
 /**
  * Returns the luminance of a given color based on the sensitivity of the human
@@ -124,5 +123,3 @@ vec3 qrk_toneMapAMD(vec3 color) {
   color = peak * ratio;
   return color;
 }
-
-#endif

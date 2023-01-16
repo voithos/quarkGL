@@ -1,5 +1,4 @@
-#ifndef QUARKGL_PHONG_FRAG_
-#define QUARKGL_PHONG_FRAG_
+#pragma once
 
 #pragma qrk_include < constants.glsl>
 #pragma qrk_include < lighting.frag>
@@ -144,5 +143,3 @@ vec3 qrk_shadeSpotLightBlinnPhong(QrkMaterial material, QrkSpotLight light,
       albedo, specular, material.ambient, material.shininess, light, fragPos,
       normal, ao);
 }
-
-#endif

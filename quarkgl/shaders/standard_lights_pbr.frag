@@ -1,5 +1,5 @@
-#ifndef QUARKGL_STANDARD_LIGHTS_PBR_FRAG_
-#define QUARKGL_STANDARD_LIGHTS_PBR_FRAG_
+#pragma once
+
 #pragma qrk_include < lighting.frag>
 #pragma qrk_include < pbr.frag>
 #pragma qrk_include < standard_lights.frag>
@@ -133,5 +133,3 @@ vec3 qrk_shadeAllLightsCookTorranceGGXDeferred(vec3 albedo, float roughness,
                                                    fragPos, normal,
                                                    /*shadow=*/0.0);
 }
-
-#endif

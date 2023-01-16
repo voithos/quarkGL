@@ -1,5 +1,4 @@
-#ifndef QUARKGL_GAMMA_FRAG_
-#define QUARKGL_GAMMA_FRAG_
+#pragma once
 
 #ifndef QUARKGL_GAMMA
 #define QUARKGL_GAMMA 2.2
@@ -24,4 +23,3 @@ vec3 qrk_gammaCorrect(vec3 color, float gamma) {
 vec3 qrk_gammaCorrect(vec3 color) {
   return qrk_gammaCorrect(color, QUARKGL_GAMMA);
 }
-#endif

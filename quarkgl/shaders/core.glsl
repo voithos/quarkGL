@@ -1,6 +1,3 @@
-#ifndef QUARKGL_CORE_GLSL_
-#define QUARKGL_CORE_GLSL_
+#pragma once
 
 uniform float qrk_time;
-
-#endif

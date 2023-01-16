@@ -1,5 +1,4 @@
-#ifndef QUARKGL_NORMALS_FRAG_
-#define QUARKGL_NORMALS_FRAG_
+#pragma once
 
 /**
  * Samples a normal map and converts the texture colors [0..1] to a normalized
@@ -11,5 +10,3 @@ vec3 qrk_sampleNormalMap(sampler2D normalMap, vec2 texCoords) {
 
 /** Converts a normal to a color representation, with 100% opacity. */
 vec4 qrk_normalColor(vec3 normal) { return vec4((normal + 1.0) / 2.0, 1.0); }
-
-#endif

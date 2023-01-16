@@ -1,5 +1,4 @@
-#ifndef QUARKGL_PBR_FRAG_
-#define QUARKGL_PBR_FRAG_
+#pragma once
 
 #pragma qrk_include < constants.glsl>
 #pragma qrk_include < lighting.frag>
@@ -230,5 +229,3 @@ vec3 qrk_shadeSpotLightCookTorranceGGX(QrkMaterial material, QrkSpotLight light,
   return qrk_shadeSpotLightCookTorranceGGXDeferred(albedo, roughness, metallic,
                                                    light, fragPos, normal);
 }
-
-#endif

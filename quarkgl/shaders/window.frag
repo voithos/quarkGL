@@ -1,5 +1,4 @@
-#ifndef QUARKGL_WINDOW_FRAG_
-#define QUARKGL_WINDOW_FRAG_
+#pragma once
 
 // TODO: This file should be .glsl
 
@@ -14,5 +13,3 @@ bool qrk_isWindowBottomHalf() {
   return gl_FragCoord.y < (qrk_windowHeight / 2);
 }
 bool qrk_isWindowTopHalf() { return gl_FragCoord.y >= (qrk_windowHeight / 2); }
-
-#endif

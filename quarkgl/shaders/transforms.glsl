@@ -1,5 +1,4 @@
-#ifndef QUARKGL_TRANSFORMS_GLSL_
-#define QUARKGL_TRANSFORMS_GLSL_
+#pragma once
 
 /**
  * Calculates the normal of a triangle based on vertices.
@@ -24,5 +23,3 @@ mat3 qrk_calculateTBN(vec3 normal, vec3 tangent) {
 
   return mat3(T, B, N);
 }
-
-#endif

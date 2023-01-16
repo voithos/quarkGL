@@ -1,5 +1,4 @@
-#ifndef QUARKGL_LIGHTING_FRAG_
-#define QUARKGL_LIGHTING_FRAG_
+#pragma once
 
 #pragma qrk_include < gamma.frag>
 #pragma qrk_include < normals.frag>
@@ -311,5 +310,3 @@ float qrk_shadow(sampler2D shadowMap, vec4 fragPosLightSpace, float bias) {
   float currentDepth = projectedPos.z;
   return qrk_shadowSamplePCF(shadowMap, shadowTexCoords, currentDepth, bias);
 }
-
-#endif

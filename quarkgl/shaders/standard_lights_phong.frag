@@ -1,5 +1,5 @@
-#ifndef QUARKGL_STANDARD_LIGHTS_PHONG_FRAG_
-#define QUARKGL_STANDARD_LIGHTS_PHONG_FRAG_
+#pragma once
+
 #pragma qrk_include < lighting.frag>
 #pragma qrk_include < phong.frag>
 #pragma qrk_include < standard_lights.frag>
@@ -123,5 +123,3 @@ vec3 qrk_shadeAllLightsBlinnPhongDeferred(vec3 albedo, vec3 specular,
                                               shininess, fragPos, normal,
                                               /*shadow=*/0.0, /*ao=*/1.0);
 }
-
-#endif

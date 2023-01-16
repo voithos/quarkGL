@@ -1,5 +1,4 @@
-#ifndef QUARKGL_POST_PROCESSING_FRAG_
-#define QUARKGL_POST_PROCESSING_FRAG_
+#pragma once
 
 #ifndef QRK_KERNEL_GRANULARITY
 #define QRK_KERNEL_GRANULARITY 1.0 / 300.0
@@ -123,5 +122,3 @@ vec4 qrk_gaussianBlurOnePass(sampler2D image, vec2 texCoords, bool horizontal) {
   }
   return vec4(result, 1.0);
 }
-
-#endif

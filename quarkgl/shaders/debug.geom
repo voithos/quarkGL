@@ -1,5 +1,4 @@
-#ifndef QUARKGL_DEBUG_GEOM_
-#define QUARKGL_DEBUG_GEOM_
+#pragma once
 
 const float DEFAULT_MAGNITUDE = 0.1;
 
@@ -22,5 +21,3 @@ void qrk_generateNormalLine(vec4 position, vec3 normal, float magnitude) {
 void qrk_generateNormalLine(vec4 position, vec3 normal) {
   qrk_generateNormalLine(position, normal, DEFAULT_MAGNITUDE);
 }
-
-#endif
