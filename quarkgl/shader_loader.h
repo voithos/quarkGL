@@ -7,6 +7,7 @@
 #include <deque>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace qrk {
 
@@ -21,6 +22,7 @@ class ShaderLoader {
 
  private:
   void checkShaderType(std::string const& shaderPath);
+  bool alreadyLoadedOnce(std::string const& shaderPath);
   void cacheShaderCode(std::string const& shaderPath,
                        std::string const& shaderCode);
   std::string load(std::string const& shaderPath);
@@ -34,6 +36,7 @@ class ShaderLoader {
   const ShaderType shaderType_;
   std::deque<std::string> includeChain_;
   std::unordered_map<std::string, std::string> codeCache_;
+  std::unordered_set<std::string> onceCache_;
 };
 }  // namespace qrk
 

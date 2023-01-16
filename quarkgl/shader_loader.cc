@@ -1,3 +1,5 @@
+#include "shader_loader.h"
+
 #include <qrk/exceptions.h>
 #include <qrk/shader_defs.h>
 #include <qrk/shader_loader.h>
@@ -60,6 +62,12 @@ void ShaderLoader::checkShaderType(std::string const& shaderPath) {
   }
 }
 
+bool ShaderLoader::alreadyLoadedOnce(std::string const& shaderPath) {
+  std::string resolvedPath = resolvePath(shaderPath);
+  auto item = onceCache_.find(resolvedPath);
+  return item != onceCache_.end();
+}
+
 std::string ShaderLoader::getIncludesTraceback() {
   std::stringstream buffer;
   for (std::string path : includeChain_) {
@@ -109,6 +117,11 @@ std::string ShaderLoader::lookupOrLoad(std::string const& shaderPath) {
 std::string ShaderLoader::load(std::string const& shaderPath) {
   checkShaderType(shaderPath);
 
+  // Handle #pragma once.
+  if (alreadyLoadedOnce(shaderPath)) {
+    return "";
+  }
+
   auto shaderCode = lookupOrLoad(shaderPath);
   auto processedCode = preprocessShader(shaderPath, shaderCode);
   cacheShaderCode(shaderPath, processedCode);
@@ -125,6 +138,11 @@ std::string ShaderLoader::preprocessShader(std::string const& shaderPath,
                                            std::string const& shaderCode) {
   std::string resolvedPath = resolvePath(shaderPath);
   includeChain_.push_back(resolvedPath);
+
+  std::regex oncePattern(R"(((^|\r?\n)\s*)#pragma\s+once\s*(?=\r?\n|$))");
+  if (std::regex_search(shaderCode, oncePattern)) {
+    onceCache_.insert(resolvedPath);
+  }
 
   std::regex includePattern(
       R"(((^|\r?\n)\s*)#pragma\s+qrk_include\s+(".*"|<.*>)(?=\r?\n|$))");
@@ -156,6 +174,7 @@ std::string ShaderLoader::preprocessShader(std::string const& shaderPath,
 
 std::string ShaderLoader::load() {
   // Handle either loading from file, or loading from inline source.
+  onceCache_.clear();
   if (shaderSource_->isPath()) {
     return load(shaderSource_->value);
   } else {
