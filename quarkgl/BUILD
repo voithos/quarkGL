@@ -15,6 +15,7 @@ cc_library(
         ":deferred",
         ":exceptions",
         ":framebuffer",
+        ":ibl",
         ":light",
         ":mesh",
         ":mesh_primitives",
@@ -157,6 +158,23 @@ cc_library(
     include_prefix = "qrk",
     deps = [
         "//third_party/glad",
+    ],
+)
+
+cc_library(
+    name = "ibl",
+    srcs = ["ibl.cc"],
+    hdrs = ["ibl.h"],
+    include_prefix = "qrk",
+    deps = [
+        ":core",
+        ":cubemap",
+        ":exceptions",
+        ":framebuffer",
+        ":mesh_primitives",
+        ":shader",
+        ":shader_primitives",
+        ":texture_registry",
     ],
 )
 

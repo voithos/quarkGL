@@ -15,6 +15,7 @@
 #include <qrk/deferred.h>
 #include <qrk/exceptions.h>
 #include <qrk/framebuffer.h>
+#include <qrk/ibl.h>
 #include <qrk/light.h>
 #include <qrk/mesh.h>
 #include <qrk/mesh_primitives.h>

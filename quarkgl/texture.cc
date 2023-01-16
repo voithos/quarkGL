@@ -253,6 +253,9 @@ Texture Texture::createCubemap(int size, GLenum internalFormat,
   texture.height_ = size;
   texture.numChannels_ = 0;  // Default.
   texture.numMips_ = 1;
+  if (params.generateMips == MipGeneration::ALWAYS) {
+    texture.numMips_ = calculateNumMips(texture.width_, texture.height_);
+  }
   texture.internalFormat_ = internalFormat;
 
   glGenTextures(1, &texture.id_);
