@@ -71,6 +71,9 @@ class GGXPrefilterShader : public Shader {
   unsigned int numSamples_ = 1024;
 };
 
+// Calculates the prefiltered env map based on the GGX microfacet model. The map
+// contains multiple mip level, which each mip level representing a different
+// material roughness (mip0 -> roughness 0).
 class GGXPrefilteredEnvMapCalculator : public TextureSource {
  public:
   GGXPrefilteredEnvMapCalculator(int width, int height, int maxNumMips = -1);
@@ -81,7 +84,9 @@ class GGXPrefilteredEnvMapCalculator : public TextureSource {
   unsigned int getNumSamples() const { return shader_.getNumSamples(); }
   void setNumSamples(unsigned int samples) { shader_.setNumSamples(samples); }
 
-  // Draw onto the allocated cubemap from the given cubemap as the source.
+  // Draw onto the allocated prefiltering cubemap from the given cubemap as the
+  // source. The cubemap should ideally have mip levels in order to avoid
+  // hotspot artifacts.
   void multipassDraw(Texture source);
 
   Texture getPrefilteredEnvMap() { return cubemap_.asTexture(); }
