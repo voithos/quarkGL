@@ -330,9 +330,10 @@ void Texture::bindToUnit(unsigned int textureUnit, TextureBindType bindType) {
 }
 
 void Texture::setSamplerMipRange(int min, int max) {
-  glBindTexture(GL_TEXTURE_2D, id_);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, min);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, max);
+  GLenum target = textureTypeToGlTarget(type_);
+  glBindTexture(target, id_);
+  glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, min);
+  glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, max);
 }
 
 void Texture::unsetSamplerMipRange() {
