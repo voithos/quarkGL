@@ -546,8 +546,16 @@ int main(int argc, char** argv) {
     prefilteredEnvMapCalculator->multipassDraw(cubemap);
   }
   auto prefilteredEnvMap = prefilteredEnvMapCalculator->getPrefilteredEnvMap();
-  cubemap.setSamplerMipRange(0, 0);
-  qrk::SkyboxMesh skybox(cubemap);
+
+  auto brdfLUT = std::make_shared<qrk::GGXBrdfIntegrationCalculator>(512, 512);
+  {
+    qrk::DebugGroup debugGroup("BRDF LUT calculation");
+    brdfLUT->draw();
+  }
+  auto brdfIntegrationMap = brdfLUT->getBrdfIntegrationMap();
+
+  prefilteredEnvMap.setSamplerMipRange(2, 2);
+  qrk::SkyboxMesh skybox(prefilteredEnvMap);
 
   // Load primary model.
   std::unique_ptr<qrk::Model> model = loadModelOrDefault();

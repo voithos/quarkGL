@@ -100,6 +100,45 @@ class GGXPrefilteredEnvMapCalculator : public TextureSource {
   GGXPrefilterShader shader_;
 };
 
+class GGXBrdfIntegrationShader : public ScreenShader {
+ public:
+  GGXBrdfIntegrationShader();
+
+  unsigned int getNumSamples() const { return numSamples_; }
+  void setNumSamples(unsigned int samples);
+
+ private:
+  unsigned int numSamples_ = 1024;
+};
+
+// Calculates an integration map for the GGX BRDF, parameterized over roughness
+// and NdotV.
+class GGXBrdfIntegrationCalculator : public TextureSource {
+ public:
+  GGXBrdfIntegrationCalculator(int width, int height);
+  explicit GGXBrdfIntegrationCalculator(ImageSize size)
+      : GGXBrdfIntegrationCalculator(size.width, size.height) {}
+  virtual ~GGXBrdfIntegrationCalculator() = default;
+
+  unsigned int getNumSamples() const { return shader_.getNumSamples(); }
+  void setNumSamples(unsigned int samples) { shader_.setNumSamples(samples); }
+
+  // Draw onto the allocated BRDF integration texture. This is solely a function
+  // of the BRDF and does not require any source data.
+  void draw();
+
+  Texture getBrdfIntegrationMap() { return integrationMap_.asTexture(); }
+
+  unsigned int bindTexture(unsigned int nextTextureUnit,
+                           Shader& shader) override;
+
+ private:
+  Framebuffer buffer_;
+  Attachment integrationMap_;
+  ScreenQuadMesh screenQuad_;
+  GGXBrdfIntegrationShader shader_;
+};
+
 }  // namespace qrk
 
 #endif

@@ -95,4 +95,39 @@ unsigned int GGXPrefilteredEnvMapCalculator::bindTexture(
   return nextTextureUnit + 1;
 }
 
+GGXBrdfIntegrationShader::GGXBrdfIntegrationShader()
+    : ScreenShader(
+          ShaderPath("quarkgl/shaders/builtin/ggx_brdf_integration.frag")) {
+  setNumSamples(numSamples_);
+}
+
+void GGXBrdfIntegrationShader::setNumSamples(unsigned int samples) {
+  numSamples_ = samples;
+  setUInt("qrk_numSamples", numSamples_);
+}
+
+GGXBrdfIntegrationCalculator::GGXBrdfIntegrationCalculator(int width,
+                                                           int height)
+    : buffer_(width, height) {
+  // The BRDF integration map contains values from [0..1] so we can use an SNORM
+  // for greater precision.
+  // TODO: Use a 2-channel SNORM texture instead.
+  integrationMap_ = buffer_.attachTexture(BufferType::COLOR_SNORM);
+}
+
+void GGXBrdfIntegrationCalculator::draw() {
+  buffer_.activate();
+  screenQuad_.draw(shader_);
+  buffer_.deactivate();
+}
+
+unsigned int GGXBrdfIntegrationCalculator::bindTexture(
+    unsigned int nextTextureUnit, Shader& shader) {
+  integrationMap_.asTexture().bindToUnit(nextTextureUnit);
+  // Bind sampler uniforms.
+  shader.setInt("qrk_ggxIntegrationMap", nextTextureUnit);
+
+  return nextTextureUnit + 1;
+}
+
 }  // namespace qrk
