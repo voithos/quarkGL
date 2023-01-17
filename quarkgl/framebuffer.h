@@ -49,7 +49,7 @@ class Attachment {
   BufferType type;
   // Attachment index. Only applies for color buffers.
   int colorAttachmentIndex;
-  bool isCubemap;
+  TextureType textureType;
 
   Texture asTexture();
 
@@ -224,7 +224,7 @@ class Framebuffer {
 
   Attachment saveAttachment(unsigned int id, int numMips,
                             AttachmentTarget target, BufferType type,
-                            int colorAttachmentIndex, bool isCubemap);
+                            int colorAttachmentIndex, TextureType textureType);
   Attachment getAttachment(AttachmentTarget target, BufferType type);
   void checkFlags(BufferType type);
   void updateFlags(BufferType type);

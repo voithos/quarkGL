@@ -35,6 +35,7 @@ Texture Texture::load(const char* path, bool isSRGB) {
 Texture Texture::load(const char* path, bool isSRGB,
                       const TextureParams& params) {
   Texture texture;
+  texture.type_ = TextureType::TEXTURE_2D;
 
   stbi_set_flip_vertically_on_load(params.flipVerticallyOnLoad);
   unsigned char* data =
@@ -81,7 +82,7 @@ Texture Texture::load(const char* path, bool isSRGB,
   }
 
   // Set texture-wrapping/filtering options.
-  applyParams(params);
+  applyParams(params, texture.type_);
 
   stbi_image_free(data);
 
@@ -96,6 +97,7 @@ Texture Texture::loadHdr(const char* path) {
 
 Texture Texture::loadHdr(const char* path, const TextureParams& params) {
   Texture texture;
+  texture.type_ = TextureType::TEXTURE_2D;
   texture.numMips_ = 1;
 
   stbi_set_flip_vertically_on_load(true);
@@ -135,7 +137,7 @@ Texture Texture::loadHdr(const char* path, const TextureParams& params) {
                /*tex data format=*/dataFormat, GL_FLOAT, data);
 
   // Set texture-wrapping/filtering options.
-  applyParams(params);
+  applyParams(params, texture.type_);
 
   stbi_image_free(data);
 
@@ -157,6 +159,7 @@ Texture Texture::loadCubemap(std::vector<std::string> faces,
   }
 
   Texture texture;
+  texture.type_ = TextureType::CUBEMAP;
   texture.numMips_ = 1;
   texture.internalFormat_ = GL_RGB8;  // Cubemaps must be RGB.
 
@@ -206,7 +209,7 @@ Texture Texture::loadCubemap(std::vector<std::string> faces,
     stbi_image_free(data);
   }
 
-  applyParams(params, /*isCubemap=*/true);
+  applyParams(params, texture.type_);
 
   return texture;
 }
@@ -220,6 +223,7 @@ Texture Texture::create(int width, int height, GLenum internalFormat) {
 Texture Texture::create(int width, int height, GLenum internalFormat,
                         const TextureParams& params) {
   Texture texture;
+  texture.type_ = TextureType::TEXTURE_2D;
   texture.width_ = width;
   texture.height_ = height;
   texture.numChannels_ = 0;  // Default.
@@ -239,7 +243,7 @@ Texture Texture::create(int width, int height, GLenum internalFormat,
                  texture.width_, texture.height_);
 
   // Set texture-wrapping/filtering options.
-  applyParams(params);
+  applyParams(params, texture.type_);
 
   return texture;
 }
@@ -253,6 +257,7 @@ Texture Texture::createCubemap(int size, GLenum internalFormat) {
 Texture Texture::createCubemap(int size, GLenum internalFormat,
                                const TextureParams& params) {
   Texture texture;
+  texture.type_ = TextureType::CUBEMAP;
   texture.width_ = size;
   texture.height_ = size;
   texture.numChannels_ = 0;  // Default.
@@ -271,7 +276,7 @@ Texture Texture::createCubemap(int size, GLenum internalFormat,
   glTexStorage2D(GL_TEXTURE_CUBE_MAP, texture.numMips_, texture.internalFormat_,
                  texture.width_, texture.height_);
 
-  applyParams(params, /*isCubemap=*/true);
+  applyParams(params, texture.type_);
 
   return texture;
 }
@@ -302,6 +307,10 @@ void Texture::bindToUnit(unsigned int textureUnit, TextureBindType bindType) {
   // TODO: Take into account GL_MAX_TEXTURE_UNITS here.
   glActiveTexture(GL_TEXTURE0 + textureUnit);
 
+  if (bindType == TextureBindType::BY_TEXTURE_TYPE) {
+    bindType = textureTypeToTextureBindType(type_);
+  }
+
   switch (bindType) {
     case TextureBindType::TEXTURE_2D:
       glBindTexture(GL_TEXTURE_2D, id_);
@@ -331,8 +340,8 @@ void Texture::unsetSamplerMipRange() {
   setSamplerMipRange(0, 1000);
 }
 
-void Texture::applyParams(const TextureParams& params, bool isCubemap) {
-  GLenum target = isCubemap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+void Texture::applyParams(const TextureParams& params, TextureType type) {
+  GLenum target = textureTypeToGlTarget(type);
 
   switch (params.filtering) {
     case TextureFiltering::NEAREST:
@@ -359,21 +368,21 @@ void Texture::applyParams(const TextureParams& params, bool isCubemap) {
     case TextureWrapMode::REPEAT:
       glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
       glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
-      if (isCubemap) {
+      if (type == TextureType::CUBEMAP) {
         glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_REPEAT);
       }
       break;
     case TextureWrapMode::CLAMP_TO_EDGE:
       glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      if (isCubemap) {
+      if (type == TextureType::CUBEMAP) {
         glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
       }
       break;
     case TextureWrapMode::CLAMP_TO_BORDER:
       glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
       glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-      if (isCubemap) {
+      if (type == TextureType::CUBEMAP) {
         glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
       }
       glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR,

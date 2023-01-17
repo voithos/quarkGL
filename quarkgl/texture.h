@@ -14,15 +14,45 @@ class TextureException : public QuarkException {
   using QuarkException::QuarkException;
 };
 
+// Texture type.
+enum class TextureType {
+  TEXTURE_2D = 0,
+  CUBEMAP,
+};
+
+inline const GLenum textureTypeToGlTarget(TextureType type) {
+  switch (type) {
+    case TextureType::TEXTURE_2D:
+      return GL_TEXTURE_2D;
+    case TextureType::CUBEMAP:
+      return GL_TEXTURE_CUBE_MAP;
+  }
+  throw TextureException("ERROR::TEXTURE::INVALID_TEXTURE_TYPE\n" +
+                         std::to_string(static_cast<int>(type)));
+}
+
 // The type of texture binding.
 enum class TextureBindType {
-  // A normal TEXTURE_2D.
-  TEXTURE_2D = 0,
+  // By default we bind by texture type.
+  BY_TEXTURE_TYPE = 0,
+  // A TEXTURE_2D.
+  TEXTURE_2D,
   // A cubemap.
   CUBEMAP,
   // An image texture that is directly indexed, rather than sampled.
   IMAGE_TEXTURE,
 };
+
+inline const TextureBindType textureTypeToTextureBindType(TextureType type) {
+  switch (type) {
+    case TextureType::TEXTURE_2D:
+      return TextureBindType::TEXTURE_2D;
+    case TextureType::CUBEMAP:
+      return TextureBindType::CUBEMAP;
+  }
+  throw TextureException("ERROR::TEXTURE::INVALID_TEXTURE_TYPE\n" +
+                         std::to_string(static_cast<int>(type)));
+}
 
 enum class TextureFiltering {
   // Uses nearest-neighbor sampling.
@@ -112,7 +142,7 @@ class Texture {
   // GLenum. This will bind samplers normally, but will bind cubemaps as
   // cubemaps and custom textures as image textures.
   void bindToUnit(unsigned int textureUnit,
-                  TextureBindType bindType = TextureBindType::TEXTURE_2D);
+                  TextureBindType bindType = TextureBindType::BY_TEXTURE_TYPE);
 
   // Sets a min/max mip level allowed when sampling from this texture. This is
   // important to avoid undefined behavior when drawing to a mip level while
@@ -135,6 +165,7 @@ class Texture {
  private:
   // TODO: Texture lifetimes aren't managed currently, so they aren't unloaded.
   unsigned int id_;
+  TextureType type_;
   std::string path_;
   int width_;
   int height_;
@@ -143,7 +174,8 @@ class Texture {
   GLenum internalFormat_;
 
   // Applies the given params to the currently-active texture.
-  static void applyParams(const TextureParams& params, bool isCubemap = false);
+  static void applyParams(const TextureParams& params,
+                          TextureType type = TextureType::TEXTURE_2D);
 
   friend class Framebuffer;
   friend class Attachment;
