@@ -86,6 +86,11 @@ void GGXPrefilteredEnvMapCalculator::multipassDraw(Texture source) {
   }
 }
 
+void GGXPrefilteredEnvMapCalculator::updateUniforms(Shader& shader) {
+  shader.setFloat("qrk_ggxPrefilteredEnvMapMaxLOD",
+                  static_cast<float>(cubemap_.numMips - 1.0));
+}
+
 unsigned int GGXPrefilteredEnvMapCalculator::bindTexture(
     unsigned int nextTextureUnit, Shader& shader) {
   cubemap_.asTexture().bindToUnit(nextTextureUnit, TextureBindType::CUBEMAP);

@@ -537,8 +537,8 @@ int main(int argc, char** argv) {
   auto irradianceMap = irradianceCalculator->getIrradianceMap();
   lightingTextureRegistry->addTextureSource(irradianceCalculator);
 
-  // Create prefiltered envmap for specular IBL. Similar to the irradiance map,
-  // it doesn't have to be super large.
+  // Create prefiltered envmap for specular IBL. It doesn't have to be super
+  // large.
   auto prefilteredEnvMapCalculator =
       std::make_shared<qrk::GGXPrefilteredEnvMapCalculator>(512, 512);
   {
@@ -546,6 +546,8 @@ int main(int argc, char** argv) {
     prefilteredEnvMapCalculator->multipassDraw(cubemap);
   }
   auto prefilteredEnvMap = prefilteredEnvMapCalculator->getPrefilteredEnvMap();
+  lightingTextureRegistry->addTextureSource(prefilteredEnvMapCalculator);
+  lightingPassShader.addUniformSource(prefilteredEnvMapCalculator);
 
   auto brdfLUT = std::make_shared<qrk::GGXBrdfIntegrationCalculator>(512, 512);
   {
@@ -553,8 +555,10 @@ int main(int argc, char** argv) {
     brdfLUT->draw();
   }
   auto brdfIntegrationMap = brdfLUT->getBrdfIntegrationMap();
+  lightingTextureRegistry->addTextureSource(brdfLUT);
 
-  prefilteredEnvMap.setSamplerMipRange(2, 2);
+  // TODO: Set this to something else.
+  prefilteredEnvMap.setSamplerMipRange(1, 1);
   qrk::SkyboxMesh skybox(prefilteredEnvMap);
 
   // Load primary model.

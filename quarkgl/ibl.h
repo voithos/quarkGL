@@ -74,7 +74,8 @@ class GGXPrefilterShader : public Shader {
 // Calculates the prefiltered env map based on the GGX microfacet model. The map
 // contains multiple mip level, which each mip level representing a different
 // material roughness (mip0 -> roughness 0).
-class GGXPrefilteredEnvMapCalculator : public TextureSource {
+class GGXPrefilteredEnvMapCalculator : public UniformSource,
+                                       public TextureSource {
  public:
   GGXPrefilteredEnvMapCalculator(int width, int height, int maxNumMips = -1);
   explicit GGXPrefilteredEnvMapCalculator(ImageSize size, int maxNumMips = -1)
@@ -91,6 +92,7 @@ class GGXPrefilteredEnvMapCalculator : public TextureSource {
 
   Texture getPrefilteredEnvMap() { return cubemap_.asTexture(); }
 
+  void updateUniforms(Shader& shader) override;
   unsigned int bindTexture(unsigned int nextTextureUnit,
                            Shader& shader) override;
 

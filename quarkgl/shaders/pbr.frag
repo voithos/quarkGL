@@ -46,34 +46,61 @@ vec3 qrk_fresnelSchlickRoughness(float LdotV, vec3 F0, float roughness) {
   return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - LdotV, 5.0);
 }
 
-/** Calculate the ambient irradiance shading component. */
-vec3 qrk_shadeAmbientIrradianceDeferred(vec3 albedo, vec3 irradiance,
-                                        float roughness, float metallic,
-                                        float ao, vec3 viewDir, vec3 normal) {
+// TODO: Move to an IBL shader file.
+
+vec3 qrk_samplePrefilteredEnvMap(vec3 viewDir_worldSpace,
+                                 vec3 normal_worldSpace, float roughness,
+                                 samplerCube prefilteredEnvMap,
+                                 float prefilteredEnvMapMaxLOD) {
+  vec3 reflectionDir_worldSpace =
+      reflect(-viewDir_worldSpace, normal_worldSpace);
+  float mipLevel = roughness * prefilteredEnvMapMaxLOD;
+  return textureLod(prefilteredEnvMap, reflectionDir_worldSpace, mipLevel).rgb;
+}
+
+vec2 qrk_sampleBrdfLUT(vec3 viewDir_worldSpace, vec3 normal_worldSpace,
+                       float roughness, sampler2D brdfLUT) {
+  float NdotV = clamp(dot(normal_worldSpace, viewDir_worldSpace), 0.0, 1.0);
+  return texture(brdfLUT, vec2(NdotV, roughness)).rg;
+}
+
+/** Calculate the ambient IBL shading component. */
+vec3 qrk_shadeAmbientIBLDeferred(vec3 albedo, vec3 irradiance,
+                                 vec3 prefilteredEnvColor, vec2 envBRDF,
+                                 float roughness, float metallic, float ao,
+                                 vec3 viewDir, vec3 normal) {
   // Compute reflectance at normal incidence.
   vec3 F0 = vec3(0.04);
   F0 = mix(F0, albedo, metallic);
 
   // Use the roughness-aware fresnel function to compute the specular component.
-  vec3 kS = qrk_fresnelSchlickRoughness(clamp(dot(normal, viewDir), 0.0, 1.0),
-                                        F0, roughness);
-  // Extract out the diffuse component and calculate diffuse lighting.
+  vec3 F = qrk_fresnelSchlickRoughness(clamp(dot(normal, viewDir), 0.0, 1.0),
+                                       F0, roughness);
+  vec3 kS = F;
   vec3 kD = 1.0 - kS;
-  return kD * albedo * irradiance * ao;
+  kD *= 1.0 - metallic;
+
+  vec3 diffuse = kD * irradiance * albedo;
+  // No need to multiply by kS, since F is already here.
+  vec3 specular = prefilteredEnvColor * (F * envBRDF.x + envBRDF.y);
+
+  return (diffuse + specular) * ao;
 }
 
 /**
- * Calculate shading for ambient irradiance component based on the given
+ * Calculate shading for ambient IBL component based on the given
  * material.
  */
 vec3 qrk_shadeAmbientIrradiance(QrkMaterial material, vec2 texCoords,
-                                vec3 irradiance, vec3 viewDir, vec3 normal) {
+                                vec3 irradiance, vec3 prefilteredEnvColor,
+                                vec2 envBRDF, vec3 viewDir, vec3 normal) {
   vec3 albedo = qrk_extractAlbedo(material, texCoords);
   float roughness = qrk_extractRoughness(material, texCoords);
   float metallic = qrk_extractMetallic(material, texCoords);
   float ao = qrk_extractAmbientOcclusion(material, texCoords);
-  return qrk_shadeAmbientIrradianceDeferred(albedo, irradiance, roughness,
-                                            metallic, ao, viewDir, normal);
+  return qrk_shadeAmbientIBLDeferred(albedo, irradiance, prefilteredEnvColor,
+                                     envBRDF, roughness, metallic, ao, viewDir,
+                                     normal);
 }
 
 /**

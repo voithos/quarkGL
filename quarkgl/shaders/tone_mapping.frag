@@ -21,20 +21,6 @@ vec3 qrk_toneMapReinhardLuminance(vec3 color) {
   return mix(color / (1.0f + luminance), mapped, mapped);
 }
 
-// vec3 qrk_toneMapCrosstalk(vec3 color) {
-//   float maxColor = max(color.r, max(color.g, color.b));
-//   vec3 ratio = color / maxColor;
-//   float crosstalk = 0.1;
-//   float saturation = 1.0;
-//   float crossSaturation = 1.0;
-
-//   ratio = pow(ratio, saturation / crossSaturation);
-//   ratio = lerp(ratio, vec3(1.0), pow(maxColor, crosstalk));
-//   ratio = pow(ratio, crossSaturation);
-
-//   return ratio * maxColor;
-// }
-
 /**
  * Simpler approximation to ACES, by Krzysztof Narkowicz.
  * https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
