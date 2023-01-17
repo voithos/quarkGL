@@ -41,6 +41,7 @@ Window::Window(int width, int height, const char* title, bool fullscreen,
 
   // A few options are enabled by default.
   enableDepthTest();
+  enableSeamlessCubemap();
   enableResizeUpdates();
   enableKeyInput();
   enableScrollInput();

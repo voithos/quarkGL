@@ -120,6 +120,9 @@ class Window : public UniformSource {
   void enableWireframe() { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
   void disableWireframe() { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
 
+  void enableSeamlessCubemap() { glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS); }
+  void disableSeamlessCubemap() { glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS); }
+
   void cullFrontFaces() { glCullFace(GL_FRONT); }
   void cullBackFaces() { glCullFace(GL_BACK); }
 
