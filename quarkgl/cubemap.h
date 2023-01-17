@@ -19,6 +19,8 @@ class CubemapRenderHelper {
  public:
   CubemapRenderHelper(Framebuffer* buffer) : buffer_(buffer) {}
 
+  void setTargetMip(int mip) { targetMip_ = mip; }
+
   // Draws with the given shader to each face of the cubemap. This results in 6
   // different draw calls. Shader should be prepared (i.e. necessary textures
   // should either be bound or be in the registry, uniforms should be set, etc).
@@ -28,6 +30,7 @@ class CubemapRenderHelper {
  private:
   Framebuffer* buffer_;
   CubeMesh cube_;
+  int targetMip_ = 0;
 };
 
 class EquirectCubemapShader : public Shader {

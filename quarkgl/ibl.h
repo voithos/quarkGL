@@ -18,7 +18,11 @@ class CubemapIrradianceShader : public Shader {
  public:
   CubemapIrradianceShader();
 
+  float getHemisphereSampleDelta() const { return hemisphereSampleDelta_; }
   void setHemisphereSampleDelta(float delta);
+
+ private:
+  float hemisphereSampleDelta_ = 0.025f;
 };
 
 // Calculates a diffuse irradiance map based on a given HDR cubemap.
@@ -33,6 +37,9 @@ class CubemapIrradianceCalculator : public TextureSource {
       : CubemapIrradianceCalculator(size.width, size.height) {}
   virtual ~CubemapIrradianceCalculator() = default;
 
+  float getHemisphereSampleDelta() const {
+    return irradianceShader_.getHemisphereSampleDelta();
+  }
   void setHemisphereSampleDelta(float delta) {
     irradianceShader_.setHemisphereSampleDelta(delta);
   }
@@ -49,6 +56,43 @@ class CubemapIrradianceCalculator : public TextureSource {
   Framebuffer buffer_;
   Attachment cubemap_;
   CubemapIrradianceShader irradianceShader_;
+};
+
+class GGXPrefilterShader : public Shader {
+ public:
+  GGXPrefilterShader();
+
+  unsigned int getNumSamples() const { return numSamples_; }
+  void setNumSamples(unsigned int samples);
+
+  void setRoughness(float roughness);
+
+ private:
+  unsigned int numSamples_ = 1024;
+};
+
+class GGXPrefilteredEnvMapCalculator : public TextureSource {
+ public:
+  GGXPrefilteredEnvMapCalculator(int width, int height, int maxNumMips = 5);
+  explicit GGXPrefilteredEnvMapCalculator(ImageSize size, int maxNumMips = 5)
+      : GGXPrefilteredEnvMapCalculator(size.width, size.height, maxNumMips) {}
+  virtual ~GGXPrefilteredEnvMapCalculator() = default;
+
+  unsigned int getNumSamples() const { return shader_.getNumSamples(); }
+  void setNumSamples(unsigned int samples) { shader_.setNumSamples(samples); }
+
+  // Draw onto the allocated cubemap from the given cubemap as the source.
+  void multipassDraw(Texture source);
+
+  Texture getPrefilteredEnvMap() { return cubemap_.asTexture(); }
+
+  unsigned int bindTexture(unsigned int nextTextureUnit,
+                           Shader& shader) override;
+
+ private:
+  Framebuffer buffer_;
+  Attachment cubemap_;
+  GGXPrefilterShader shader_;
 };
 
 }  // namespace qrk

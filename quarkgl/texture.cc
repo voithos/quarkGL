@@ -75,6 +75,7 @@ Texture Texture::load(const char* path, bool isSRGB,
   if (params.generateMips >= MipGeneration::ON_LOAD) {
     glGenerateMipmap(GL_TEXTURE_2D);
     texture.numMips_ = calculateNumMips(texture.width_, texture.height_);
+    // TODO: Take into account params.maxNumMips
   } else {
     texture.numMips_ = 1;
   }
@@ -225,6 +226,9 @@ Texture Texture::create(int width, int height, GLenum internalFormat,
   texture.numMips_ = 1;
   if (params.generateMips == MipGeneration::ALWAYS) {
     texture.numMips_ = calculateNumMips(texture.width_, texture.height_);
+    if (params.maxNumMips >= 0) {
+      texture.numMips_ = std::min(texture.numMips_, params.maxNumMips);
+    }
   }
   texture.internalFormat_ = internalFormat;
 
@@ -255,6 +259,9 @@ Texture Texture::createCubemap(int size, GLenum internalFormat,
   texture.numMips_ = 1;
   if (params.generateMips == MipGeneration::ALWAYS) {
     texture.numMips_ = calculateNumMips(texture.width_, texture.height_);
+    if (params.maxNumMips >= 0) {
+      texture.numMips_ = std::min(texture.numMips_, params.maxNumMips);
+    }
   }
   texture.internalFormat_ = internalFormat;
 

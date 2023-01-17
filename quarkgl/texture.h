@@ -59,6 +59,8 @@ struct TextureParams {
   TextureWrapMode wrapMode = TextureWrapMode::REPEAT;
   glm::vec4 borderColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
   MipGeneration generateMips = MipGeneration::ON_LOAD;
+  // Maximum number of mips to allocate. If negative, no maximum is used.
+  int maxNumMips = -1;
 };
 
 // Returns the number of mips for an image of a given width/height.

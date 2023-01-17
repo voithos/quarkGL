@@ -105,6 +105,9 @@ Attachment Framebuffer::attachTexture(BufferType type,
   int numMips = 1;
   if (params.generateMips == MipGeneration::ALWAYS) {
     numMips = calculateNumMips(width_, height_);
+    if (params.maxNumMips >= 0) {
+      numMips = std::min(numMips, params.maxNumMips);
+    }
   }
   if (samples_ && !isCubemap) {
     glTexStorage2DMultisample(textureTarget, samples_, internalFormat, width_,

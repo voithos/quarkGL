@@ -47,6 +47,10 @@ class Shader {
 
   virtual void setBool(const char* name, bool value);
   void setBool(std::string name, bool value) { setBool(name.c_str(), value); }
+  virtual void setUInt(const char* name, unsigned int value);
+  void setUInt(std::string name, unsigned int value) {
+    setUInt(name.c_str(), value);
+  }
   virtual void setInt(const char* name, int value);
   void setInt(std::string name, int value) { setInt(name.c_str(), value); }
   virtual void setFloat(const char* name, float value);

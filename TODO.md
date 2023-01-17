@@ -27,7 +27,6 @@
 - [ ] P4: Add weighted, blended order-independent transparency (http://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html)
 
 ## Cleanup
-- [ ] P1: Add `#pragma once` for shaders
 - [ ] P1: Model loading is sometimes slow
 - [ ] P2: Add a logging system, and log e.g. invalid glGetUniformLocation() calls
 - [ ] P2: Remove some duplication from light class impl
@@ -109,3 +108,4 @@
   - [x] Add shadow map vis
   - [x] Add SSAO
 - [x] P0: Add FXAA
+- [x] P1: Add `#pragma once` for shaders

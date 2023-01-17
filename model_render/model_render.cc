@@ -167,7 +167,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     // camera while still representing the same model rotation.
     glm::quat rotViewSpace =
         glm::quat_cast(ctx.camera.getViewTransform()) * opts.modelRotation;
-    ImGui::gizmo3D("Rotation", rotViewSpace, /*size=*/120);
+    ImGui::gizmo3D("Rotation", rotViewSpace, /*size=*/160);
     opts.modelRotation =
         glm::quat_cast(glm::inverse(ctx.camera.getViewTransform())) *
         glm::normalize(rotViewSpace);
@@ -210,7 +210,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     glm::vec3 dirViewSpace =
         glm::vec3(ctx.camera.getViewTransform() *
                   glm::vec4(opts.directionalDirection, 0.0f));
-    ImGui::gizmo3D("Light dir", dirViewSpace, /*size=*/120);
+    ImGui::gizmo3D("Light dir", dirViewSpace, /*size=*/160);
     opts.directionalDirection =
         glm::vec3(glm::inverse(ctx.camera.getViewTransform()) *
                   glm::vec4(glm::normalize(dirViewSpace), 0.0f));
@@ -515,14 +515,14 @@ int main(int argc, char** argv) {
   lampShader.addUniformSource(camera);
 
   // TODO: Make this more configurable.
-  qrk::Texture ibl =
-      qrk::Texture::loadHdr("examples/assets/ibl/Milkyway_small.hdr");
+  qrk::Texture hdr =
+      qrk::Texture::loadHdr("examples/assets/ibl/Alexs_Apt_2k.hdr");
   constexpr int CUBEMAP_SIZE = 1024;
   qrk::EquirectCubemapConverter equirectCubemapConverter(CUBEMAP_SIZE,
                                                          CUBEMAP_SIZE);
   {
     qrk::DebugGroup debugGroup("HDR equirect to cubemap");
-    equirectCubemapConverter.multipassDraw(ibl);
+    equirectCubemapConverter.multipassDraw(hdr);
   }
   auto cubemap = equirectCubemapConverter.getCubemap();
 
@@ -537,7 +537,17 @@ int main(int argc, char** argv) {
   auto irradianceMap = irradianceCalculator->getIrradianceMap();
   lightingTextureRegistry->addTextureSource(irradianceCalculator);
 
-  qrk::SkyboxMesh skybox(cubemap);
+  // Create prefiltered envmap for specular IBL. Similar to the irradiance map,
+  // it doesn't have to be super large.
+  auto prefilteredEnvMapCalculator =
+      std::make_shared<qrk::GGXPrefilteredEnvMapCalculator>(128, 128);
+  {
+    qrk::DebugGroup debugGroup("Prefiltered env map calculation");
+    prefilteredEnvMapCalculator->multipassDraw(cubemap);
+  }
+  auto prefilteredEnvMap = prefilteredEnvMapCalculator->getPrefilteredEnvMap();
+  // prefilteredEnvMap.setSamplerMipRange(0, 0);
+  qrk::SkyboxMesh skybox(prefilteredEnvMap);
 
   // Load primary model.
   std::unique_ptr<qrk::Model> model = loadModelOrDefault();

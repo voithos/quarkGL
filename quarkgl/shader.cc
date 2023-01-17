@@ -1,3 +1,5 @@
+#include "shader.h"
+
 #include <qrk/core.h>
 #include <qrk/shader.h>
 #include <qrk/shader_compiler.h>
@@ -53,6 +55,11 @@ void Shader::updateUniforms() {
 void Shader::setBool(const char* name, bool value) {
   activate();
   glUniform1i(safeGetUniformLocation(name), static_cast<int>(value));
+}
+
+void Shader::setUInt(const char* name, unsigned int value) {
+  activate();
+  glUniform1ui(safeGetUniformLocation(name), value);
 }
 
 void Shader::setInt(const char* name, int value) {

@@ -25,7 +25,7 @@ void CubemapRenderHelper::multipassDraw(Shader& shader,
                   glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))};
 
   for (int cubemapFace = 0; cubemapFace < 6; ++cubemapFace) {
-    buffer_->activate(/*miplevel=*/0, cubemapFace);
+    buffer_->activate(targetMip_, cubemapFace);
     buffer_->clear();
 
     shader.setMat4("view", faceViews[cubemapFace]);
