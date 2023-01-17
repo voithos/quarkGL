@@ -17,7 +17,7 @@ class TextureException : public QuarkException {
 // The type of texture binding.
 enum class TextureBindType {
   // A normal TEXTURE_2D.
-  TEXTURE = 0,
+  TEXTURE_2D = 0,
   // A cubemap.
   CUBEMAP,
   // An image texture that is directly indexed, rather than sampled.
@@ -112,7 +112,7 @@ class Texture {
   // GLenum. This will bind samplers normally, but will bind cubemaps as
   // cubemaps and custom textures as image textures.
   void bindToUnit(unsigned int textureUnit,
-                  TextureBindType bindType = TextureBindType::TEXTURE);
+                  TextureBindType bindType = TextureBindType::TEXTURE_2D);
 
   // Sets a min/max mip level allowed when sampling from this texture. This is
   // important to avoid undefined behavior when drawing to a mip level while

@@ -46,7 +46,7 @@ EquirectCubemapConverter::EquirectCubemapConverter(int width, int height)
 
 void EquirectCubemapConverter::multipassDraw(Texture source) {
   // Set up the source.
-  source.bindToUnit(0, TextureBindType::TEXTURE);
+  source.bindToUnit(0, TextureBindType::TEXTURE_2D);
   equirectCubemapShader_.setInt("qrk_equirectMap", 0);
 
   CubemapRenderHelper renderHelper(&buffer_);

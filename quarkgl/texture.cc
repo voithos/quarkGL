@@ -303,7 +303,7 @@ void Texture::bindToUnit(unsigned int textureUnit, TextureBindType bindType) {
   glActiveTexture(GL_TEXTURE0 + textureUnit);
 
   switch (bindType) {
-    case TextureBindType::TEXTURE:
+    case TextureBindType::TEXTURE_2D:
       glBindTexture(GL_TEXTURE_2D, id_);
       break;
     case TextureBindType::CUBEMAP:

@@ -467,7 +467,7 @@ void ScreenQuadMesh::bindTextures(Shader& shader,
   }
 
   Texture& texture = textureMaps_[0].getTexture();
-  texture.bindToUnit(textureUnit, TextureBindType::TEXTURE);
+  texture.bindToUnit(textureUnit, TextureBindType::TEXTURE_2D);
 
   // Set the sampler to the correct texture unit.
   shader.setInt("qrk_screenTexture", textureUnit);

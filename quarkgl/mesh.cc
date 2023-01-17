@@ -116,7 +116,7 @@ void Mesh::bindTextures(Shader& shader, TextureRegistry* textureRegistry) {
       texture.bindToUnit(textureUnit, TextureBindType::CUBEMAP);
       samplerName = "skybox";
     } else {
-      texture.bindToUnit(textureUnit, TextureBindType::TEXTURE);
+      texture.bindToUnit(textureUnit, TextureBindType::TEXTURE_2D);
       static std::string materialName = "material";
       std::ostringstream ss;
       // TODO: Make this more configurable / less generic?
