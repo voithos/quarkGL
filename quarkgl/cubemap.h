@@ -41,9 +41,9 @@ class EquirectCubemapShader : public Shader {
 // Converts an equirect texture to a cubemap.
 class EquirectCubemapConverter : public TextureSource {
  public:
-  EquirectCubemapConverter(int width, int height);
-  explicit EquirectCubemapConverter(ImageSize size)
-      : EquirectCubemapConverter(size.width, size.height) {}
+  EquirectCubemapConverter(int width, int height, bool generateMips = false);
+  explicit EquirectCubemapConverter(ImageSize size, bool generateMips = false)
+      : EquirectCubemapConverter(size.width, size.height, generateMips) {}
   virtual ~EquirectCubemapConverter() = default;
 
   // Draw onto the allocated cubemap from the given texture as the source.
@@ -58,6 +58,7 @@ class EquirectCubemapConverter : public TextureSource {
   Framebuffer buffer_;
   Attachment cubemap_;
   EquirectCubemapShader equirectCubemapShader_;
+  bool generateMips_;
 };
 
 }  // namespace qrk

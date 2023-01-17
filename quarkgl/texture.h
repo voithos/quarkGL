@@ -144,6 +144,10 @@ class Texture {
   void bindToUnit(unsigned int textureUnit,
                   TextureBindType bindType = TextureBindType::BY_TEXTURE_TYPE);
 
+  // Generates mipmaps for the current texture. Note that this will not succeed
+  // for textures with immutable storage.
+  void generateMips(int maxNumMips = -1);
+
   // Sets a min/max mip level allowed when sampling from this texture. This is
   // important to avoid undefined behavior when drawing to a mip level while
   // sampling from another.

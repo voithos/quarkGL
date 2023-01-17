@@ -62,9 +62,8 @@ qrk::GGXPrefilteredEnvMapCalculator::GGXPrefilteredEnvMapCalculator(
       .filtering = TextureFiltering::TRILINEAR,
       // Clamp to the edge so we don't oversample.
       .wrapMode = TextureWrapMode::CLAMP_TO_EDGE,
-      // Force mip generation. Don't use the entire mip chain because we want to
-      // cluster more of the roughness levels at higher resolutions, for
-      // details.
+      // Force mip generation. We can optionally just use a smaller part of the
+      // mip chain.
       .generateMips = MipGeneration::ALWAYS,
       .maxNumMips = maxNumMips,
   };

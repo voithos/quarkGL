@@ -518,8 +518,8 @@ int main(int argc, char** argv) {
   qrk::Texture hdr =
       qrk::Texture::loadHdr("examples/assets/ibl/Alexs_Apt_2k.hdr");
   constexpr int CUBEMAP_SIZE = 1024;
-  qrk::EquirectCubemapConverter equirectCubemapConverter(CUBEMAP_SIZE,
-                                                         CUBEMAP_SIZE);
+  qrk::EquirectCubemapConverter equirectCubemapConverter(
+      CUBEMAP_SIZE, CUBEMAP_SIZE, /*generateMips=*/true);
   {
     qrk::DebugGroup debugGroup("HDR equirect to cubemap");
     equirectCubemapConverter.multipassDraw(hdr);
@@ -540,14 +540,14 @@ int main(int argc, char** argv) {
   // Create prefiltered envmap for specular IBL. Similar to the irradiance map,
   // it doesn't have to be super large.
   auto prefilteredEnvMapCalculator =
-      std::make_shared<qrk::GGXPrefilteredEnvMapCalculator>(128, 128);
+      std::make_shared<qrk::GGXPrefilteredEnvMapCalculator>(512, 512);
   {
     qrk::DebugGroup debugGroup("Prefiltered env map calculation");
     prefilteredEnvMapCalculator->multipassDraw(cubemap);
   }
   auto prefilteredEnvMap = prefilteredEnvMapCalculator->getPrefilteredEnvMap();
-  // prefilteredEnvMap.setSamplerMipRange(0, 0);
-  qrk::SkyboxMesh skybox(prefilteredEnvMap);
+  cubemap.setSamplerMipRange(0, 0);
+  qrk::SkyboxMesh skybox(cubemap);
 
   // Load primary model.
   std::unique_ptr<qrk::Model> model = loadModelOrDefault();

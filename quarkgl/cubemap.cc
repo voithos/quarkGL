@@ -39,9 +39,18 @@ EquirectCubemapShader::EquirectCubemapShader()
     : Shader(ShaderPath("quarkgl/shaders/builtin/cubemap.vert"),
              ShaderPath("quarkgl/shaders/builtin/equirect_cubemap.frag")) {}
 
-EquirectCubemapConverter::EquirectCubemapConverter(int width, int height)
-    : buffer_(width, height) {
-  cubemap_ = buffer_.attachTexture(BufferType::COLOR_CUBEMAP_HDR);
+EquirectCubemapConverter::EquirectCubemapConverter(int width, int height,
+                                                   bool generateMips)
+    : buffer_(width, height), generateMips_(generateMips) {
+  // Optionally allocate memory for mips if requested.
+  TextureParams params = {
+      .filtering = generateMips ? TextureFiltering::TRILINEAR
+                                : TextureFiltering::BILINEAR,
+      .wrapMode = TextureWrapMode::CLAMP_TO_EDGE,
+      .generateMips =
+          generateMips ? MipGeneration::ALWAYS : MipGeneration::NEVER,
+  };
+  cubemap_ = buffer_.attachTexture(BufferType::COLOR_CUBEMAP_HDR, params);
 }
 
 void EquirectCubemapConverter::multipassDraw(Texture source) {
@@ -51,6 +60,11 @@ void EquirectCubemapConverter::multipassDraw(Texture source) {
 
   CubemapRenderHelper renderHelper(&buffer_);
   renderHelper.multipassDraw(equirectCubemapShader_);
+
+  if (generateMips_) {
+    // Generate mips after having rendered to the cubemap.
+    cubemap_.asTexture().generateMips();
+  }
 }
 
 unsigned int EquirectCubemapConverter::bindTexture(unsigned int nextTextureUnit,

@@ -1,3 +1,5 @@
+#include "texture.h"
+
 #include <glad/glad.h>
 #include <qrk/texture.h>
 #include <stb/stb_image.h>
@@ -339,6 +341,20 @@ void Texture::setSamplerMipRange(int min, int max) {
 void Texture::unsetSamplerMipRange() {
   // OpenGL defaults.
   setSamplerMipRange(0, 1000);
+}
+
+void Texture::generateMips(int maxNumMips) {
+  if (maxNumMips >= 0) {
+    setSamplerMipRange(0, maxNumMips);
+  }
+
+  GLenum target = textureTypeToGlTarget(type_);
+  glBindTexture(target, id_);
+  glGenerateMipmap(target);
+
+  if (maxNumMips >= 0) {
+    unsetSamplerMipRange();
+  }
 }
 
 void Texture::applyParams(const TextureParams& params, TextureType type) {

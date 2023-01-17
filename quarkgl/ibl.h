@@ -73,8 +73,8 @@ class GGXPrefilterShader : public Shader {
 
 class GGXPrefilteredEnvMapCalculator : public TextureSource {
  public:
-  GGXPrefilteredEnvMapCalculator(int width, int height, int maxNumMips = 5);
-  explicit GGXPrefilteredEnvMapCalculator(ImageSize size, int maxNumMips = 5)
+  GGXPrefilteredEnvMapCalculator(int width, int height, int maxNumMips = -1);
+  explicit GGXPrefilteredEnvMapCalculator(ImageSize size, int maxNumMips = -1)
       : GGXPrefilteredEnvMapCalculator(size.width, size.height, maxNumMips) {}
   virtual ~GGXPrefilteredEnvMapCalculator() = default;
 
