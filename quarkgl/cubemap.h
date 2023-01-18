@@ -29,7 +29,7 @@ class CubemapRenderHelper {
 
  private:
   Framebuffer* buffer_;
-  CubeMesh cube_;
+  RoomMesh room_;
   int targetMip_ = 0;
 };
 
@@ -58,6 +58,7 @@ class EquirectCubemapConverter : public TextureSource {
   Framebuffer buffer_;
   Attachment cubemap_;
   EquirectCubemapShader equirectCubemapShader_;
+  CubemapRenderHelper cubemapRenderHelper_;
   bool generateMips_;
 };
 

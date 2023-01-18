@@ -71,7 +71,7 @@ class Window : public UniformSource {
     glfwSwapInterval(0);
   }
 
-  // TODO: Consider extracting depth test logic.
+  // TODO: Extract all these as a "Context" object.
   void enableDepthTest() {
     glEnable(GL_DEPTH_TEST);
     depthTestEnabled_ = true;

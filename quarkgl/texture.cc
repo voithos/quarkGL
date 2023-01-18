@@ -341,6 +341,8 @@ void Texture::unsetSamplerMipRange() {
   setSamplerMipRange(0, 1000);
 }
 
+void Texture::free() { glDeleteTextures(1, &id_); }
+
 void Texture::generateMips(int maxNumMips) {
   if (maxNumMips >= 0) {
     setSamplerMipRange(0, maxNumMips);

@@ -92,7 +92,7 @@ struct ModelRenderOptions {
   float shadowBiasMin = 0.0001;
   float shadowBiasMax = 0.001;
 
-  SkyboxImage skyboxImage = SkyboxImage::MILKYWAY;
+  SkyboxImage skyboxImage = SkyboxImage::KLOPPENHEIM;
 
   bool useIBL = true;
   glm::vec3 ambientColor = glm::vec3(0.1f);
@@ -431,7 +431,6 @@ void loadSkyboxImage(
       break;
   }
 
-  // TODO: Delete this afterwards
   qrk::Texture hdr = qrk::Texture::loadHdr(hdrPath.c_str());
 
   // Process HDR cubemap
@@ -450,6 +449,9 @@ void loadSkyboxImage(
   }
 
   skybox.setTexture(cubemap);
+
+  // Don't need this anymore.
+  hdr.free();
 }
 
 int main(int argc, char** argv) {

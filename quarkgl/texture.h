@@ -137,6 +137,9 @@ class Texture {
                                 const std::vector<glm::vec3>& data,
                                 const TextureParams& params);
 
+  // TODO: Replace this with proper RAII.
+  void free();
+
   // Binds the texture to the given texture unit.
   // Unit should be a number starting from 0, not the actual texture unit's
   // GLenum. This will bind samplers normally, but will bind cubemaps as

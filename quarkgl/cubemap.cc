@@ -29,7 +29,7 @@ void CubemapRenderHelper::multipassDraw(Shader& shader,
     buffer_->clear();
 
     shader.setMat4("view", faceViews[cubemapFace]);
-    cube_.draw(shader, textureRegistry);
+    room_.draw(shader, textureRegistry);
   }
 
   buffer_->deactivate();
@@ -41,7 +41,9 @@ EquirectCubemapShader::EquirectCubemapShader()
 
 EquirectCubemapConverter::EquirectCubemapConverter(int width, int height,
                                                    bool generateMips)
-    : buffer_(width, height), generateMips_(generateMips) {
+    : buffer_(width, height),
+      cubemapRenderHelper_(&buffer_),
+      generateMips_(generateMips) {
   // Optionally allocate memory for mips if requested.
   TextureParams params = {
       .filtering = generateMips ? TextureFiltering::TRILINEAR
@@ -58,8 +60,7 @@ void EquirectCubemapConverter::multipassDraw(Texture source) {
   source.bindToUnit(0, TextureBindType::TEXTURE_2D);
   equirectCubemapShader_.setInt("qrk_equirectMap", 0);
 
-  CubemapRenderHelper renderHelper(&buffer_);
-  renderHelper.multipassDraw(equirectCubemapShader_);
+  cubemapRenderHelper_.multipassDraw(equirectCubemapShader_);
 
   if (generateMips_) {
     // Generate mips after having rendered to the cubemap.

@@ -56,6 +56,7 @@ class CubemapIrradianceCalculator : public TextureSource {
   Framebuffer buffer_;
   Attachment cubemap_;
   CubemapIrradianceShader irradianceShader_;
+  CubemapRenderHelper cubemapRenderHelper_;
 };
 
 class GGXPrefilterShader : public Shader {
@@ -100,6 +101,7 @@ class GGXPrefilteredEnvMapCalculator : public UniformSource,
   Framebuffer buffer_;
   Attachment cubemap_;
   GGXPrefilterShader shader_;
+  CubemapRenderHelper cubemapRenderHelper_;
 };
 
 class GGXBrdfIntegrationShader : public ScreenShader {

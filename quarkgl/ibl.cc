@@ -15,7 +15,7 @@ void CubemapIrradianceShader::setHemisphereSampleDelta(float delta) {
 }
 
 CubemapIrradianceCalculator::CubemapIrradianceCalculator(int width, int height)
-    : buffer_(width, height) {
+    : buffer_(width, height), cubemapRenderHelper_(&buffer_) {
   cubemap_ = buffer_.attachTexture(BufferType::COLOR_CUBEMAP_HDR);
 }
 
@@ -24,8 +24,7 @@ void CubemapIrradianceCalculator::multipassDraw(Texture source) {
   source.bindToUnit(0, TextureBindType::CUBEMAP);
   irradianceShader_.setInt("qrk_environmentMap", 0);
 
-  CubemapRenderHelper renderHelper(&buffer_);
-  renderHelper.multipassDraw(irradianceShader_);
+  cubemapRenderHelper_.multipassDraw(irradianceShader_);
 }
 
 unsigned int CubemapIrradianceCalculator::bindTexture(
@@ -54,7 +53,7 @@ void GGXPrefilterShader::setRoughness(float roughness) {
 
 qrk::GGXPrefilteredEnvMapCalculator::GGXPrefilteredEnvMapCalculator(
     int width, int height, int maxNumMips)
-    : buffer_(width, height) {
+    : buffer_(width, height), cubemapRenderHelper_(&buffer_) {
   TextureParams textureParams = {
       // Need trilinear filtering in order to make use of mip levels.
       .filtering = TextureFiltering::TRILINEAR,
@@ -74,13 +73,12 @@ void GGXPrefilteredEnvMapCalculator::multipassDraw(Texture source) {
   source.bindToUnit(0, TextureBindType::CUBEMAP);
   shader_.setInt("qrk_environmentMap", 0);
 
-  CubemapRenderHelper renderHelper(&buffer_);
   for (int mip = 0; mip < cubemap_.numMips; ++mip) {
-    renderHelper.setTargetMip(mip);
+    cubemapRenderHelper_.setTargetMip(mip);
     // Go through roughness from [0..1].
     float roughness = static_cast<float>(mip) / (cubemap_.numMips - 1);
     shader_.setRoughness(roughness);
-    renderHelper.multipassDraw(shader_);
+    cubemapRenderHelper_.multipassDraw(shader_);
   }
 }
 
