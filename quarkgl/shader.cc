@@ -1,5 +1,3 @@
-#include "shader.h"
-
 #include <qrk/core.h>
 #include <qrk/shader.h>
 #include <qrk/shader_compiler.h>

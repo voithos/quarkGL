@@ -1,12 +1,17 @@
 #ifndef QUARKGL_MESH_PRIMITIVES_H_
 #define QUARKGL_MESH_PRIMITIVES_H_
 
+#include <qrk/exceptions.h>
 #include <qrk/framebuffer.h>
 #include <qrk/mesh.h>
 #include <qrk/texture.h>
 #include <qrk/texture_map.h>
 
 namespace qrk {
+
+class MeshPrimitiveException : public QuarkException {
+  using QuarkException::QuarkException;
+};
 
 class PrimitiveMesh : public Mesh {};
 
@@ -65,6 +70,8 @@ class SphereMesh : public PrimitiveMesh {
 
 class SkyboxMesh : public PrimitiveMesh {
  public:
+  // Creates an unbound skybox mesh.
+  SkyboxMesh();
   // Creates a new skybox mesh from a set of 6 textures for the faces. Textures
   // must be passed in order starting with GL_TEXTURE_CUBE_MAP_POSITIVE_X and
   // incrementing from there; namely, in the order right, left, top, bottom,
@@ -72,7 +79,13 @@ class SkyboxMesh : public PrimitiveMesh {
   explicit SkyboxMesh(std::vector<std::string> faces);
   explicit SkyboxMesh(Texture texture);
 
+  // Sets a framebuffer attachment as the texture.
+  void setTexture(Attachment attachment);
+  // Sets the texture. This overrides previously set textures.
+  void setTexture(Texture texture);
+
  protected:
+  void loadMesh();
   void initializeVertexAttributes() override;
 };
 

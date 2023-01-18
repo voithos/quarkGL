@@ -1,5 +1,3 @@
-#include "ibl.h"
-
 #include <qrk/ibl.h>
 
 namespace qrk {

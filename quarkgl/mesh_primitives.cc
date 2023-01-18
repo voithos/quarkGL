@@ -389,14 +389,35 @@ constexpr float skyboxVertices[] = {
 };
 // clang-format on
 
+SkyboxMesh::SkyboxMesh() { loadMesh(); }
+
 SkyboxMesh::SkyboxMesh(std::vector<std::string> faces)
     : SkyboxMesh(Texture::loadCubemap(faces)) {}
 
 SkyboxMesh::SkyboxMesh(Texture texture) {
-  TextureMap textureMap(texture, TextureMapType::CUBEMAP);
+  loadMesh();
+  setTexture(texture);
+}
+
+void SkyboxMesh::setTexture(Attachment attachment) {
+  setTexture(attachment.asTexture());
+}
+
+void SkyboxMesh::setTexture(Texture texture) {
+  if (texture.getType() != TextureType::CUBEMAP) {
+    throw MeshPrimitiveException(
+        "ERROR::MESH_PRIMITIVE::INVALID_TEXTURE_TYPE\n" +
+        std::to_string(static_cast<int>(texture.getType())));
+  }
+  // TODO: This copies the texture info, meaning it won't see updates.
+  textureMaps_.clear();
+  textureMaps_.emplace_back(texture, TextureMapType::CUBEMAP);
+}
+
+void SkyboxMesh::loadMesh() {
   constexpr unsigned int skyboxVertexSizeBytes = 3 * sizeof(float);
   loadMeshData(skyboxVertices, sizeof(skyboxVertices) / skyboxVertexSizeBytes,
-               skyboxVertexSizeBytes, /*indices=*/{}, {textureMap});
+               skyboxVertexSizeBytes, /*indices=*/{}, /*textureMaps=*/{});
 }
 
 void SkyboxMesh::initializeVertexAttributes() {

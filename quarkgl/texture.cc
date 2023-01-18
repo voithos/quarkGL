@@ -1,5 +1,3 @@
-#include "texture.h"
-
 #include <glad/glad.h>
 #include <qrk/texture.h>
 #include <stb/stb_image.h>

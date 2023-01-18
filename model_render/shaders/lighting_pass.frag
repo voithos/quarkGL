@@ -35,7 +35,7 @@ uniform sampler2D shadowMap;
 uniform float shadowBiasMin;
 uniform float shadowBiasMax;
 uniform samplerCube qrk_irradianceMap;
-uniform bool useIrradianceMap;
+uniform bool useIBL;
 uniform samplerCube qrk_ggxPrefilteredEnvMap;
 uniform float qrk_ggxPrefilteredEnvMapMaxLOD;
 uniform sampler2D qrk_ggxIntegrationMap;
@@ -85,7 +85,7 @@ void main() {
         fragAlbedo, fragRoughness, fragMetallic, fragPos_viewSpace,
         fragNormal_viewSpace, shadow);
     // Add ambient term.
-    if (useIrradianceMap) {
+    if (useIBL) {
       // Need to sample from cubemaps via worlspace vectors.
       vec3 fragNormal_worldSpace = mat3(transpose(view)) * fragNormal_viewSpace;
       vec3 viewDir_worldSpace =

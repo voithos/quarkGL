@@ -41,6 +41,16 @@ enum class LightingModel {
   COOK_TORRANCE_GGX,
 };
 
+enum class SkyboxImage {
+  ALEXS_APT = 0,
+  FROZEN_WATERFALL,
+  KLOPPENHEIM,
+  MILKYWAY,
+  MON_VALLEY,
+  UENO_SHRINE,
+  WINTER_FOREST,
+};
+
 enum class GBufferVis {
   DISABLED = 0,
   POSITIONS,
@@ -82,7 +92,9 @@ struct ModelRenderOptions {
   float shadowBiasMin = 0.0001;
   float shadowBiasMax = 0.001;
 
-  bool useIrradianceMap = true;
+  SkyboxImage skyboxImage = SkyboxImage::MILKYWAY;
+
+  bool useIBL = true;
   glm::vec3 ambientColor = glm::vec3(0.1f);
   bool ssao = true;
   float ssaoRadius = 0.5f;
@@ -92,7 +104,7 @@ struct ModelRenderOptions {
   glm::vec3 emissionAttenuation = glm::vec3(0, 0, 1.0f);
 
   bool bloom = true;
-  float bloomMix = 0.005;
+  float bloomMix = 0.004;
   ToneMapping toneMapping = ToneMapping::ACES_APPROX;
   bool gammaCorrect = true;
   float gamma = 2.2f;
@@ -261,12 +273,16 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     ImGui::Separator();
     ImGui::Text("Environment");
 
+    ImGui::Combo("Skybox image", reinterpret_cast<int*>(&opts.skyboxImage),
+                 "Alex's apt\0Frozen waterfall\0Kloppenheim\0Milkyway\0Mon "
+                 "Valley\0Ueno shrine\0Winter forest\0");
+
     ImGui::BeginDisabled(opts.lightingModel == LightingModel::BLINN_PHONG);
-    ImGui::Checkbox("Use irradiance map", &opts.useIrradianceMap);
+    ImGui::Checkbox("Use IBL", &opts.useIBL);
     ImGui::EndDisabled();
 
     ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG &&
-                         opts.useIrradianceMap);
+                         opts.useIBL);
     ImGui::ColorEdit3("Ambient color",
                       reinterpret_cast<float*>(&opts.ambientColor),
                       ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
@@ -384,6 +400,58 @@ std::unique_ptr<qrk::Model> loadModelOrDefault() {
   return helmet;
 }
 
+/** Loads a skybox image as a cubemap and generates IBL info. */
+void loadSkyboxImage(
+    SkyboxImage skyboxImage, qrk::SkyboxMesh& skybox,
+    qrk::EquirectCubemapConverter& equirectCubemapConverter,
+    qrk::CubemapIrradianceCalculator& irradianceCalculator,
+    qrk::GGXPrefilteredEnvMapCalculator& prefilteredEnvMapCalculator) {
+  std::string hdrPath;
+  switch (skyboxImage) {
+    case SkyboxImage::ALEXS_APT:
+      hdrPath = "examples/assets/ibl/AlexsApt.hdr";
+      break;
+    case SkyboxImage::FROZEN_WATERFALL:
+      hdrPath = "examples/assets/ibl/FrozenWaterfall.hdr";
+      break;
+    case SkyboxImage::KLOPPENHEIM:
+      hdrPath = "examples/assets/ibl/Kloppenheim.hdr";
+      break;
+    case SkyboxImage::MILKYWAY:
+      hdrPath = "examples/assets/ibl/Milkyway.hdr";
+      break;
+    case SkyboxImage::MON_VALLEY:
+      hdrPath = "examples/assets/ibl/MonValley.hdr";
+      break;
+    case SkyboxImage::UENO_SHRINE:
+      hdrPath = "examples/assets/ibl/UenoShrine.hdr";
+      break;
+    case SkyboxImage::WINTER_FOREST:
+      hdrPath = "examples/assets/ibl/WinterForest.hdr";
+      break;
+  }
+
+  // TODO: Delete this afterwards
+  qrk::Texture hdr = qrk::Texture::loadHdr(hdrPath.c_str());
+
+  // Process HDR cubemap
+  {
+    qrk::DebugGroup debugGroup("HDR equirect to cubemap");
+    equirectCubemapConverter.multipassDraw(hdr);
+  }
+  auto cubemap = equirectCubemapConverter.getCubemap();
+  {
+    qrk::DebugGroup debugGroup("Irradiance calculation");
+    irradianceCalculator.multipassDraw(cubemap);
+  }
+  {
+    qrk::DebugGroup debugGroup("Prefiltered env map calculation");
+    prefilteredEnvMapCalculator.multipassDraw(cubemap);
+  }
+
+  skybox.setTexture(cubemap);
+}
+
 int main(int argc, char** argv) {
   absl::SetProgramUsageMessage(
       "quarkGL model viewer. Usage:\n  model_render --model path/to/model.obj");
@@ -499,9 +567,45 @@ int main(int argc, char** argv) {
 
   qrk::FXAAShader fxaaShader;
 
-  // Setup skybox.
+  // Setup skybox and IBL.
   qrk::SkyboxShader skyboxShader;
   skyboxShader.addUniformSource(camera);
+
+  constexpr int CUBEMAP_SIZE = 1024;
+  qrk::EquirectCubemapConverter equirectCubemapConverter(
+      CUBEMAP_SIZE, CUBEMAP_SIZE, /*generateMips=*/true);
+
+  // Irradiance map averages radiance uniformly so it doesn't have a lot of high
+  // frequency details and can thus be small.
+  auto irradianceCalculator =
+      std::make_shared<qrk::CubemapIrradianceCalculator>(32, 32);
+  auto irradianceMap = irradianceCalculator->getIrradianceMap();
+  lightingTextureRegistry->addTextureSource(irradianceCalculator);
+
+  // Create prefiltered envmap for specular IBL. It doesn't have to be super
+  // large.
+  auto prefilteredEnvMapCalculator =
+      std::make_shared<qrk::GGXPrefilteredEnvMapCalculator>(CUBEMAP_SIZE,
+                                                            CUBEMAP_SIZE);
+  auto prefilteredEnvMap = prefilteredEnvMapCalculator->getPrefilteredEnvMap();
+  lightingTextureRegistry->addTextureSource(prefilteredEnvMapCalculator);
+  lightingPassShader.addUniformSource(prefilteredEnvMapCalculator);
+
+  auto brdfLUT = std::make_shared<qrk::GGXBrdfIntegrationCalculator>(
+      CUBEMAP_SIZE, CUBEMAP_SIZE);
+  {
+    // Only needs to be calculated once up front.
+    qrk::DebugGroup debugGroup("BRDF LUT calculation");
+    brdfLUT->draw();
+  }
+  auto brdfIntegrationMap = brdfLUT->getBrdfIntegrationMap();
+  lightingTextureRegistry->addTextureSource(brdfLUT);
+
+  qrk::SkyboxMesh skybox;
+
+  // Load the actual env map and generate IBL textures.
+  loadSkyboxImage(opts.skyboxImage, skybox, equirectCubemapConverter,
+                  *irradianceCalculator, *prefilteredEnvMapCalculator);
 
   // Prepare some debug shaders.
   qrk::Shader normalShader(
@@ -513,53 +617,6 @@ int main(int argc, char** argv) {
   qrk::Shader lampShader(qrk::ShaderPath("model_render/shaders/model.vert"),
                          qrk::ShaderInline(lampShaderSource));
   lampShader.addUniformSource(camera);
-
-  // TODO: Make this more configurable.
-  qrk::Texture hdr =
-      qrk::Texture::loadHdr("examples/assets/ibl/Alexs_Apt_2k.hdr");
-  constexpr int CUBEMAP_SIZE = 1024;
-  qrk::EquirectCubemapConverter equirectCubemapConverter(
-      CUBEMAP_SIZE, CUBEMAP_SIZE, /*generateMips=*/true);
-  {
-    qrk::DebugGroup debugGroup("HDR equirect to cubemap");
-    equirectCubemapConverter.multipassDraw(hdr);
-  }
-  auto cubemap = equirectCubemapConverter.getCubemap();
-
-  // Irradiance map averages radiance uniformly so it doesn't have a lot of high
-  // frequency details and can thus be small.
-  auto irradianceCalculator =
-      std::make_shared<qrk::CubemapIrradianceCalculator>(32, 32);
-  {
-    qrk::DebugGroup debugGroup("Irradiance calculation");
-    irradianceCalculator->multipassDraw(cubemap);
-  }
-  auto irradianceMap = irradianceCalculator->getIrradianceMap();
-  lightingTextureRegistry->addTextureSource(irradianceCalculator);
-
-  // Create prefiltered envmap for specular IBL. It doesn't have to be super
-  // large.
-  auto prefilteredEnvMapCalculator =
-      std::make_shared<qrk::GGXPrefilteredEnvMapCalculator>(512, 512);
-  {
-    qrk::DebugGroup debugGroup("Prefiltered env map calculation");
-    prefilteredEnvMapCalculator->multipassDraw(cubemap);
-  }
-  auto prefilteredEnvMap = prefilteredEnvMapCalculator->getPrefilteredEnvMap();
-  lightingTextureRegistry->addTextureSource(prefilteredEnvMapCalculator);
-  lightingPassShader.addUniformSource(prefilteredEnvMapCalculator);
-
-  auto brdfLUT = std::make_shared<qrk::GGXBrdfIntegrationCalculator>(512, 512);
-  {
-    qrk::DebugGroup debugGroup("BRDF LUT calculation");
-    brdfLUT->draw();
-  }
-  auto brdfIntegrationMap = brdfLUT->getBrdfIntegrationMap();
-  lightingTextureRegistry->addTextureSource(brdfLUT);
-
-  // TODO: Set this to something else.
-  prefilteredEnvMap.setSamplerMipRange(1, 1);
-  qrk::SkyboxMesh skybox(prefilteredEnvMap);
 
   // Load primary model.
   std::unique_ptr<qrk::Model> model = loadModelOrDefault();
@@ -627,6 +684,10 @@ int main(int argc, char** argv) {
       } else {
         win.disableVsync();
       }
+    }
+    if (opts.skyboxImage != prevOpts.skyboxImage) {
+      loadSkyboxImage(opts.skyboxImage, skybox, equirectCubemapConverter,
+                      *irradianceCalculator, *prefilteredEnvMapCalculator);
     }
 
     win.setMouseButtonBehavior(opts.captureMouse
@@ -742,7 +803,7 @@ int main(int argc, char** argv) {
       lightingPassShader.setBool("shadowMapping", opts.shadowMapping);
       lightingPassShader.setFloat("shadowBiasMin", opts.shadowBiasMin);
       lightingPassShader.setFloat("shadowBiasMax", opts.shadowBiasMax);
-      lightingPassShader.setBool("useIrradianceMap", opts.useIrradianceMap);
+      lightingPassShader.setBool("useIBL", opts.useIBL);
       lightingPassShader.setBool("ssao", opts.ssao);
       lightingPassShader.setInt("lightingModel",
                                 static_cast<int>(opts.lightingModel));

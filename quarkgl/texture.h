@@ -156,6 +156,7 @@ class Texture {
   void unsetSamplerMipRange();
 
   unsigned int getId() const { return id_; }
+  TextureType getType() const { return type_; }
   // Returns the path to a texture. Not applicable for cubemaps or generated
   // textures.
   std::string getPath() const { return path_; }
