@@ -135,7 +135,7 @@ struct ModelRenderOptions {
 };
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
-static void helpMarker(const char* desc) {
+static void imguiHelpMarker(const char* desc) {
   ImGui::TextDisabled("(?)");
   if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
     ImGui::BeginTooltip();
@@ -152,9 +152,9 @@ enum class Scale {
 };
 
 // Helper for a float slider value.
-static bool floatSlider(const char* desc, float* value, float min, float max,
-                        const char* fmt = nullptr,
-                        Scale scale = Scale::LINEAR) {
+static bool imguiFloatSlider(const char* desc, float* value, float min,
+                             float max, const char* fmt = nullptr,
+                             Scale scale = Scale::LINEAR) {
   ImGuiSliderFlags flags = ImGuiSliderFlags_None;
   if (scale == Scale::LOG) {
     flags = ImGuiSliderFlags_Logarithmic;
@@ -163,10 +163,19 @@ static bool floatSlider(const char* desc, float* value, float min, float max,
                              flags);
 }
 
+// Helper for an image control.
+static void imguiImage(const qrk::Texture& texture, glm::vec2 size) {
+  ImTextureID texID = reinterpret_cast<void*>(texture.getId());
+  // Flip the image.
+  ImGui::Image(texID, size, /*uv0=*/glm::vec2(0.0f, 1.0f),
+               /*uv1=*/glm::vec2(1.0f, 0.0f));
+}
+
 // Non-normative context for UI rendering. Used for accessing renderer info.
 struct UIContext {
   qrk::Camera& camera;
   qrk::ShadowMap& shadowMap;
+  qrk::SsaoBuffer& ssaoBuffer;
 };
 
 // Called during game loop.
@@ -175,12 +184,14 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
 
   ImGui::Begin("Model Render");
 
+  constexpr float IMAGE_BASE_SIZE = 160.0f;
+
   if (ImGui::CollapsingHeader("Model", ImGuiTreeNodeFlags_DefaultOpen)) {
     // Perform some shenanigans so that the gizmo rotates along with the
     // camera while still representing the same model rotation.
     glm::quat rotViewSpace =
         glm::quat_cast(ctx.camera.getViewTransform()) * opts.modelRotation;
-    ImGui::gizmo3D("Model rotation", rotViewSpace, /*size=*/160);
+    ImGui::gizmo3D("Model rotation", rotViewSpace, IMAGE_BASE_SIZE);
     opts.modelRotation =
         glm::quat_cast(glm::inverse(ctx.camera.getViewTransform())) *
         glm::normalize(rotViewSpace);
@@ -192,7 +203,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     glm::vec3 dirViewSpace =
         glm::vec3(ctx.camera.getViewTransform() *
                   glm::vec4(opts.directionalDirection, 0.0f));
-    ImGui::gizmo3D("Light dir", dirViewSpace, /*size=*/160);
+    ImGui::gizmo3D("Light dir", dirViewSpace, IMAGE_BASE_SIZE);
     opts.directionalDirection =
         glm::vec3(glm::inverse(ctx.camera.getViewTransform()) *
                   glm::vec4(glm::normalize(dirViewSpace), 0.0f));
@@ -203,8 +214,8 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     if (ImGui::Button("Reset rotation")) {
       opts.modelRotation = glm::identity<glm::quat>();
     }
-    floatSlider("Model scale", &opts.modelScale, 0.0001f, 100.0f, "%.04f",
-                Scale::LOG);
+    imguiFloatSlider("Model scale", &opts.modelScale, 0.0001f, 100.0f, "%.04f",
+                     Scale::LOG);
   }
 
   ImGui::Separator();
@@ -216,7 +227,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     ImGui::Combo("Lighting model", reinterpret_cast<int*>(&opts.lightingModel),
                  "Blinn-Phong\0Cook-Torrance GGX\0\0");
     ImGui::SameLine();
-    helpMarker("Which lighting model to use for shading.");
+    imguiHelpMarker("Which lighting model to use for shading.");
 
     ImGui::Separator();
     if (ImGui::TreeNode("Directional light")) {
@@ -231,26 +242,26 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
       ImGui::EndDisabled();
       ImGui::Checkbox("Lock specular", &lockSpecular);
       ImGui::SameLine();
-      helpMarker(
+      imguiHelpMarker(
           "Whether to lock the specular light color to the diffuse. Usually "
           "desired for PBR.");
       if (lockSpecular) {
         opts.directionalSpecular = opts.directionalDiffuse;
       }
-      floatSlider("Intensity", &opts.directionalIntensity, 0.0f, 50.0f, nullptr,
-                  Scale::LINEAR);
+      imguiFloatSlider("Intensity", &opts.directionalIntensity, 0.0f, 50.0f,
+                       nullptr, Scale::LINEAR);
 
       ImGui::TreePop();
     }
 
-    if (ImGui::TreeNode("Emission light")) {
-      floatSlider("Emission intensity", &opts.emissionIntensity, 0.0f, 1000.0f,
-                  nullptr, Scale::LOG);
+    if (ImGui::TreeNode("Emission lights")) {
+      imguiFloatSlider("Emission intensity", &opts.emissionIntensity, 0.0f,
+                       1000.0f, nullptr, Scale::LOG);
       ImGui::DragFloat3("Emission attenuation",
                         reinterpret_cast<float*>(&opts.emissionAttenuation),
                         /*v_speed=*/0.01f, 0.0f, 10.0f);
       ImGui::SameLine();
-      helpMarker(
+      imguiHelpMarker(
           "Constant, linear, and quadratic attenuation of emission lights.");
 
       ImGui::TreePop();
@@ -259,34 +270,36 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     if (ImGui::TreeNode("Shadows")) {
       ImGui::Checkbox("Shadow mapping", &opts.shadowMapping);
       ImGui::BeginDisabled(!opts.shadowMapping);
-      ImTextureID shadowMapTexID =
-          reinterpret_cast<void*>(ctx.shadowMap.getDepthTexture().getId());
-      ImGui::Image(shadowMapTexID, glm::vec2(200, 200));
-      floatSlider("Cuboid extents", &opts.shadowCameraCuboidExtents, 0.1f,
-                  50.0f, nullptr, Scale::LOG);
+      // Shadow map texture is a square, so extend both width/height by the
+      // aspect ratio.
+      imguiImage(ctx.shadowMap.getDepthTexture(),
+                 glm::vec2(IMAGE_BASE_SIZE * ctx.camera.getAspectRatio(),
+                           IMAGE_BASE_SIZE * ctx.camera.getAspectRatio()));
+      imguiFloatSlider("Cuboid extents", &opts.shadowCameraCuboidExtents, 0.1f,
+                       50.0f, nullptr, Scale::LOG);
 
-      if (floatSlider("Near plane", &opts.shadowCameraNear, 0.01, 1000.0,
-                      nullptr, Scale::LOG)) {
+      if (imguiFloatSlider("Near plane", &opts.shadowCameraNear, 0.01, 1000.0,
+                           nullptr, Scale::LOG)) {
         if (opts.shadowCameraNear > opts.shadowCameraFar) {
           opts.shadowCameraFar = opts.shadowCameraNear;
         }
       }
-      if (floatSlider("Far plane", &opts.shadowCameraFar, 0.01, 1000.0, nullptr,
-                      Scale::LOG)) {
+      if (imguiFloatSlider("Far plane", &opts.shadowCameraFar, 0.01, 1000.0,
+                           nullptr, Scale::LOG)) {
         if (opts.shadowCameraFar < opts.shadowCameraNear) {
           opts.shadowCameraNear = opts.shadowCameraFar;
         }
       }
-      floatSlider("Distance from origin", &opts.shadowCameraDistance, 0.01,
-                  100.0f, nullptr, Scale::LOG);
-      if (floatSlider("Bias min", &opts.shadowBiasMin, 0.0001, 1.0, "%.04f",
-                      Scale::LOG)) {
+      imguiFloatSlider("Distance from origin", &opts.shadowCameraDistance, 0.01,
+                       100.0f, nullptr, Scale::LOG);
+      if (imguiFloatSlider("Bias min", &opts.shadowBiasMin, 0.0001, 1.0,
+                           "%.04f", Scale::LOG)) {
         if (opts.shadowBiasMin > opts.shadowBiasMax) {
           opts.shadowBiasMax = opts.shadowBiasMin;
         }
       }
-      if (floatSlider("Bias max", &opts.shadowBiasMax, 0.0001, 1.0, "%.04f",
-                      Scale::LOG)) {
+      if (imguiFloatSlider("Bias max", &opts.shadowBiasMax, 0.0001, 1.0,
+                           "%.04f", Scale::LOG)) {
         if (opts.shadowBiasMax < opts.shadowBiasMin) {
           opts.shadowBiasMin = opts.shadowBiasMax;
         }
@@ -312,22 +325,27 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
                         reinterpret_cast<float*>(&opts.ambientColor),
                         ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
       ImGui::SameLine();
-      helpMarker("The color of the fixed ambient component.");
+      imguiHelpMarker("The color of the fixed ambient component.");
       ImGui::EndDisabled();
 
       ImGui::Checkbox("SSAO", &opts.ssao);
       ImGui::BeginDisabled(!opts.ssao);
-      floatSlider("SSAO radius", &opts.ssaoRadius, 0.01, 5.0, "%.04f",
-                  Scale::LOG);
-      floatSlider("SSAO bias", &opts.ssaoBias, 0.0001, 1.0, "%.04f",
-                  Scale::LOG);
+      imguiImage(ctx.ssaoBuffer.getSsaoTexture(),
+                 glm::vec2(IMAGE_BASE_SIZE * ctx.camera.getAspectRatio(),
+                           IMAGE_BASE_SIZE));
+
+      imguiFloatSlider("SSAO radius", &opts.ssaoRadius, 0.01, 5.0, "%.04f",
+                       Scale::LOG);
+      imguiFloatSlider("SSAO bias", &opts.ssaoBias, 0.0001, 1.0, "%.04f",
+                       Scale::LOG);
       ImGui::EndDisabled();
 
       ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG);
-      floatSlider("Shininess", &opts.shininess, 1.0f, 1000.0f, nullptr,
-                  Scale::LOG);
+      imguiFloatSlider("Shininess", &opts.shininess, 1.0f, 1000.0f, nullptr,
+                       Scale::LOG);
       ImGui::SameLine();
-      helpMarker("Shininess of specular highlights. Only applies to Phong.");
+      imguiHelpMarker(
+          "Shininess of specular highlights. Only applies to Phong.");
       ImGui::EndDisabled();
 
       ImGui::TreePop();
@@ -336,8 +354,8 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     if (ImGui::TreeNode("Post-processing")) {
       ImGui::Checkbox("Bloom", &opts.bloom);
       ImGui::BeginDisabled(!opts.bloom);
-      floatSlider("Bloom mix", &opts.bloomMix, 0.001f, 1.0f, nullptr,
-                  Scale::LOG);
+      imguiFloatSlider("Bloom mix", &opts.bloomMix, 0.001f, 1.0f, nullptr,
+                       Scale::LOG);
       ImGui::EndDisabled();
 
       ImGui::Combo(
@@ -345,7 +363,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
           "None\0Reinhard\0Reinhard luminance\0ACES (approx)\0AMD\0\0");
       ImGui::Checkbox("Gamma correct", &opts.gammaCorrect);
       ImGui::BeginDisabled(!opts.gammaCorrect);
-      floatSlider("Gamma", &opts.gamma, 0.01f, 8.0f, nullptr, Scale::LOG);
+      imguiFloatSlider("Gamma", &opts.gamma, 0.01f, 8.0f, nullptr, Scale::LOG);
       ImGui::EndDisabled();
 
       ImGui::Checkbox("FXAA", &opts.fxaa);
@@ -363,18 +381,18 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
                        reinterpret_cast<int*>(&opts.cameraControlType),
                        static_cast<int>(CameraControlType::ORBIT));
 
-    floatSlider("Speed", &opts.speed, 0.1, 50.0);
-    floatSlider("Sensitivity", &opts.sensitivity, 0.01, 1.0, nullptr,
-                Scale::LOG);
-    floatSlider("FoV", &opts.fov, qrk::MIN_FOV, qrk::MAX_FOV, "%.1f°");
-    if (floatSlider("Near plane", &opts.near, 0.01, 1000.0, nullptr,
-                    Scale::LOG)) {
+    imguiFloatSlider("Speed", &opts.speed, 0.1, 50.0);
+    imguiFloatSlider("Sensitivity", &opts.sensitivity, 0.01, 1.0, nullptr,
+                     Scale::LOG);
+    imguiFloatSlider("FoV", &opts.fov, qrk::MIN_FOV, qrk::MAX_FOV, "%.1f°");
+    if (imguiFloatSlider("Near plane", &opts.near, 0.01, 1000.0, nullptr,
+                         Scale::LOG)) {
       if (opts.near > opts.far) {
         opts.far = opts.near;
       }
     }
-    if (floatSlider("Far plane", &opts.far, 0.01, 1000.0, nullptr,
-                    Scale::LOG)) {
+    if (imguiFloatSlider("Far plane", &opts.far, 0.01, 1000.0, nullptr,
+                         Scale::LOG)) {
       if (opts.far < opts.near) {
         opts.near = opts.far;
       }
@@ -389,7 +407,7 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
         "Disabled\0Positions\0Ambient "
         "occlusion\0Normals\0Roughness\0Albedo\0Metallic\0Emission\0\0");
     ImGui::SameLine();
-    helpMarker("What component of the G-Buffer to visualize.");
+    imguiHelpMarker("What component of the G-Buffer to visualize.");
 
     ImGui::Checkbox("Wireframe", &opts.wireframe);
     ImGui::Checkbox("Draw vertex normals", &opts.drawNormals);
@@ -673,7 +691,12 @@ int main(int argc, char** argv) {
     opts.avgFPS = win.getAvgFPS();
 
     // Render UI.
-    renderImGuiUI(opts, {.camera = *camera, .shadowMap = *shadowMap});
+    UIContext ctx = {
+        .camera = *camera,
+        .shadowMap = *shadowMap,
+        .ssaoBuffer = *ssaoBlurredBuffer,
+    };
+    renderImGuiUI(opts, ctx);
 
     // Post-process options. Some option values are used later during rendering.
     model->setModelTransform(glm::scale(glm::mat4_cast(opts.modelRotation),

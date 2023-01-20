@@ -1,3 +1,5 @@
+#include "window.h"
+
 #include <qrk/window.h>
 
 namespace qrk {
@@ -90,6 +92,11 @@ void Window::disableResizeUpdates() {
   if (!resizeUpdatesEnabled_) return;
   glfwSetFramebufferSizeCallback(window_, nullptr);
   resizeUpdatesEnabled_ = false;
+}
+
+float Window::getAspectRatio() const {
+  ImageSize size = getSize();
+  return size.width / static_cast<float>(size.height);
 }
 
 void Window::enableKeyInput() {

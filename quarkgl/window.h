@@ -132,6 +132,7 @@ class Window : public UniformSource {
   void setSize(int width, int height);
   void enableResizeUpdates();
   void disableResizeUpdates();
+  float getAspectRatio() const;
 
   unsigned int getFrameCount() const { return frameCount_; }
   const float* getFrameDeltas() const;
