@@ -180,45 +180,12 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     // camera while still representing the same model rotation.
     glm::quat rotViewSpace =
         glm::quat_cast(ctx.camera.getViewTransform()) * opts.modelRotation;
-    ImGui::gizmo3D("Rotation", rotViewSpace, /*size=*/160);
+    ImGui::gizmo3D("Model rotation", rotViewSpace, /*size=*/160);
     opts.modelRotation =
         glm::quat_cast(glm::inverse(ctx.camera.getViewTransform())) *
         glm::normalize(rotViewSpace);
 
-    if (ImGui::Button("Reset")) {
-      opts.modelRotation = glm::identity<glm::quat>();
-    }
-    floatSlider("Scale", &opts.modelScale, 0.0001f, 100.0f, "%.04f",
-                Scale::LOG);
-  }
-
-  if (ImGui::CollapsingHeader("Rendering")) {
-    ImGui::Combo("Lighting model", reinterpret_cast<int*>(&opts.lightingModel),
-                 "Blinn-Phong\0Cook-Torrance GGX\0\0");
     ImGui::SameLine();
-    helpMarker("Which lighting model to use for shading.");
-
-    ImGui::Separator();
-    ImGui::Text("Directional light");
-    static bool lockSpecular = true;
-    ImGui::ColorEdit3("Diffuse color",
-                      reinterpret_cast<float*>(&opts.directionalDiffuse),
-                      ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
-    ImGui::BeginDisabled(lockSpecular);
-    ImGui::ColorEdit3("Specular color",
-                      reinterpret_cast<float*>(&opts.directionalSpecular),
-                      ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
-    ImGui::EndDisabled();
-    ImGui::Checkbox("Lock specular", &lockSpecular);
-    ImGui::SameLine();
-    helpMarker(
-        "Whether to lock the specular light color to the diffuse. Usually "
-        "desired for PBR.");
-    if (lockSpecular) {
-      opts.directionalSpecular = opts.directionalDiffuse;
-    }
-    floatSlider("Intensity", &opts.directionalIntensity, 0.0f, 50.0f, nullptr,
-                Scale::LINEAR);
 
     // Perform some shenanigans so that the gizmo rotates along with the
     // camera while still representing the same light dir..
@@ -229,109 +196,162 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     opts.directionalDirection =
         glm::vec3(glm::inverse(ctx.camera.getViewTransform()) *
                   glm::vec4(glm::normalize(dirViewSpace), 0.0f));
-    ImGui::SliderFloat3("##directional_direction",
+    ImGui::SliderFloat3("Light dir",
                         reinterpret_cast<float*>(&opts.directionalDirection),
                         -1.0f, 1.0f);
 
-    ImGui::Separator();
-    ImGui::Text("Shadows");
-
-    ImGui::Checkbox("Shadow mapping", &opts.shadowMapping);
-    ImGui::BeginDisabled(!opts.shadowMapping);
-    ImTextureID shadowMapTexID =
-        reinterpret_cast<void*>(ctx.shadowMap.getDepthTexture().getId());
-    ImGui::Image(shadowMapTexID, glm::vec2(200, 200));
-    floatSlider("Cuboid extents", &opts.shadowCameraCuboidExtents, 0.1f, 50.0f,
-                nullptr, Scale::LOG);
-
-    if (floatSlider("Near plane", &opts.shadowCameraNear, 0.01, 1000.0, nullptr,
-                    Scale::LOG)) {
-      if (opts.shadowCameraNear > opts.shadowCameraFar) {
-        opts.shadowCameraFar = opts.shadowCameraNear;
-      }
+    if (ImGui::Button("Reset rotation")) {
+      opts.modelRotation = glm::identity<glm::quat>();
     }
-    if (floatSlider("Far plane", &opts.shadowCameraFar, 0.01, 1000.0, nullptr,
-                    Scale::LOG)) {
-      if (opts.shadowCameraFar < opts.shadowCameraNear) {
-        opts.shadowCameraNear = opts.shadowCameraFar;
-      }
-    }
-    floatSlider("Distance from origin", &opts.shadowCameraDistance, 0.01,
-                100.0f, nullptr, Scale::LOG);
-    if (floatSlider("Bias min", &opts.shadowBiasMin, 0.0001, 1.0, "%.04f",
-                    Scale::LOG)) {
-      if (opts.shadowBiasMin > opts.shadowBiasMax) {
-        opts.shadowBiasMax = opts.shadowBiasMin;
-      }
-    }
-    if (floatSlider("Bias max", &opts.shadowBiasMax, 0.0001, 1.0, "%.04f",
-                    Scale::LOG)) {
-      if (opts.shadowBiasMax < opts.shadowBiasMin) {
-        opts.shadowBiasMin = opts.shadowBiasMax;
-      }
-    }
-
-    ImGui::EndDisabled();
-
-    ImGui::Separator();
-    ImGui::Text("Environment");
-
-    ImGui::Combo("Skybox image", reinterpret_cast<int*>(&opts.skyboxImage),
-                 "Alex's apt\0Frozen waterfall\0Kloppenheim\0Milkyway\0Mon "
-                 "Valley\0Ueno shrine\0Winter forest\0");
-
-    ImGui::BeginDisabled(opts.lightingModel == LightingModel::BLINN_PHONG);
-    ImGui::Checkbox("Use IBL", &opts.useIBL);
-    ImGui::EndDisabled();
-
-    ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG &&
-                         opts.useIBL);
-    ImGui::ColorEdit3("Ambient color",
-                      reinterpret_cast<float*>(&opts.ambientColor),
-                      ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
-    ImGui::SameLine();
-    helpMarker("The color of the fixed ambient component.");
-    ImGui::EndDisabled();
-
-    ImGui::Checkbox("SSAO", &opts.ssao);
-    ImGui::BeginDisabled(!opts.ssao);
-    floatSlider("SSAO radius", &opts.ssaoRadius, 0.01, 5.0, "%.04f",
+    floatSlider("Model scale", &opts.modelScale, 0.0001f, 100.0f, "%.04f",
                 Scale::LOG);
-    floatSlider("SSAO bias", &opts.ssaoBias, 0.0001, 1.0, "%.04f", Scale::LOG);
-    ImGui::EndDisabled();
+  }
 
-    ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG);
-    floatSlider("Shininess", &opts.shininess, 1.0f, 1000.0f, nullptr,
-                Scale::LOG);
-    ImGui::SameLine();
-    helpMarker("Shininess of specular highlights. Only applies to Phong.");
-    ImGui::EndDisabled();
+  ImGui::Separator();
 
-    floatSlider("Emission intensity", &opts.emissionIntensity, 0.0f, 1000.0f,
-                nullptr, Scale::LOG);
-    ImGui::DragFloat3("Emission attenuation",
-                      reinterpret_cast<float*>(&opts.emissionAttenuation),
-                      /*v_speed=*/0.01f, 0.0f, 10.0f);
+  // Create a child so that this section can scroll separately.
+  ImGui::BeginChild("MainOptions");
+
+  if (ImGui::CollapsingHeader("Rendering")) {
+    ImGui::Combo("Lighting model", reinterpret_cast<int*>(&opts.lightingModel),
+                 "Blinn-Phong\0Cook-Torrance GGX\0\0");
     ImGui::SameLine();
-    helpMarker(
-        "Constant, linear, and quadratic attenuation of emission lights.");
+    helpMarker("Which lighting model to use for shading.");
 
     ImGui::Separator();
-    ImGui::Text("Post-processing");
+    if (ImGui::TreeNode("Directional light")) {
+      static bool lockSpecular = true;
+      ImGui::ColorEdit3("Diffuse color",
+                        reinterpret_cast<float*>(&opts.directionalDiffuse),
+                        ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+      ImGui::BeginDisabled(lockSpecular);
+      ImGui::ColorEdit3("Specular color",
+                        reinterpret_cast<float*>(&opts.directionalSpecular),
+                        ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+      ImGui::EndDisabled();
+      ImGui::Checkbox("Lock specular", &lockSpecular);
+      ImGui::SameLine();
+      helpMarker(
+          "Whether to lock the specular light color to the diffuse. Usually "
+          "desired for PBR.");
+      if (lockSpecular) {
+        opts.directionalSpecular = opts.directionalDiffuse;
+      }
+      floatSlider("Intensity", &opts.directionalIntensity, 0.0f, 50.0f, nullptr,
+                  Scale::LINEAR);
 
-    ImGui::Checkbox("Bloom", &opts.bloom);
-    ImGui::BeginDisabled(!opts.bloom);
-    floatSlider("Bloom mix", &opts.bloomMix, 0.001f, 1.0f, nullptr, Scale::LOG);
-    ImGui::EndDisabled();
+      ImGui::TreePop();
+    }
 
-    ImGui::Combo("Tone mapping", reinterpret_cast<int*>(&opts.toneMapping),
-                 "None\0Reinhard\0Reinhard luminance\0ACES (approx)\0AMD\0\0");
-    ImGui::Checkbox("Gamma correct", &opts.gammaCorrect);
-    ImGui::BeginDisabled(!opts.gammaCorrect);
-    floatSlider("Gamma", &opts.gamma, 0.01f, 8.0f, nullptr, Scale::LOG);
-    ImGui::EndDisabled();
+    if (ImGui::TreeNode("Emission light")) {
+      floatSlider("Emission intensity", &opts.emissionIntensity, 0.0f, 1000.0f,
+                  nullptr, Scale::LOG);
+      ImGui::DragFloat3("Emission attenuation",
+                        reinterpret_cast<float*>(&opts.emissionAttenuation),
+                        /*v_speed=*/0.01f, 0.0f, 10.0f);
+      ImGui::SameLine();
+      helpMarker(
+          "Constant, linear, and quadratic attenuation of emission lights.");
 
-    ImGui::Checkbox("FXAA", &opts.fxaa);
+      ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Shadows")) {
+      ImGui::Checkbox("Shadow mapping", &opts.shadowMapping);
+      ImGui::BeginDisabled(!opts.shadowMapping);
+      ImTextureID shadowMapTexID =
+          reinterpret_cast<void*>(ctx.shadowMap.getDepthTexture().getId());
+      ImGui::Image(shadowMapTexID, glm::vec2(200, 200));
+      floatSlider("Cuboid extents", &opts.shadowCameraCuboidExtents, 0.1f,
+                  50.0f, nullptr, Scale::LOG);
+
+      if (floatSlider("Near plane", &opts.shadowCameraNear, 0.01, 1000.0,
+                      nullptr, Scale::LOG)) {
+        if (opts.shadowCameraNear > opts.shadowCameraFar) {
+          opts.shadowCameraFar = opts.shadowCameraNear;
+        }
+      }
+      if (floatSlider("Far plane", &opts.shadowCameraFar, 0.01, 1000.0, nullptr,
+                      Scale::LOG)) {
+        if (opts.shadowCameraFar < opts.shadowCameraNear) {
+          opts.shadowCameraNear = opts.shadowCameraFar;
+        }
+      }
+      floatSlider("Distance from origin", &opts.shadowCameraDistance, 0.01,
+                  100.0f, nullptr, Scale::LOG);
+      if (floatSlider("Bias min", &opts.shadowBiasMin, 0.0001, 1.0, "%.04f",
+                      Scale::LOG)) {
+        if (opts.shadowBiasMin > opts.shadowBiasMax) {
+          opts.shadowBiasMax = opts.shadowBiasMin;
+        }
+      }
+      if (floatSlider("Bias max", &opts.shadowBiasMax, 0.0001, 1.0, "%.04f",
+                      Scale::LOG)) {
+        if (opts.shadowBiasMax < opts.shadowBiasMin) {
+          opts.shadowBiasMin = opts.shadowBiasMax;
+        }
+      }
+
+      ImGui::EndDisabled();
+
+      ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Environment")) {
+      ImGui::Combo("Skybox image", reinterpret_cast<int*>(&opts.skyboxImage),
+                   "Alex's apt\0Frozen waterfall\0Kloppenheim\0Milkyway\0Mon "
+                   "Valley\0Ueno shrine\0Winter forest\0");
+
+      ImGui::BeginDisabled(opts.lightingModel == LightingModel::BLINN_PHONG);
+      ImGui::Checkbox("Use IBL", &opts.useIBL);
+      ImGui::EndDisabled();
+
+      ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG &&
+                           opts.useIBL);
+      ImGui::ColorEdit3("Ambient color",
+                        reinterpret_cast<float*>(&opts.ambientColor),
+                        ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+      ImGui::SameLine();
+      helpMarker("The color of the fixed ambient component.");
+      ImGui::EndDisabled();
+
+      ImGui::Checkbox("SSAO", &opts.ssao);
+      ImGui::BeginDisabled(!opts.ssao);
+      floatSlider("SSAO radius", &opts.ssaoRadius, 0.01, 5.0, "%.04f",
+                  Scale::LOG);
+      floatSlider("SSAO bias", &opts.ssaoBias, 0.0001, 1.0, "%.04f",
+                  Scale::LOG);
+      ImGui::EndDisabled();
+
+      ImGui::BeginDisabled(opts.lightingModel != LightingModel::BLINN_PHONG);
+      floatSlider("Shininess", &opts.shininess, 1.0f, 1000.0f, nullptr,
+                  Scale::LOG);
+      ImGui::SameLine();
+      helpMarker("Shininess of specular highlights. Only applies to Phong.");
+      ImGui::EndDisabled();
+
+      ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Post-processing")) {
+      ImGui::Checkbox("Bloom", &opts.bloom);
+      ImGui::BeginDisabled(!opts.bloom);
+      floatSlider("Bloom mix", &opts.bloomMix, 0.001f, 1.0f, nullptr,
+                  Scale::LOG);
+      ImGui::EndDisabled();
+
+      ImGui::Combo(
+          "Tone mapping", reinterpret_cast<int*>(&opts.toneMapping),
+          "None\0Reinhard\0Reinhard luminance\0ACES (approx)\0AMD\0\0");
+      ImGui::Checkbox("Gamma correct", &opts.gammaCorrect);
+      ImGui::BeginDisabled(!opts.gammaCorrect);
+      floatSlider("Gamma", &opts.gamma, 0.01f, 8.0f, nullptr, Scale::LOG);
+      ImGui::EndDisabled();
+
+      ImGui::Checkbox("FXAA", &opts.fxaa);
+
+      ImGui::TreePop();
+    }
   }
 
   if (ImGui::CollapsingHeader("Camera")) {
@@ -384,6 +404,8 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
 
     ImGui::Checkbox("Enable VSync", &opts.enableVsync);
   }
+
+  ImGui::EndChild();
 
   ImGui::End();
   ImGui::Render();
