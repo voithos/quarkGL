@@ -2,7 +2,6 @@
 
 ## Features
 - [ ] P0: Update README / documentation
-- [ ] P0: Model scaling controls
 - [ ] P1: Replace model via imgui menu
 - [ ] P1: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 - [ ] P1: Implement tessellation
@@ -110,3 +109,4 @@
 - [x] P0: Add FXAA
 - [x] P1: Add `#pragma once` for shaders
 - [x] P0: Implement IBL (image based lighting)
+- [x] P0: Model scaling controls

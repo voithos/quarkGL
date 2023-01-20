@@ -74,6 +74,7 @@ enum class ToneMapping {
 struct ModelRenderOptions {
   // Model.
   glm::quat modelRotation = glm::identity<glm::quat>();
+  float modelScale = 1.0f;
 
   // Rendering.
   LightingModel lightingModel = LightingModel::COOK_TORRANCE_GGX;
@@ -187,6 +188,8 @@ void renderImGuiUI(ModelRenderOptions& opts, UIContext ctx) {
     if (ImGui::Button("Reset")) {
       opts.modelRotation = glm::identity<glm::quat>();
     }
+    floatSlider("Scale", &opts.modelScale, 0.0001f, 100.0f, "%.04f",
+                Scale::LOG);
   }
 
   if (ImGui::CollapsingHeader("Rendering")) {
@@ -651,7 +654,8 @@ int main(int argc, char** argv) {
     renderImGuiUI(opts, {.camera = *camera, .shadowMap = *shadowMap});
 
     // Post-process options. Some option values are used later during rendering.
-    model->setModelTransform(glm::mat4_cast(opts.modelRotation));
+    model->setModelTransform(glm::scale(glm::mat4_cast(opts.modelRotation),
+                                        glm::vec3(opts.modelScale)));
 
     directionalLight->setDiffuse(opts.directionalDiffuse *
                                  opts.directionalIntensity);
