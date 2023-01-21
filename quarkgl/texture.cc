@@ -51,6 +51,9 @@ Texture Texture::load(const char* path, bool isSRGB,
   if (texture.numChannels_ == 1) {
     texture.internalFormat_ = GL_R8;
     dataFormat = GL_RED;
+  } else if (texture.numChannels_ == 2) {
+    texture.internalFormat_ = GL_RG8;
+    dataFormat = GL_RG;
   } else if (texture.numChannels_ == 3) {
     texture.internalFormat_ = isSRGB ? GL_SRGB8 : GL_RGB8;
     dataFormat = GL_RGB;
@@ -113,6 +116,9 @@ Texture Texture::loadHdr(const char* path, const TextureParams& params) {
   if (texture.numChannels_ == 1) {
     texture.internalFormat_ = GL_R16F;
     dataFormat = GL_RED;
+  } else if (texture.numChannels_ == 2) {
+    texture.internalFormat_ = GL_RG16F;
+    dataFormat = GL_RG;
   } else if (texture.numChannels_ == 3) {
     texture.internalFormat_ = GL_RGB16F;
     dataFormat = GL_RGB;
