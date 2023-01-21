@@ -3,6 +3,7 @@
 ## Features
 - [ ] P0: Update README / documentation
 - [ ] P1: Replace model via imgui menu
+- [ ] P1: Change orbit point
 - [ ] P1: Add skeletal animation https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 - [ ] P1: Implement tessellation
 - [ ] P1: Implement material system
