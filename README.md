@@ -11,41 +11,45 @@ quarkGL uses [Bazel](https://bazel.build/) as its build system. To begin, first
 To be able to actually compile the dependencies, run the following to install
 the appropriate tools and headers (on Ubuntu/Debian):
 
-    $ sudo apt-get install build-essential xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+```
+$ sudo apt-get install build-essential xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+```
 
-To get the linters, also run (you'll need to [install
-pip](https://pip.pypa.io/en/stable/installing/) to get cpplint):
+To get the linter, also run:
 
-    $ sudo apt-get install clang-tidy
-    $ sudo pip install cpplint
+```
+$ sudo apt-get install clang-tidy
+```
 
-Then build the examples, and run them:
+You can build and run the main model renderer, which uses many of the features
+of the library.
 
-    $ bazel build examples:all
-    $ bazel run examples:learn_opengl
+```
+$ bazel run //model_render -- --model path/to/model.gltf
+```
+
+Or you can check out any of the other [examples](examples/).
 
 ## Developing
 
 In addition to the build tooling, you may also want to build a [compilation
 database](http://clang.llvm.org/docs/JSONCompilationDatabase.html) in order to
-enable the linter and semantic completion in your editor. The database is
-processed through some Python tooling that requires the `google.protobuf`
-library in order to work properly.
+enable the linter and semantic completion in your editor. 
 
-To install `google.protobuf`, first [install
-`pip`](https://pip.pypa.io/en/stable/installing/), the Python package
-installer, and then run:
+Use
+[bazel-compilation-database](https://github.com/grailbio/bazel-compilation-database)
+to extract the `compile_commands.json` file.
 
-    $ sudo pip install protobuf
-
-Afterwards, execute the following script to generate the compilation database:
-
-    $ ./build_compile_commands.sh
+```
+$ bazel-compdb -s
+```
 
 Once the `compile_commands.json` file exists, run the following to execute the
 linter:
 
-    $ ./run_linters.sh
+```
+$ ./run_linter.sh
+```
 
 ## Acknowledgements
 
@@ -62,3 +66,5 @@ projects that were used:
 - GLM
 - stb_image
 - assimp
+- Dear ImGui
+- imGuIZMO.quat
