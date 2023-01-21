@@ -537,7 +537,7 @@ int main(int argc, char** argv) {
   auto pointLight =
       std::make_shared<qrk::PointLight>(glm::vec3(1.2f, 1.0f, 2.0f));
   pointLight->setSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
-  lightRegistry->addLight(pointLight);
+  // lightRegistry->addLight(pointLight);
 
   // Create a mesh for the light.
   qrk::SphereMesh lightSphere;
@@ -895,7 +895,8 @@ int main(int argc, char** argv) {
       if (opts.wireframe) {
         win.enableWireframe();
       }
-      lightSphere.draw(lampShader);
+      // TODO: Make point lights more part of the UI.
+      // lightSphere.draw(lampShader);
       if (opts.wireframe) {
         win.disableWireframe();
       }
