@@ -1,7 +1,38 @@
 quarkGL
 =======
 
-A subatomic OpenGL graphics library.
+A subatomic OpenGL graphics library and playground.
+
+## Features
+
+- Core
+  - Shader loader & include system
+  - Model loading via Assimp
+  - Mesh and shader primitives
+  - Framebuffer and texture system
+  - Light, uniforms, and texture registry
+  - Reusable GLSL shader library
+- Rendering
+  - Blinn-Phong lighting model
+  - PBR lighting model (Cook-Torrance GGX)
+  - Deferred shading
+  - Runtime IBL, reflection probe prefiltering functions
+  - Shadow mapping
+  - Normal mapping
+  - SSAO
+  - Instanced rendering
+- Post-processing
+  - HDR support
+  - Bloom
+  - Tone mapping
+  - Gamma correction
+  - FXAA
+- Model viewer
+  - Camera system with fly and orbit controls
+  - ImGui renderer UI
+- Debugging
+  - Debug event integration
+  - Render pass debug groups
 
 ## Building
 
