@@ -84,13 +84,18 @@ linter:
 $ ./run_linter.sh
 ```
 
-## Acknowledgements
+## About
 
 This library was built as a way to learn modern OpenGL and graphics techniques.
+Note that it is _not_ production capable, although parts may be useful as a
+reference.
+
 A big thank you goes to the wonderful tutorials by Joey de Vries at
-[learnopengl.com](https://learnopengl.com)!
+[learnopengl.com](https://learnopengl.com), and to the wider graphics
+community!
 
 ## Open Source
+
 quarkGL uses several open source libraries itself. Thanks goes to the following
 projects that were used:
 
