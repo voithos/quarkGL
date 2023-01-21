@@ -21,6 +21,7 @@ A subatomic OpenGL graphics library and playground.
   - Runtime IBL, reflection probe prefiltering functions
   - Shadow mapping
   - Normal mapping
+  - Compute shaders
   - SSAO
   - Instanced rendering
 - Post-processing
@@ -35,6 +36,8 @@ A subatomic OpenGL graphics library and playground.
 - Debugging
   - Debug event integration
   - Render pass debug groups
+
+See [examples](examples/) for sample screenshots.
 
 ## Building
 
