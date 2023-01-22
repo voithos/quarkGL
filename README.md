@@ -3,7 +3,7 @@ quarkGL
 
 A subatomic OpenGL graphics library and playground.
 
-![render preview](model_render/preview.png)
+[![render preview](model_render/preview.png)](https://www.youtube.com/watch?v=rbC2D_ayePI&ab_channel=voithoz)
 
 ## Features
 
