@@ -78,6 +78,7 @@
         "typeindex": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "filesystem": "cpp"
     }
 }

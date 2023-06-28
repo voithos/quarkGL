@@ -1,9 +1,9 @@
 #ifndef QUARKGL_UTILS_H_
 #define QUARKGL_UTILS_H_
 
-#include <linux/limits.h>
 #include <stdlib.h>
 
+#include <filesystem>
 #include <regex>
 #include <string>
 
@@ -36,9 +36,8 @@ static inline bool string_has_suffix(const std::string& str,
 }
 
 static inline std::string resolvePath(std::string const& path) {
-  char resolvedPath[PATH_MAX];
-  realpath(path.c_str(), resolvedPath);
-  return std::string(resolvedPath);
+  std::filesystem::path p = path;
+  return std::filesystem::absolute(p).string();
 }
 
 template <class BidirIt, class Traits, class CharT, class UnaryFunction>
