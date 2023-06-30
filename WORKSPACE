@@ -29,14 +29,6 @@ load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_depende
 rules_foreign_cc_dependencies()
 
 http_archive(
-    name = "assimp",
-    build_file = "@//:BUILD.assimp",
-    sha256 = "6a4ff75dc727821f75ef529cea1c4fc0a7b5fc2e0a0b2ff2f6b7993fe6cb54ba",
-    strip_prefix = "assimp-5.2.4",
-    urls = ["https://github.com/assimp/assimp/archive/refs/tags/v5.2.4.tar.gz"],
-)
-
-http_archive(
     name = "com_google_absl",
     sha256 = "6764f226bd6e2d8ab9fe2f3cab5f45fb1a4a15c04b58b87ba7fa87456054f98b",
     strip_prefix = "abseil-cpp-273292d1cfc0a94a65082ee350509af1d113344d",

@@ -249,8 +249,8 @@ cc_library(
     deps = [
         ":exceptions",
         ":texture",
+        "//third_party/assimp",
         "//third_party/glad",
-        "@assimp",
     ],
 )
 
@@ -290,10 +290,10 @@ cc_library(
         ":shader",
         ":texture",
         ":texture_map",
+        "//third_party/assimp",
         "//third_party/glad",
         "//third_party/glm",
         "//third_party/stb_image",
-        "@assimp",
     ],
 )
 
