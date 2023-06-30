@@ -79,6 +79,7 @@
         "valarray": "cpp",
         "variant": "cpp",
         "*.inc": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "*.in": "cpp"
     }
 }
