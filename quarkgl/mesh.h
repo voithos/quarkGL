@@ -7,6 +7,7 @@
 #include <qrk/texture_registry.h>
 #include <qrk/vertex_array.h>
 
+#include <functional>
 #include <glm/glm.hpp>
 #include <sstream>
 #include <string>
