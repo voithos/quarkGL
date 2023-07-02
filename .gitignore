@@ -2,3 +2,6 @@ bazel-*
 external
 compile_commands.json
 imgui.ini
+
+# Local .bazelrc is not checked in.
+.bazelrc

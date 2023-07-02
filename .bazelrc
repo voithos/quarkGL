@@ -1,4 +1,0 @@
-# Use c++17.
-build --cxxopt=-std=c++17
-# Default to debug compilation mode.
-build -c dbg

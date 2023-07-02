@@ -1,0 +1,7 @@
+# Necessary for proper runfiles on Windows. Requires Developer Mode to be enabled.
+startup --windows_enable_symlinks
+build --enable_runfiles
+
+build --cxxopt="/std:c++20"
+# Default to debug compilation mode.
+build -c dbg

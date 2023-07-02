@@ -1,5 +1,4 @@
-quarkGL
-=======
+# quarkGL
 
 A subatomic OpenGL graphics library and playground.
 
@@ -46,8 +45,15 @@ See [examples](examples/) for sample screenshots.
 quarkGL uses [Bazel](https://bazel.build/) as its build system. To begin, first
 [install Bazel](https://docs.bazel.build/install.html).
 
-To be able to actually compile the dependencies, run the following to install
-the appropriate tools and headers (on Ubuntu/Debian):
+Bazel needs some platform-specific flags, which you can see in the
+`.bazelrc.<platform>` files. Copy the one for your platform, for example:
+
+```
+$ cp .bazelrc.windows .bazelrc
+```
+
+For Linux, to be able to actually compile the dependencies, run the following to
+install the appropriate tools and headers (on Ubuntu/Debian):
 
 ```
 $ sudo apt-get install build-essential xorg-dev libgl1-mesa-dev libglu1-mesa-dev
@@ -70,9 +76,9 @@ Or you can check out any of the other [examples](examples/).
 
 ## Developing
 
-In addition to the build tooling, you may also want to build a [compilation
-database](http://clang.llvm.org/docs/JSONCompilationDatabase.html) in order to
-enable the linter and semantic completion in your editor. 
+In addition to the build tooling, you may also want to build a
+[compilation database](http://clang.llvm.org/docs/JSONCompilationDatabase.html)
+in order to enable the linter and semantic completion in your editor.
 
 Use
 [bazel-compilation-database](https://github.com/grailbio/bazel-compilation-database)
@@ -96,8 +102,7 @@ Note that it is _not_ production capable, although parts may be useful as a
 reference.
 
 A big thank you goes to the wonderful tutorials by Joey de Vries at
-[learnopengl.com](https://learnopengl.com), and to the wider graphics
-community!
+[learnopengl.com](https://learnopengl.com), and to the wider graphics community!
 
 ## Open Source
 
