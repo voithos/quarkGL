@@ -11,12 +11,22 @@ cc_import(
         "include/assimp/**/*.inl",
         "include/assimp/**/*.hpp",
     ]),
-    static_library = "assimp-vc143-mtd.lib",
+    # TODO: Add precompiled library for Linux.
+    static_library = select({
+        "@platforms//os:linux": "emptyfile",
+        "@platforms//os:windows": "assimp-vc143-mtd.lib",
+        "//conditions:default": "emptyfile",
+    }),
 )
 
 cc_import(
     name = "zlib_lib",
-    static_library = "zlibstaticd.lib",
+    # TODO: Add precompiled library for Linux.
+    static_library = select({
+        "@platforms//os:linux": "emptyfile",
+        "@platforms//os:windows": "zlibstaticd.lib",
+        "//conditions:default": "emptyfile",
+    }),
     alwayslink = True,
 )
 
