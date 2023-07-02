@@ -1,4 +1,4 @@
-load("//quarkgl:quarkgl.bzl", "LINUX_LINKOPTS")
+load("//quarkgl:quarkgl.bzl", "OPENGL_LINKOPTS")
 
 cc_binary(
     name = "model_render",
@@ -8,7 +8,7 @@ cc_binary(
     ] + glob([
         "shaders/**",
     ]),
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",

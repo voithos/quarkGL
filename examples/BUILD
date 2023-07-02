@@ -1,4 +1,4 @@
-load("//quarkgl:quarkgl.bzl", "LINUX_LINKOPTS")
+load("//quarkgl:quarkgl.bzl", "OPENGL_LINKOPTS")
 
 filegroup(
     name = "shaders",
@@ -20,7 +20,7 @@ cc_binary(
         "assets/rock/*",
         "assets/planet/*",
     ]),
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -35,7 +35,7 @@ cc_binary(
     data = [
         ":shaders",
     ] + glob(["assets/nanosuit/*"]),
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -51,7 +51,7 @@ cc_binary(
         "assets/container.jpg",
         "assets/metal.png",
     ],
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -66,7 +66,7 @@ cc_binary(
     data = [
         ":shaders",
     ],
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glm",
@@ -80,7 +80,7 @@ cc_binary(
         "assets/wood.png",
         ":shaders",
     ],
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -97,7 +97,7 @@ cc_binary(
         "assets/brickwall_normal.jpg",
         ":shaders",
     ],
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -113,7 +113,7 @@ cc_binary(
         "assets/wood.png",
         ":shaders",
     ],
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -130,7 +130,7 @@ cc_binary(
         "assets/wood.png",
         ":shaders",
     ],
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -147,7 +147,7 @@ cc_binary(
     ] + glob([
         "assets/DamagedHelmet/*",
     ]),
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -166,7 +166,7 @@ cc_binary(
     ] + glob([
         "assets/SurvivalGuitarBackpack/**",
     ]),
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
@@ -184,7 +184,7 @@ cc_binary(
     ] + glob([
         "assets/rusted_iron/*",
     ]),
-    linkopts = LINUX_LINKOPTS,
+    linkopts = OPENGL_LINKOPTS,
     deps = [
         "//quarkgl",
         "//third_party/glad",
