@@ -59,7 +59,7 @@ int main() {
   registry->addLight(pointLight);
 
   // Generate asteroid distribution.
-  int rockCount = 8000;
+  constexpr int rockCount = 8000;
   glm::mat4 modelTransforms[rockCount];
   std::mt19937 gen(42);
   float radius = 10.0f;
